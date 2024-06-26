@@ -1,0 +1,43 @@
+package com.samzuhalsetiawan.habbits.data.local.dao
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import com.samzuhalsetiawan.habbits.data.local.entities.HabitEntity
+import com.samzuhalsetiawan.habbits.data.local.entities.HabitHistoryEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface HabitDao {
+
+    @Query("SELECT * FROM habit_table")
+    fun getAllHabit(): Flow<List<HabitEntity>>
+
+    @Insert(entity = HabitEntity::class, OnConflictStrategy.REPLACE)
+    suspend fun insertHabit(habit: HabitEntity)
+
+    @Query(
+        "SELECT * FROM habit_table " +
+        "LEFT JOIN habit_history_table ON habit_table.id = habit_history_table.habit_id"
+    )
+    fun getAllHabitWithHistory(): Flow<Map<HabitEntity, List<HabitHistoryEntity>>>
+
+    @Query(
+        "SELECT * FROM habit_table " +
+        "LEFT JOIN habit_history_table ON habit_table.id = habit_history_table.habit_id " +
+        "WHERE habit_table.id = :habitId"
+    )
+    fun getHabitWithHistory(habitId: Int): Flow<Map<HabitEntity, List<HabitHistoryEntity>>>
+
+    @Insert(entity = HabitHistoryEntity::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHabitHistory(habitHistoryEntity: HabitHistoryEntity)
+
+    @Delete(entity = HabitEntity::class)
+    suspend fun deleteHabit(habit: HabitEntity)
+
+    @Query("DELETE FROM habit_table WHERE id = :habitId")
+    suspend fun deleteHabitById(habitId: Int)
+}
