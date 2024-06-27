@@ -1,7 +1,6 @@
 package com.samzuhalsetiawan.habbits.ui.composable.popup_dialog
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme

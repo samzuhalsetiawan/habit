@@ -17,8 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.LocalNavigationController
 import com.samzuhalsetiawan.habbits.ui.screen.Screens
 import com.samzuhalsetiawan.habbits.utils.provideViewModel
@@ -26,65 +24,65 @@ import com.samzuhalsetiawan.habbits.utils.provideViewModel
 
 @Composable
 fun MenuWelcome(
-    modifier: Modifier = Modifier
+   modifier: Modifier = Modifier
 ) {
 
-    val viewModel: MenuWelcomeViewModel = provideViewModel()
-    val navController = LocalNavigationController.current
+   val viewModel: MenuWelcomeViewModel = provideViewModel()
+   val navController = LocalNavigationController.current
 
-    MenuWelcome(
-        onNavigateToPertanyaan = {
-            navController.navigate(Screens.Pertanyaan)
-        }
-    )
+   MenuWelcome(
+      onNavigateToPertanyaan = {
+         navController.navigate(Screens.Pertanyaan)
+      }
+   )
 
 }
 
 @Composable
 private fun MenuWelcome(
-    modifier: Modifier = Modifier,
-    onNavigateToPertanyaan: () -> Unit,
+   modifier: Modifier = Modifier,
+   onNavigateToPertanyaan: () -> Unit,
 ) {
 
 
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.7f)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Selamat datang di aplikasi habits",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                Text(
-                    text = "Sebelum memulai mohon jawab beberapa pertanyaan berikut",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+   Surface(
+      modifier = modifier.fillMaxSize(),
+      color = MaterialTheme.colorScheme.background
+   ) {
+      Column(
+         modifier = Modifier.fillMaxSize()
+      ) {
+         Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.7f)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+         ) {
+            Text(
+               text = "Selamat datang di aplikasi habits",
+               textAlign = TextAlign.Center,
+               style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            Text(
+               text = "Sebelum memulai mohon jawab beberapa pertanyaan berikut",
+               textAlign = TextAlign.Center,
+               style = MaterialTheme.typography.bodyMedium
+            )
+         }
+         Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+         ) {
+            Button(onClick = onNavigateToPertanyaan) {
+               Text(text = "Ayo Mulai")
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.3f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(onClick = onNavigateToPertanyaan) {
-                    Text(text = "Ayo Mulai")
-                }
-            }
-        }
-    }
+         }
+      }
+   }
 }

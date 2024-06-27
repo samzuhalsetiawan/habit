@@ -19,7 +19,7 @@ interface PopUpController {
 
 class PopUpControllerImpl(
    private val popUpManager: PopUpManager
-): PopUpController {
+) : PopUpController {
 
    override fun show(dialog: PopUpDialog) {
       dialog.show(popUpManager)
@@ -44,6 +44,7 @@ sealed class PopUpDialog {
    fun show(popUpManager: PopUpManager) {
       popUpManager.showPopUpDialog(this)
    }
+
    fun close(popUpManager: PopUpManager) {
       popUpManager.closePopUpDialog()
    }
@@ -53,13 +54,13 @@ sealed class PopUpDialog {
       val message: String,
       val acknowledgeButtonText: String,
       val callback: PopUpDialogCallback = PopUpDialogCallback {},
-   ): PopUpDialog()
+   ) : PopUpDialog()
 
    class Error(
       val errorMessage: String,
       val acknowledgeButtonText: String = "Ok",
       val callback: PopUpDialogCallback = PopUpDialogCallback {},
-   ): PopUpDialog()
+   ) : PopUpDialog()
 
    class BinaryChoice(
       val title: String,
@@ -67,9 +68,9 @@ sealed class PopUpDialog {
       val positiveButtonText: String,
       val negaviteButtonText: String,
       val callback: PopUpDialogCallback,
-   ): PopUpDialog()
+   ) : PopUpDialog()
 
-   data object Loading: PopUpDialog()
+   data object Loading : PopUpDialog()
 
 }
 

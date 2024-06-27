@@ -5,15 +5,12 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.samzuhalsetiawan.habbits.models.BottomNavigationItem
 import com.samzuhalsetiawan.habbits.ui.screen.Screens
 import com.samzuhalsetiawan.habbits.utils.currentRoute
 import com.samzuhalsetiawan.habbits.utils.isRouteOf
-import kotlinx.coroutines.flow.map
 
 @Composable
 fun ProvideBottomNavBar(
@@ -25,7 +22,7 @@ fun ProvideBottomNavBar(
 
    if (shouldShowBottomNavBar) {
       BottomNavBar(
-         selected = { item ->  navBackStackEntry.currentRoute isRouteOf item.route::class },
+         selected = { item -> navBackStackEntry.currentRoute isRouteOf item.route::class },
          onClick = { item ->
             navController.navigate(item.route) {
                popUpTo(Screens.Jurnal) {

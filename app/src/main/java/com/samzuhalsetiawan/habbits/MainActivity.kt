@@ -24,9 +24,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.samzuhalsetiawan.habbits.ui.composable.bottombar.ProvideBottomNavBar
 import com.samzuhalsetiawan.habbits.ui.composable.fab.ProvideFloatingActionButton
 import com.samzuhalsetiawan.habbits.ui.composable.topbar.ProvideTopAppBar
@@ -38,80 +35,87 @@ import com.samzuhalsetiawan.habbits.ui.theme.HabbitsTheme
 
 class MainActivity : ComponentActivity() {
 
-    private val mainViewModel by lazy { initMainViewModel() }
+   private val mainViewModel by lazy { initMainViewModel() }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initSplashScreen()
-        enableEdgeToEdge()
+   @OptIn(ExperimentalMaterial3Api::class)
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      initSplashScreen()
+      enableEdgeToEdge()
 
-        setContent {
-            HabbitsTheme {
+      setContent {
+         HabbitsTheme {
 
-                val navController = rememberNavController()
-                val topAppBarState = rememberTopAppBarState()
-                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
-                val popUpDialogState by mainViewModel.popUpDialogState.collectAsStateWithLifecycle()
-                val lifecycleOwner = LocalLifecycleOwner.current
-                val snackbarHostState = remember { SnackbarHostState() }
-                val coroutineScope = rememberCoroutineScope()
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val startDestination by mainViewModel.startDestination.collectAsStateWithLifecycle()
+            val navController = rememberNavController()
+            val topAppBarState = rememberTopAppBarState()
+            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
+            val popUpDialogState by mainViewModel.popUpDialogState.collectAsStateWithLifecycle()
+            val lifecycleOwner = LocalLifecycleOwner.current
+            val snackbarHostState = remember { SnackbarHostState() }
+            val coroutineScope = rememberCoroutineScope()
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val startDestination by mainViewModel.startDestination.collectAsStateWithLifecycle()
 
-                LoginStateHandler(
-                    navController = navController,
-                    lifecycleOwner = lifecycleOwner
-                )
+            LoginStateHandler(
+               navController = navController,
+               lifecycleOwner = lifecycleOwner
+            )
 
-                ProvideLocalComposition(
-                    snackbarHostState = snackbarHostState,
-                    popUpManager = mainViewModel,
-                    coroutineScope = coroutineScope,
-                    navController = navController,
-                ) {
-                    Scaffold(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        topBar = { ProvideTopAppBar(scrollBehavior, navBackStackEntry) },
-                        floatingActionButton = { ProvideFloatingActionButton(navController, navBackStackEntry) },
-                        bottomBar = { ProvideBottomNavBar(navController, navBackStackEntry) },
-                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-                    ) { innerPadding ->
+            ProvideLocalComposition(
+               snackbarHostState = snackbarHostState,
+               popUpManager = mainViewModel,
+               coroutineScope = coroutineScope,
+               navController = navController,
+            ) {
+               Scaffold(
+                  modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                  topBar = { ProvideTopAppBar(scrollBehavior, navBackStackEntry) },
+                  floatingActionButton = {
+                     ProvideFloatingActionButton(
+                        navController,
+                        navBackStackEntry
+                     )
+                  },
+                  bottomBar = { ProvideBottomNavBar(navController, navBackStackEntry) },
+                  snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+               ) { innerPadding ->
 
-                        MainNavigation(
-                            navController = navController,
-                            startDestination = startDestination,
-                            modifier = Modifier.fillMaxSize().padding(innerPadding)
-                        )
+                  MainNavigation(
+                     navController = navController,
+                     startDestination = startDestination,
+                     modifier = Modifier
+                         .fillMaxSize()
+                         .padding(innerPadding)
+                  )
 
-                    }
-                    PopUpDialogStateHandler(
-                        popUpDialogState = popUpDialogState,
-                        popUpManager = mainViewModel
-                    )
-                }
+               }
+               PopUpDialogStateHandler(
+                  popUpDialogState = popUpDialogState,
+                  popUpManager = mainViewModel
+               )
             }
-        }
-    }
+         }
+      }
+   }
 
-    private fun initMainViewModel(): MainViewModel {
-        return ViewModelProvider(
-            owner = this,
-            factory = viewModelFactory {
-                addInitializer(MainViewModel::class) {
-                    MainViewModel(App.repositoryModule.mainRepository)
-                }
-                build()
+   private fun initMainViewModel(): MainViewModel {
+      return ViewModelProvider(
+         owner = this,
+         factory = viewModelFactory {
+            addInitializer(MainViewModel::class) {
+               MainViewModel(App.repositoryModule.mainRepository)
             }
-        )[MainViewModel::class]
-    }
+            build()
+         }
+      )[MainViewModel::class]
+   }
 
-    private fun initSplashScreen() {
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                !MainViewModel.isAppReady
-            }
-        }
-    }
+   private fun initSplashScreen() {
+      installSplashScreen().apply {
+         setKeepOnScreenCondition {
+            !MainViewModel.isAppReady
+         }
+      }
+   }
 
 }

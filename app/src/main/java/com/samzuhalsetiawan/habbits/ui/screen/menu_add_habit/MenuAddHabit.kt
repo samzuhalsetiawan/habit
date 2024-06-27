@@ -39,8 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import com.samzuhalsetiawan.habbits.App
-import com.samzuhalsetiawan.habbits.models.Habit
 import com.samzuhalsetiawan.habbits.ui.composable.date_picker_range.HabitDatePickerRange
 import com.samzuhalsetiawan.habbits.ui.handler.SnackbarHandler
 import com.samzuhalsetiawan.habbits.ui.composable.inputfield.DropdownTextField
@@ -56,11 +56,12 @@ import com.samzuhalsetiawan.habbits.utils.provideViewModel
 import com.samzuhalsetiawan.habbits.utils.toLocalDateStringFormatted
 
 @Composable
-fun MenuAddHabitTopAppBar() {
-    val viewModel = provideViewModel {
+fun MenuAddHabitTopAppBar(navBackStackEntry: NavBackStackEntry?) {
+    val viewModel = provideViewModel(navBackStackEntry) {
         MenuAddHabitViewModel(App.repositoryModule.mainRepository)
     }
     val popUpController = LocalPopUpController.current
+    val navController = LocalNavigationController.current
 
     val dialog = PopUpDialog.BinaryChoice(
         title = "Simpan Habit",
@@ -68,7 +69,9 @@ fun MenuAddHabitTopAppBar() {
         positiveButtonText = "Iya",
         negaviteButtonText = "Tidak",
         callback = { response ->
-            if (response == PopUpDialogResponse.POSITIVE) viewModel.saveHabit()
+            if (response == PopUpDialogResponse.POSITIVE) viewModel.saveHabit {
+                navController.popUpAndLunchInSingleTopTo(Screens.Jurnal)
+            }
         }
     )
 
@@ -89,7 +92,7 @@ private fun MenuAddHabitTopAppBar(
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {  }) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
             }
         },
@@ -105,8 +108,8 @@ private fun MenuAddHabitTopAppBar(
 }
 
 @Composable
-fun MenuAddHabit() {
-    val menuAddHabitViewModel = provideViewModel {
+fun MenuAddHabit(navBackStackEntry: NavBackStackEntry?) {
+    val menuAddHabitViewModel = provideViewModel(navBackStackEntry) {
         MenuAddHabitViewModel(App.repositoryModule.mainRepository)
     }
     val state by menuAddHabitViewModel.state.collectAsStateWithLifecycle()
@@ -120,17 +123,12 @@ fun MenuAddHabit() {
     PopUpDialogHandler(popUpDialog = state.dialog)
 
     LaunchedEffect(state.navigateToHome) {
-        if (state.navigateToHome) navController.popUpAndLunchInSingleTop(Screens.Jurnal)
+        if (state.navigateToHome) navController.popUpAndLunchInSingleTopTo(Screens.Jurnal)
     }
 
     MenuAddHabit(
         state = state,
-        onSetEverydayReminder = menuAddHabitViewModel::setEveryDayReminder,
-        onDatePickerRangeSet = menuAddHabitViewModel::onDatePickerRangeSet,
-        onTimePickerConfirm = menuAddHabitViewModel::onTimePickerConfirm,
-        onSetIsNoDayLimit = menuAddHabitViewModel::setIsNoDayLimit,
-        onSetHabitName = menuAddHabitViewModel::setHabitName,
-        onSetHabitType = menuAddHabitViewModel::setHabitType,
+        action = menuAddHabitViewModel
     )
 }
 
@@ -138,12 +136,7 @@ fun MenuAddHabit() {
 @Composable
 private fun MenuAddHabit(
     state: MenuAddHabitViewModel.State,
-    onSetHabitName: (String) -> Unit,
-    onSetHabitType: (Habit.Types) -> Unit,
-    onSetIsNoDayLimit: (Boolean) -> Unit,
-    onSetEverydayReminder: (Boolean) -> Unit,
-    onDatePickerRangeSet: (LongRange) -> Unit,
-    onTimePickerConfirm: (hour: Int, minute: Int, key: Int?) -> Unit,
+    action: MenuAddHabitAction,
     modifier: Modifier = Modifier
 ) {
     var shouldShowDatePickerRange by remember { mutableStateOf(false) }
@@ -164,13 +157,13 @@ private fun MenuAddHabit(
                     .fillMaxWidth()
                     .clearFocusOnKeyboardDismiss(),
                 value = state.habitName,
-                onValueChange = onSetHabitName
+                onValueChange = action::onSetHabitName
             )
             Spacer(modifier = Modifier.height(24.dp))
             DropdownTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.habitType.displayName,
-                onSetHabitType = onSetHabitType
+                onSetHabitType = action::onSetHabitType
             )
             Spacer(modifier = Modifier.height(24.dp))
             ElevatedCard{
@@ -203,7 +196,7 @@ private fun MenuAddHabit(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Switch(checked = state.isNoDayLimit, onCheckedChange = onSetIsNoDayLimit)
+                        Switch(checked = state.isNoDayLimit, onCheckedChange = action::onSetIsNoDayLimit)
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
                             text = "Tanpa batasan waktu",
@@ -240,7 +233,7 @@ private fun MenuAddHabit(
                                     OutlinedButton(onClick = {  }) {
                                         Text(text = it.formattedTime)
                                     }
-                                    IconButton(onClick = { /*TODO*/ }) {
+                                    IconButton(onClick = {  }) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription = "Hapus reminder",
@@ -262,7 +255,7 @@ private fun MenuAddHabit(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Switch(checked = state.everydayReminder, onCheckedChange = onSetEverydayReminder)
+                        Switch(checked = state.everydayReminder, onCheckedChange = action::onSetEverydayReminder)
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
                             text = "Ingatkan saya tiap hari",
@@ -275,7 +268,7 @@ private fun MenuAddHabit(
     }
     if (shouldShowDatePickerRange) {
         HabitDatePickerRange(
-            onSave = onDatePickerRangeSet,
+            onSave = action::onDatePickerRangeSet,
             onDismiss = { shouldShowDatePickerRange = false }
         )
     }
@@ -299,7 +292,7 @@ private fun MenuAddHabit(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    onTimePickerConfirm(timePickerState.hour, timePickerState.minute, null)
+                    action.onTimePickerConfirm(timePickerState.hour, timePickerState.minute, null)
                     showTimePicker = false
                 }) {
                     Text(text = "Ok")

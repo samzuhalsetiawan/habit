@@ -2,18 +2,12 @@ package com.samzuhalsetiawan.habbits
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.samzuhalsetiawan.habbits.repository.MainRepository
 import com.samzuhalsetiawan.habbits.ui.screen.Screens
 import com.samzuhalsetiawan.habbits.ui.screen.menu_add_habit.MenuAddHabit
 import com.samzuhalsetiawan.habbits.ui.screen.menu_detail.MenuDetailHabit
@@ -57,16 +51,16 @@ fun MainNavigation(
          MenuRegister()
       }
       composable<Screens.Jurnal> {
-         MenuJurnal()
+         MenuJurnal(it)
       }
       composable<Screens.Progress> {
-         MenuProgress()
+         MenuProgress(it)
       }
       composable<Screens.Pengaturan> {
          MenuPengaturan()
       }
       composable<Screens.AddHabit> {
-         MenuAddHabit()
+         MenuAddHabit(it)
       }
       composable<Screens.DetailHabit> {
          val habitId = it.toRoute<Screens.DetailHabit>().habitId

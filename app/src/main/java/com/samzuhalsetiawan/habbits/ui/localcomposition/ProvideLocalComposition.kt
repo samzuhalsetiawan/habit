@@ -3,8 +3,6 @@ package com.samzuhalsetiawan.habbits.ui.localcomposition
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidedValue
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.LocalNavigationController
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.LocalPopUpController
@@ -13,7 +11,6 @@ import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.NavigationContr
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpControllerImpl
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpManager
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.SnackbarControllerImpl
-import com.samzuhalsetiawan.habbits.utils.currentRoute
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

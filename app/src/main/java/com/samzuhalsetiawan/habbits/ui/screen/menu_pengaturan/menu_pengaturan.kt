@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 
 @Composable
 fun MenuPengaturan(
-    modifier: Modifier = Modifier
+   modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(text = "Hello Pengaturan")
-    }
+   Column(
+      modifier = modifier.fillMaxSize()
+   ) {
+      Text(text = "Hello Pengaturan")
+   }
 }

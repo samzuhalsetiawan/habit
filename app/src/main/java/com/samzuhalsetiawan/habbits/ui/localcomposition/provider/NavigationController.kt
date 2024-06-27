@@ -12,7 +12,7 @@ interface NavigationController {
       popUpToRoute: Screens = route,
       inclusive: Boolean = false
    )
-   fun popUpAndLunchInSingleTop(route: Screens)
+   fun popUpAndLunchInSingleTopTo(route: Screens)
    fun popBackStack()
 
 }
@@ -33,7 +33,7 @@ class NavigationControllerImpl(
       }
    }
 
-   override fun popUpAndLunchInSingleTop(route: Screens) {
+   override fun popUpAndLunchInSingleTopTo(route: Screens) {
       navController.navigate(route) {
          popUpTo(route)
          launchSingleTop = true
