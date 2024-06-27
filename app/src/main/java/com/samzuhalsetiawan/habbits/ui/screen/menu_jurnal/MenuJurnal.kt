@@ -40,6 +40,9 @@ import com.samzuhalsetiawan.habbits.App
 import com.samzuhalsetiawan.habbits.models.Habit
 import com.samzuhalsetiawan.habbits.ui.composable.delete_background.SwipeToDeleteContainer
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.LocalNavigationController
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.LocalPopUpController
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialog
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResponse
 import com.samzuhalsetiawan.habbits.ui.screen.Screens
 import com.samzuhalsetiawan.habbits.utils.isNotNullOrBlank
 import com.samzuhalsetiawan.habbits.utils.provideViewModel
@@ -128,6 +131,27 @@ fun MenuJurnal(
    }
    val state by menuJurnalViewModel.state.collectAsStateWithLifecycle()
    val navController = LocalNavigationController.current
+   val popUpController = LocalPopUpController.current
+
+   fun deleteHabit(habit: Habit) {
+      popUpController.show {
+         PopUpDialog.BinaryChoice(
+            title = "Menghapus habit...",
+            message = "Yakin ingin menghapus habit ini?",
+            positiveButtonText = "Yakin",
+            negaviteButtonText = "Tidak",
+            callback = { response ->
+               when (response) {
+                  PopUpDialogResponse.POSITIVE -> {
+                     menuJurnalViewModel.deleteHabit(habitId = habit.id)
+                  }
+
+                  else -> return@BinaryChoice
+               }
+            }
+         )
+      }
+   }
 
    MenuJurnal(
       modifier = modifier,
@@ -136,9 +160,7 @@ fun MenuJurnal(
       onHabitClicked = {
          navController.navigate(Screens.DetailHabit(it))
       },
-      onHabitDeleteRequest = {
-         menuJurnalViewModel.deleteHabit(it)
-      }
+      onHabitDeleteRequest = ::deleteHabit
    )
 }
 
@@ -147,7 +169,7 @@ fun MenuJurnal(
 private fun MenuJurnal(
    modifier: Modifier = Modifier,
    onHabitClicked: (habitId: Int) -> Unit,
-   onHabitDeleteRequest: (habitId: Int) -> Unit,
+   onHabitDeleteRequest: (habit: Habit) -> Unit,
    listOfHabit: List<Habit>,
    errorMessage: String?
 ) {
@@ -203,8 +225,8 @@ private fun MenuJurnal(
                   ) {
                      SwipeToDeleteContainer(
                         item = listOfHabit[it],
-                        onDelete = {
-                           onHabitDeleteRequest(it.id)
+                        onDelete = { habit ->
+                           onHabitDeleteRequest(habit)
                         }
                      ) { habit ->
                         ListItem(
