@@ -35,12 +35,16 @@ class MainRepositoryImpl(
       status: HabitHistory.Status
    ): MainRepositoryResult<Unit> {
       return handleRequestAsync {
+         val lastStatus = habitDB.habitDao.getLastHabitStatus(habitId)
+         val oldStreak = habitDB.habitDao.getStreakCountOf(habitId)
+         val newStreak = if (lastStatus == HabitHistory.Status.COMPLETE.name) (oldStreak + 1) else 0
          val habitHistoryEntity = HabitHistoryEntity(
             habitId = habitId,
             status = status.name,
             dateCreated = System.currentTimeMillis()
          )
          habitDB.habitDao.insertHabitHistory(habitHistoryEntity)
+         habitDB.habitDao.updateStreakCountOf(habitId, newStreak)
       }
    }
 

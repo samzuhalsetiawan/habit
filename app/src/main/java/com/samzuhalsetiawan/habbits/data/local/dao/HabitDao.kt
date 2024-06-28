@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitEntity
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitHistoryEntity
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +32,7 @@ interface HabitDao {
    )
    fun getHabitWithHistory(habitId: Int): Flow<Map<HabitEntity, List<HabitHistoryEntity>>>
 
-   @Insert(entity = HabitHistoryEntity::class, onConflict = OnConflictStrategy.REPLACE)
+   @Upsert(entity = HabitHistoryEntity::class)
    suspend fun insertHabitHistory(habitHistoryEntity: HabitHistoryEntity)
 
    @Delete(entity = HabitEntity::class)
@@ -39,4 +40,28 @@ interface HabitDao {
 
    @Query("DELETE FROM habit_table WHERE id = :habitId")
    suspend fun deleteHabitById(habitId: Int)
+
+   @Query(
+      "SELECT history.status " +
+            "FROM habit_history_table history " +
+            "JOIN habit_table habit " +
+            "ON history.habit_id = habit.id " +
+            "WHERE history.habit_id = :habitId " +
+            "ORDER BY history.date_created DESC LIMIT 1"
+   )
+   fun getLastHabitStatus(habitId: Int): String?
+
+   @Query(
+      "SELECT habit.streak " +
+            "FROM habit_table habit " +
+            "WHERE habit.id = :habitId LIMIT 1"
+   )
+   fun getStreakCountOf(habitId: Int): Int
+
+   @Query(
+      "UPDATE habit_table " +
+            "SET streak = :streakCount " +
+            "WHERE id = :habitId"
+   )
+   suspend fun updateStreakCountOf(habitId: Int, streakCount: Int)
 }

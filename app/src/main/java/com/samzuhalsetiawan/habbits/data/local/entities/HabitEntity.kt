@@ -28,4 +28,5 @@ data class HabitEntity(
     @ColumnInfo("repeat_everyday")
     val repeatEveryday: Boolean,
 
+    val streak: Int = 0
 )

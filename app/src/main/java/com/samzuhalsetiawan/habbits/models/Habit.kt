@@ -8,6 +8,7 @@ class Habit(
    val dayEnd: Long? = 0L,
    val isEndless: Boolean = false,
    val repeatEveryday: Boolean = false,
+   val streak: Int = 0,
    val types: Types = Types.HEALTH
 ) {
    enum class Types(val displayName: String) {

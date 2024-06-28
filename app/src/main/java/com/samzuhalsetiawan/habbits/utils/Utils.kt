@@ -82,6 +82,7 @@ fun HabitEntity.toHabit(): Habit {
       dayEnd = endUntil,
       isEndless = isEndless,
       repeatEveryday = repeatEveryday,
+      streak = streak,
       types = Habit.Types.entries.first { it.name == habitType }
    )
 }
@@ -100,7 +101,7 @@ fun Habit.toHabitEntity(): HabitEntity {
       startFrom = dayStart,
       endUntil = dayEnd ?: 0L,
       isEndless = isEndless,
-      repeatEveryday = repeatEveryday
+      repeatEveryday = repeatEveryday,
    )
 }
 

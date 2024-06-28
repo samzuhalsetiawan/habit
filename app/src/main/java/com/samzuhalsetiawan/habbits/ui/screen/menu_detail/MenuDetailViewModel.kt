@@ -44,7 +44,16 @@ class MenuDetailViewModel(
 
     fun markHabitStatus(habitId: Int, status: HabitHistory.Status) {
         viewModelScope.launch(Dispatchers.IO) {
-            mainRepository.markHabitStatus(habitId, status)
+            val result = mainRepository.markHabitStatus(habitId, status)
+            when (result) {
+                is MainRepositoryResult.Failed -> {
+                    throw Error(result.errorMessage)
+                }
+                is MainRepositoryResult.Success -> {
+//                    TODO: Show dialog Completed
+                    Unit
+                }
+            }
         }
     }
 
