@@ -157,3 +157,11 @@ fun Modifier.clearFocusOnKeyboardDismiss(): Modifier = composed {
       }
    }
 }
+
+fun dateFromHourAndMinute(hour: Int, minute: Int): Date {
+   val cal = Calendar.getInstance()
+   cal.set(Calendar.HOUR_OF_DAY, hour)
+   cal.set(Calendar.MINUTE, minute)
+   cal.isLenient = false
+   return cal.time
+}

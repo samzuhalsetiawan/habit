@@ -1,5 +1,9 @@
 package com.samzuhalsetiawan.habbits
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.samzuhalsetiawan.habbits.constants.NOTIFICATION_CHANNEL_ID
 import com.samzuhalsetiawan.habbits.ui.composable.bottombar.ProvideBottomNavBar
 import com.samzuhalsetiawan.habbits.ui.composable.fab.ProvideFloatingActionButton
 import com.samzuhalsetiawan.habbits.ui.composable.topbar.ProvideTopAppBar
@@ -41,6 +46,7 @@ class MainActivity : ComponentActivity() {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       initSplashScreen()
+      createNotificationChannel()
       enableEdgeToEdge()
 
       setContent {
@@ -84,8 +90,8 @@ class MainActivity : ComponentActivity() {
                      navController = navController,
                      startDestination = startDestination,
                      modifier = Modifier
-                         .fillMaxSize()
-                         .padding(innerPadding)
+                        .fillMaxSize()
+                        .padding(innerPadding)
                   )
 
                }
@@ -117,5 +123,23 @@ class MainActivity : ComponentActivity() {
          }
       }
    }
+
+   private fun createNotificationChannel() {
+      // Create the NotificationChannel, but only on API 26+ because
+      // the NotificationChannel class is not in the Support Library.
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+         val name = getString(R.string.channel_name)
+         val descriptionText = getString(R.string.channel_description)
+         val importance = NotificationManager.IMPORTANCE_DEFAULT
+         val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+         }
+         // Register the channel with the system.
+         val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+         notificationManager.createNotificationChannel(channel)
+      }
+   }
+
 
 }

@@ -8,6 +8,8 @@ import com.samzuhalsetiawan.habbits.models.Reminder
 import com.samzuhalsetiawan.habbits.repository.MainRepository
 import com.samzuhalsetiawan.habbits.repository.MainRepositoryResult
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialog
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResponse
+import com.samzuhalsetiawan.habbits.utils.dateFromHourAndMinute
 import com.samzuhalsetiawan.habbits.utils.formatToTimeString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Date
 
@@ -59,19 +62,18 @@ class MenuAddHabitViewModel(
       }
    }
 
-   override fun onTimePickerConfirm(hour: Int, minute: Int, key: Int?) {
-      val cal = Calendar.getInstance()
-      cal.set(Calendar.HOUR_OF_DAY, hour)
-      cal.set(Calendar.MINUTE, minute)
-      cal.isLenient = false
-      val date = cal.time
-      key?.let { key ->
+   override fun onTimePickerConfirm(hour: Int, minute: Int, days: List<DayOfWeek>, key: Int?) {
+      val date = dateFromHourAndMinute(hour, minute)
+      key?.let {
          _state.update {
             it.copy(
                reminders = ArrayList(it.reminders).toList().apply {
                   get(key).apply {
+                     this.hour = hour
+                     this.minute = minute
                      time = date.time
                      formattedTime = date.formatToTimeString()
+                     this.days = days
                   }
                }
             )
@@ -79,7 +81,15 @@ class MenuAddHabitViewModel(
       } ?: _state.update {
          it.copy(
             reminders = ArrayList(it.reminders).apply {
-               add(Reminder(date.time, date.formatToTimeString()))
+               add(
+                  Reminder(
+                     hour = hour,
+                     minute = minute,
+                     time = date.time,
+                     formattedTime = date.formatToTimeString(),
+                     days = days
+                  )
+               )
             }.toList()
          )
       }
@@ -94,15 +104,17 @@ class MenuAddHabitViewModel(
          dayEnd = _state.value.dayEnd,
          isEndless = _state.value.isNoDayLimit,
          repeatEveryday = _state.value.everydayReminder,
-         types = _state.value.habitType
+         types = _state.value.habitType,
+         reminders = _state.value.reminders
       )
+      println(newHabit.reminders.size)
       viewModelScope.launch(Dispatchers.IO) {
          _state.update {
             it.copy(
                dialog = PopUpDialog.Loading
             )
          }
-         delay(3000L)
+         delay(2000L)
          when (val result = mainRepository.saveNewHabit(newHabit)) {
             is MainRepositoryResult.Success -> {
                _state.update {
@@ -127,6 +139,27 @@ class MenuAddHabitViewModel(
                }
             }
          }
+      }
+   }
+
+   override fun onShowTimePicker() {
+      _state.update {
+         it.copy(
+            dialog = PopUpDialog.DailyReminderTimePicker(
+               title = "Pilih Waktu",
+               positiveButtonText = "Ok",
+               negaviteButtonText = "Cancel",
+               callback = { result ->
+                  if (result.response == PopUpDialogResponse.POSITIVE && result.data != null) {
+                     onTimePickerConfirm(
+                        hour = result.data.hour,
+                        minute = result.data.minute,
+                        days = result.data.days
+                     )
+                  }
+               }
+            )
+         )
       }
    }
 

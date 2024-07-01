@@ -1,6 +1,7 @@
 package com.samzuhalsetiawan.habbits.repository
 
 import android.content.Context
+import com.samzuhalsetiawan.habbits.HabitAlarmManager
 import com.samzuhalsetiawan.habbits.appSettingsDS
 import com.samzuhalsetiawan.habbits.data.local.database.HabitDB
 import com.samzuhalsetiawan.habbits.data.repository.MainRepositoryImpl
@@ -48,7 +49,8 @@ interface MainRepository {
          return INSTANCE ?: synchronized(this) {
             MainRepositoryImpl(
                habitDB = HabitDB.getInstance(applicationContext),
-               appSettingsDS = applicationContext.appSettingsDS
+               appSettingsDS = applicationContext.appSettingsDS,
+               habitAlarmManager = HabitAlarmManager(applicationContext)
             )
          }
       }

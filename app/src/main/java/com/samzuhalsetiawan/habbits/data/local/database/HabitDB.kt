@@ -8,32 +8,34 @@ import com.samzuhalsetiawan.habbits.data.local.dao.HabitDao
 import com.samzuhalsetiawan.habbits.data.local.dao.StartingQuestionDao
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitEntity
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitHistoryEntity
+import com.samzuhalsetiawan.habbits.data.local.entities.ReminderEntity
 import com.samzuhalsetiawan.habbits.data.local.entities.StartingQuestion
 
 @Database(
-    entities = [
-        StartingQuestion::class,
-        HabitEntity::class,
-        HabitHistoryEntity::class
-    ],
-    version = 3,
-    exportSchema = false
+   entities = [
+      StartingQuestion::class,
+      HabitEntity::class,
+      HabitHistoryEntity::class,
+      ReminderEntity::class
+   ],
+   version = 4,
+   exportSchema = false
 )
-abstract class HabitDB: RoomDatabase() {
+abstract class HabitDB : RoomDatabase() {
 
-    abstract val startingQuestionDao: StartingQuestionDao
-    abstract val habitDao: HabitDao
+   abstract val startingQuestionDao: StartingQuestionDao
+   abstract val habitDao: HabitDao
 
-    companion object {
-        @Volatile
-        private var INSTANCE: HabitDB? = null
+   companion object {
+      @Volatile
+      private var INSTANCE: HabitDB? = null
 
-        fun getInstance(applicationContext: Context): HabitDB {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(applicationContext, HabitDB::class.java, "habit.db")
-                    .fallbackToDestructiveMigration(true)
-                    .build().also { INSTANCE = it }
-            }
-        }
-    }
+      fun getInstance(applicationContext: Context): HabitDB {
+         return INSTANCE ?: synchronized(this) {
+            Room.databaseBuilder(applicationContext, HabitDB::class.java, "habit.db")
+               .fallbackToDestructiveMigration(true)
+               .build().also { INSTANCE = it }
+         }
+      }
+   }
 }

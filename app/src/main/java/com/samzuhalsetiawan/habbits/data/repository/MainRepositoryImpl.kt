@@ -2,8 +2,10 @@ package com.samzuhalsetiawan.habbits.data.repository
 
 import android.util.Log
 import androidx.datastore.core.DataStore
+import com.samzuhalsetiawan.habbits.HabitAlarmManager
 import com.samzuhalsetiawan.habbits.data.local.database.HabitDB
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitHistoryEntity
+import com.samzuhalsetiawan.habbits.data.local.entities.ReminderEntity
 import com.samzuhalsetiawan.habbits.data.local.entities.StartingQuestion
 import com.samzuhalsetiawan.habbits.exceptions.NullErrorMessageException
 import com.samzuhalsetiawan.habbits.models.AnsweredQuestion
@@ -21,7 +23,8 @@ import kotlinx.coroutines.flow.map
 
 class MainRepositoryImpl(
    private val habitDB: HabitDB,
-   private val appSettingsDS: DataStore<AppSettings>
+   private val appSettingsDS: DataStore<AppSettings>,
+   private val habitAlarmManager: HabitAlarmManager
 ) : MainRepository {
 
    override suspend fun deleteHabit(habitId: Int): MainRepositoryResult<Unit> {
@@ -82,7 +85,21 @@ class MainRepositoryImpl(
 
    override suspend fun saveNewHabit(habit: Habit): MainRepositoryResult<Unit> {
       return handleRequestAsync {
-         habitDB.habitDao.insertHabit(habit = habit.toHabitEntity())
+         val habitId = habitDB.habitDao.insertHabit(habit = habit.toHabitEntity())
+         for (reminder in habit.reminders) {
+            val reminderEntity = ReminderEntity(
+               habitId = habitId.toInt(),
+               hour = reminder.hour,
+               minute = reminder.minute
+            )
+            val reminderId = habitDB.habitDao.insertReminder(reminderEntity)
+            habitAlarmManager.scheduleAlarm(
+               reminderId = reminderId.toInt(),
+               hour = reminder.hour,
+               minute = reminder.minute,
+               habitName = habit.name
+            )
+         }
       }
    }
 

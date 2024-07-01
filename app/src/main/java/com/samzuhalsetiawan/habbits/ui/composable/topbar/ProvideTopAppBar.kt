@@ -24,8 +24,7 @@ fun ProvideTopAppBar(
       )
 
       Screens.Progress::class.simpleName -> MenuProgressTopAppBar(
-         scrollBehavior = scrollBehavior,
-         navBackStackEntry = navBackStackEntry
+         scrollBehavior = scrollBehavior
       )
 
       Screens.AddHabit::class.simpleName -> MenuAddHabitTopAppBar(navBackStackEntry = navBackStackEntry)

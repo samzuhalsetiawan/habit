@@ -34,6 +34,8 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -104,4 +106,10 @@ dependencies {
 
 //    Lottie
     implementation(libs.dotlottie.android)
+
+//    desugaring
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // The compose calendar library
+    implementation(libs.kizitonwose.calendar.compose)
 }

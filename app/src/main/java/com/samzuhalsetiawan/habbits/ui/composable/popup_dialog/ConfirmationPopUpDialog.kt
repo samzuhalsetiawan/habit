@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialog
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResponse
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResult
 
 @Composable
 fun ConfirmationPopUp(
@@ -22,7 +23,7 @@ fun ConfirmationPopUp(
         positiveButton = {
             TextButton(
                 onClick = {
-                    confirmationDialog.callback.onResponse(PopUpDialogResponse.POSITIVE)
+                    confirmationDialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.POSITIVE))
                     onDismissRequest()
                 }
             ) {
@@ -30,7 +31,7 @@ fun ConfirmationPopUp(
             }
         },
         onDismissRequest = {
-            confirmationDialog.callback.onResponse(PopUpDialogResponse.DISMISS)
+            confirmationDialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.DISMISS))
             onDismissRequest()
         }
     )

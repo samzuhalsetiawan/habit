@@ -9,7 +9,8 @@ class Habit(
    val isEndless: Boolean = false,
    val repeatEveryday: Boolean = false,
    val streak: Int = 0,
-   val types: Types = Types.HEALTH
+   val types: Types = Types.HEALTH,
+   val reminders: List<Reminder> = emptyList()
 ) {
    enum class Types(val displayName: String) {
       HEALTH("Health"),

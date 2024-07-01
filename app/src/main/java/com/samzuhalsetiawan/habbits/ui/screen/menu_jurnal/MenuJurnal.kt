@@ -140,8 +140,8 @@ fun MenuJurnal(
             message = "Yakin ingin menghapus habit ini?",
             positiveButtonText = "Yakin",
             negaviteButtonText = "Tidak",
-            callback = { response ->
-               when (response) {
+            callback = { result ->
+               when (result.response) {
                   PopUpDialogResponse.POSITIVE -> {
                      menuJurnalViewModel.deleteHabit(habitId = habit.id)
                   }

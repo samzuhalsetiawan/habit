@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitEntity
 import com.samzuhalsetiawan.habbits.data.local.entities.HabitHistoryEntity
+import com.samzuhalsetiawan.habbits.data.local.entities.ReminderEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,7 +18,7 @@ interface HabitDao {
    fun getAllHabit(): Flow<List<HabitEntity>>
 
    @Insert(entity = HabitEntity::class, OnConflictStrategy.REPLACE)
-   suspend fun insertHabit(habit: HabitEntity)
+   suspend fun insertHabit(habit: HabitEntity): Long
 
    @Query(
       "SELECT * FROM habit_table " +
@@ -64,4 +65,7 @@ interface HabitDao {
             "WHERE id = :habitId"
    )
    suspend fun updateStreakCountOf(habitId: Int, streakCount: Int)
+
+   @Insert(entity = ReminderEntity::class, onConflict = OnConflictStrategy.REPLACE)
+   suspend fun insertReminder(reminder: ReminderEntity): Long
 }

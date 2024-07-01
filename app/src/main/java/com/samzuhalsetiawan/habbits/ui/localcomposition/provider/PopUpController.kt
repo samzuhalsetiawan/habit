@@ -1,6 +1,8 @@
 package com.samzuhalsetiawan.habbits.ui.localcomposition.provider
 
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialog.BasicTimePicker.Result
+import java.time.DayOfWeek
 
 interface PopUpManager {
 
@@ -53,13 +55,13 @@ sealed class PopUpDialog {
       val title: String,
       val message: String,
       val acknowledgeButtonText: String,
-      val callback: PopUpDialogCallback = PopUpDialogCallback {},
+      val callback: PopUpDialogCallback<Unit> = PopUpDialogCallback {},
    ) : PopUpDialog()
 
    class Error(
       val errorMessage: String,
       val acknowledgeButtonText: String = "Ok",
-      val callback: PopUpDialogCallback = PopUpDialogCallback {},
+      val callback: PopUpDialogCallback<Unit> = PopUpDialogCallback {},
    ) : PopUpDialog()
 
    class BinaryChoice(
@@ -67,16 +69,53 @@ sealed class PopUpDialog {
       val message: String,
       val positiveButtonText: String,
       val negaviteButtonText: String,
-      val callback: PopUpDialogCallback,
+      val callback: PopUpDialogCallback<Unit>,
    ) : PopUpDialog()
+
+   interface TimePicker <T> {
+      val title: String
+      val positiveButtonText: String
+      val negaviteButtonText: String
+      val callback: PopUpDialogCallback<T>
+   }
+
+   class BasicTimePicker(
+      override val title: String,
+      override val positiveButtonText: String,
+      override val negaviteButtonText: String,
+      override val callback: PopUpDialogCallback<Result>
+   ): PopUpDialog(), TimePicker<Result> {
+      class Result(
+         val hour: Int,
+         val minute: Int,
+      )
+   }
+
+   class DailyReminderTimePicker(
+      override val title: String,
+      override val positiveButtonText: String,
+      override val negaviteButtonText: String,
+      override val callback: PopUpDialogCallback<Result>
+   ): PopUpDialog(), TimePicker<DailyReminderTimePicker.Result> {
+      class Result(
+         val hour: Int,
+         val minute: Int,
+         val days: List<DayOfWeek>
+      )
+   }
 
    data object Loading : PopUpDialog()
 
 }
 
-fun interface PopUpDialogCallback {
-   fun onResponse(response: PopUpDialogResponse)
+fun interface PopUpDialogCallback<T> {
+   fun callback(result: PopUpDialogResult<T>)
 }
+
+data class PopUpDialogResult<T>(
+   val response: PopUpDialogResponse,
+   val data: T? = null
+)
 
 enum class PopUpDialogResponse {
    POSITIVE, NEGATIVE, DISMISS

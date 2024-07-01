@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialog
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResponse
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResult
 
 @Composable
 fun ErrorPopUpDialog(
@@ -41,12 +42,12 @@ fun ErrorPopUpDialog(
          )
       },
       onDismissRequest = {
-         errorDialog.callback.onResponse(PopUpDialogResponse.DISMISS)
+         errorDialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.DISMISS))
          onDismissRequest()
       },
       confirmButton = {
          TextButton(onClick = {
-            errorDialog.callback.onResponse(PopUpDialogResponse.POSITIVE)
+            errorDialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.POSITIVE))
             onDismissRequest()
          }) {
             Text(

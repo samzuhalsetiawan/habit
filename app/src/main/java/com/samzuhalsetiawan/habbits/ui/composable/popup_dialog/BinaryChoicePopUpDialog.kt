@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.samzuhalsetiawan.habbits.R
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialog
 import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResponse
+import com.samzuhalsetiawan.habbits.ui.localcomposition.provider.PopUpDialogResult
 
 @Composable
 fun BinaryChoicePopUpDialog(
@@ -41,12 +42,12 @@ fun BinaryChoicePopUpDialog(
          )
       },
       onDismissRequest = {
-         dialog.callback.onResponse(PopUpDialogResponse.DISMISS)
+         dialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.DISMISS))
          onDismissRequest()
       },
       confirmButton = {
          TextButton(onClick = {
-            dialog.callback.onResponse(PopUpDialogResponse.POSITIVE)
+            dialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.POSITIVE))
             onDismissRequest()
          }) {
             Text(text = dialog.positiveButtonText)
@@ -54,7 +55,7 @@ fun BinaryChoicePopUpDialog(
       },
       dismissButton = {
          TextButton(onClick = {
-            dialog.callback.onResponse(PopUpDialogResponse.NEGATIVE)
+            dialog.callback.callback(PopUpDialogResult(PopUpDialogResponse.NEGATIVE))
             onDismissRequest()
          }) {
             Text(text = dialog.negaviteButtonText)

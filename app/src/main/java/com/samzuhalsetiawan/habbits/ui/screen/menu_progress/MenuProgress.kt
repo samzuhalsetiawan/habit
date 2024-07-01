@@ -42,7 +42,6 @@ import kotlin.random.Random
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuProgressTopAppBar(
-   navBackStackEntry: NavBackStackEntry?,
    scrollBehavior: TopAppBarScrollBehavior?,
    modifier: Modifier = Modifier,
 ) {
@@ -52,7 +51,6 @@ fun MenuProgressTopAppBar(
          Column {
             Text(
                text = "Progress Saya",
-//                            style = MaterialTheme.typography.titleMedium
             )
          }
       },
@@ -139,27 +137,12 @@ private fun MenuProgress(
                )
             }
          }
-         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-         ) {
-            items(
-               count = habitsWithHistories.size,
-               key = { habitsWithHistories[it].first.id }
-            ) {
-               val habit = habitsWithHistories[it].first
-               val histories = habitsWithHistories[it].second
-               DetailCard(
-                  habit = habit,
-                  histories = histories,
-                  modifier = Modifier
-                      .fillMaxWidth()
-                      .padding(top = 16.dp)
-               )
-               Spacer(modifier = Modifier.height(16.dp))
-            }
+         when (tabState) {
+            0 -> { TabDaily(habitsWithHistories) }
+            1 -> { TabMonthly() }
+            2 -> {}
          }
+
       }
    }
 }
