@@ -1,6 +1,9 @@
 plugins {
    alias(libs.plugins.android.application)
    alias(libs.plugins.jetbrains.kotlin.android)
+   alias(libs.plugins.kotlin.ksp)
+   alias(libs.plugins.hilt.plugin)
+   alias(libs.plugins.room.plugin)
 }
 
 android {
@@ -47,6 +50,9 @@ android {
          excludes += "/META-INF/{AL2.0,LGPL2.1}"
       }
    }
+   room {
+      schemaDirectory("$projectDir/schemas")
+   }
 }
 
 dependencies {
@@ -66,4 +72,24 @@ dependencies {
    androidTestImplementation(libs.androidx.ui.test.junit4)
    debugImplementation(libs.androidx.ui.tooling)
    debugImplementation(libs.androidx.ui.test.manifest)
+
+//   Dagger Hilt
+   implementation(libs.hilt.android)
+   implementation(libs.hilt.navigation.compose)
+   ksp(libs.hilt.compiler)
+
+//   Room
+   implementation(libs.room.runtime)
+   ksp(libs.room.compiler)
+   implementation(libs.room.ktx)
+
+//   Navigation
+   implementation(libs.navigation.compose)
+
+//   Lifecycle
+   implementation(libs.lifecycle.viewmodel)
+   implementation(libs.lifecycle.viewmodel.compose)
+   implementation(libs.lifecycle.viewmodel.savedstate)
+   ksp(libs.lifecycle.compiler)
+   
 }
