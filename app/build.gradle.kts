@@ -2,7 +2,6 @@ plugins {
    alias(libs.plugins.android.application)
    alias(libs.plugins.jetbrains.kotlin.android)
    alias(libs.plugins.kotlin.ksp)
-   alias(libs.plugins.hilt.plugin)
    alias(libs.plugins.room.plugin)
    alias(libs.plugins.compose.compiler)
    alias(libs.plugins.kotlin.serialization)
@@ -75,11 +74,6 @@ dependencies {
    androidTestImplementation(libs.androidx.ui.test.junit4)
    debugImplementation(libs.androidx.ui.tooling)
    debugImplementation(libs.androidx.ui.test.manifest)
-
-//   Dagger Hilt
-   implementation(libs.hilt.android)
-   implementation(libs.hilt.navigation.compose)
-   ksp(libs.hilt.compiler)
 
 //   Room
    implementation(libs.room.runtime)
