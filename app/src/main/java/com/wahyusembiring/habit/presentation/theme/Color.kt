@@ -1,4 +1,4 @@
-package com.wahyusembiring.habit.ui.theme
+package com.wahyusembiring.habit.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

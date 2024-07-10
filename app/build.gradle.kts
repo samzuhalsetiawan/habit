@@ -4,6 +4,9 @@ plugins {
    alias(libs.plugins.kotlin.ksp)
    alias(libs.plugins.hilt.plugin)
    alias(libs.plugins.room.plugin)
+   alias(libs.plugins.compose.compiler)
+   alias(libs.plugins.kotlin.serialization)
+   alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -80,8 +83,8 @@ dependencies {
 
 //   Room
    implementation(libs.room.runtime)
-   ksp(libs.room.compiler)
    implementation(libs.room.ktx)
+   ksp(libs.room.compiler)
 
 //   Navigation
    implementation(libs.navigation.compose)
@@ -91,5 +94,7 @@ dependencies {
    implementation(libs.lifecycle.viewmodel.compose)
    implementation(libs.lifecycle.viewmodel.savedstate)
    ksp(libs.lifecycle.compiler)
-   
+
+//   Kotlin Serialization
+   implementation(libs.kotlin.serialization.json)
 }
