@@ -17,6 +17,9 @@
     <string name="add_reminder">Add Reminder</string>
     <string name="add_exam_schedule">Add exam schedule</string>
     <string name="add_homework">Add Homework</string>
+    <string name="homework_title">Homework Title</string>
+    <string name="close_add_homework_sheet">Close add homework sheet</string>
+    <string name="save">Save</string>
 
     <string-array name="home_screen_tabs">
         <item>All Jurnal</item>

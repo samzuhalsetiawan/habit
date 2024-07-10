@@ -11,7 +11,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
@@ -23,9 +27,9 @@ import androidx.navigation.NavController
 import com.wahyusembiring.habit.R
 import com.wahyusembiring.habit.domain.model.Task
 import com.wahyusembiring.habit.presentation.composable.alertdialog.AlertDialog
+import com.wahyusembiring.habit.presentation.composable.fab.MultiFloatingActionButton
 import com.wahyusembiring.habit.presentation.composable.lists.DeleteableColumnList
 import com.wahyusembiring.habit.presentation.composable.tab.PrimaryTab
-import com.wahyusembiring.habit.presentation.composable.tab.rememberTabState
 import com.wahyusembiring.habit.presentation.handler.alertdialog.ScreenAlertDialogHandler
 
 @Composable
@@ -47,14 +51,39 @@ private fun HomeScreen(
    state: HomeScreenState,
    userAction: HomeUserAction
 ) {
-   val tabState = rememberTabState()
+   val activeTab = remember { mutableIntStateOf(0) }
    val tabTitles = stringArrayResource(id = R.array.home_screen_tabs)
 
+   Box(
+      modifier = modifier.fillMaxSize(),
+      contentAlignment = Alignment.BottomEnd
+   ) {
+      MainContent(
+         selectedTabState = activeTab,
+         tabTitles = tabTitles,
+         state = state,
+         userAction = userAction
+      )
+      MultiFloatingActionButton()
+      ScreenAlertDialogHandler(
+         dialog = state.alertDialog,
+         onDismissRequest = { userAction.dissmissAlertDialog() }
+      )
+   }
+}
+
+@Composable
+private fun MainContent(
+   selectedTabState: MutableIntState,
+   tabTitles: Array<String>,
+   state: HomeScreenState,
+   userAction: HomeUserAction
+) {
    Column(
-      modifier = modifier.fillMaxSize()
+      modifier = Modifier.fillMaxSize()
    ) {
       PrimaryTab(
-         tabState = tabState,
+         selectedTabState = selectedTabState,
          titles = tabTitles.toList()
       )
       when {
@@ -70,10 +99,6 @@ private fun HomeScreen(
          else -> EmptyTaskPlaceholder()
       }
    }
-   ScreenAlertDialogHandler(
-      dialog = state.alertDialog,
-      onDismissRequest = { userAction.dissmissAlertDialog() }
-   )
 }
 
 @Composable

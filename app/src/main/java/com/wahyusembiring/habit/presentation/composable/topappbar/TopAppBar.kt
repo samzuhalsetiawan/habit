@@ -10,7 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavBackStackEntry
 import com.wahyusembiring.habit.R
-import com.wahyusembiring.habit.domain.utils.ConvertionUtil.routeName
+import com.wahyusembiring.habit.domain.utils.GetterUtil.routeName
 import com.wahyusembiring.habit.presentation.screen.Screen
 
 @Composable

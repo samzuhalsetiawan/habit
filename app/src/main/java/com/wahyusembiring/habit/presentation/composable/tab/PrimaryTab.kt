@@ -14,18 +14,15 @@ import androidx.compose.ui.text.style.TextOverflow
 @Composable
 fun PrimaryTab(
    titles: List<String>,
-   tabState: MutableIntState = rememberTabState()
+   selectedTabState: MutableIntState,
 ) {
-   PrimaryTabRow(selectedTabIndex = tabState.intValue) {
+   PrimaryTabRow(selectedTabIndex = selectedTabState.intValue) {
       titles.forEachIndexed { index, title ->
          Tab(
-            selected = tabState.intValue == index,
-            onClick = { tabState.intValue = index },
+            selected = selectedTabState.intValue == index,
+            onClick = { selectedTabState.intValue = index },
             text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
          )
       }
    }
 }
-
-@Composable
-fun rememberTabState() = remember { mutableIntStateOf(0) }

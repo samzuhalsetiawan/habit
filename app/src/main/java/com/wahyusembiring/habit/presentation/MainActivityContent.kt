@@ -11,6 +11,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.wahyusembiring.habit.presentation.composable.drawer.DrawerItem
 import com.wahyusembiring.habit.presentation.composable.drawer.MainNavigationDrawer
+import com.wahyusembiring.habit.presentation.composable.fab.FAB
 import com.wahyusembiring.habit.presentation.composable.fab.MultiFloatingActionButton
 import com.wahyusembiring.habit.presentation.composable.topappbar.TopAppBar
 import com.wahyusembiring.habit.presentation.handler.navigation.ScreenNavigationHandler
@@ -40,9 +41,6 @@ fun MainActivityContent() {
                   navBackStackEntry = navBackStackEntry,
                   onMenuClick = { coroutineScope.launch { drawerState.open() } }
                )
-            },
-            floatingActionButton = {
-               MultiFloatingActionButton()
             },
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
          ) { scaffoldPadding ->
