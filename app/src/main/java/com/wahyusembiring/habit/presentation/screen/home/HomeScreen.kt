@@ -64,7 +64,6 @@ private fun HomeScreen(
          state = state,
          userAction = userAction
       )
-      MultiFloatingActionButton()
       ScreenAlertDialogHandler(
          dialog = state.alertDialog,
          onDismissRequest = { userAction.dissmissAlertDialog() }

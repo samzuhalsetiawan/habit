@@ -56,50 +56,17 @@ import kotlin.math.roundToInt
 private const val SUB_FAB_COLUMN_ID = "fab_column"
 private const val MAIN_FAB_LAYOUT_ID = "main_fab"
 
-enum class FAB {
-   REMINDER, EXAM, HOMEWORK
-}
-
 @Composable
 fun MultiFloatingActionButton(
-   modifier: Modifier = Modifier
-) {
-   var isExpanded by remember { mutableStateOf(false) }
-
-   MultiFloatingActionButton(
-      modifier = modifier,
-      isExpanded = isExpanded,
-      mainFloatingActionButton = {
-         MainFloatingActionButton(
-            onClick = { isExpanded = !isExpanded },
-            isExpanded = isExpanded
-         )
-      },
-      subFloatingActionButton = {
-         SubFloatingActionButton(
-            isExpanded = isExpanded,
-            onFabClick = {
-
-            }
-         )
-      }
-   )
-}
-
-@Composable
-private fun MultiFloatingActionButton(
    modifier: Modifier = Modifier,
-   isExpanded: Boolean,
    mainFloatingActionButton: @Composable () -> Unit,
    subFloatingActionButton: @Composable ColumnScope.() -> Unit
 ) {
    Box(
       modifier = Modifier
-         .fillMaxSize()
-         .zIndex(10f),
+         .fillMaxSize(),
       contentAlignment = Alignment.BottomEnd
    ) {
-      Scrim(isShowing = isExpanded)
       MultiFloatingActionButtonLayout(
          modifier = modifier
       ) {
@@ -112,7 +79,7 @@ private fun MultiFloatingActionButton(
          Box(
             modifier = Modifier
                .layoutId(MAIN_FAB_LAYOUT_ID)
-               .padding(MaterialTheme.spacing.Medium)
+               .padding(top = MaterialTheme.spacing.Small)
          ) {
             mainFloatingActionButton()
          }
@@ -158,7 +125,7 @@ private fun MultiFloatingActionButtonLayout(
 }
 
 @Composable
-private fun MainFloatingActionButton(
+fun MainFloatingActionButton(
    modifier: Modifier = Modifier,
    onClick: () -> Unit,
    isExpanded: Boolean
@@ -180,14 +147,14 @@ private fun MainFloatingActionButton(
 }
 
 @Composable
-private fun ColumnScope.SubFloatingActionButton(
+fun ColumnScope.SubFloatingActionButton(
    modifier: Modifier = Modifier,
    isExpanded: Boolean,
-   onFabClick: (subFab: FAB) -> Unit,
+   onFabClick: (subFab: ClickedFAB) -> Unit,
 ) {
    SubFloatingActionButton(
       isVisible = isExpanded,
-      onClick = { onFabClick(FAB.REMINDER) },
+      onClick = { onFabClick(ClickedFAB.REMINDER) },
    ) {
       Icon(
          painter = painterResource(id = R.drawable.ic_reminder),
@@ -196,7 +163,7 @@ private fun ColumnScope.SubFloatingActionButton(
    }
    SubFloatingActionButton(
       isVisible = isExpanded,
-      onClick = { onFabClick(FAB.EXAM) },
+      onClick = { onFabClick(ClickedFAB.EXAM) },
    ) {
       Icon(
          painter = painterResource(id = R.drawable.ic_exam),
@@ -205,7 +172,7 @@ private fun ColumnScope.SubFloatingActionButton(
    }
    SubFloatingActionButton(
       isVisible = isExpanded,
-      onClick = { onFabClick(FAB.HOMEWORK) },
+      onClick = { onFabClick(ClickedFAB.HOMEWORK) },
    ) {
       Icon(
          painter = painterResource(id = R.drawable.ic_homework),
@@ -233,32 +200,4 @@ private fun SubFloatingActionButton(
          content = icon
       )
    }
-}
-
-@Composable
-private fun Scrim(
-   modifier: Modifier = Modifier,
-   isShowing: Boolean
-) {
-   val context = LocalContext.current
-   val windowSize = GetterUtil.getWindowSize(context)
-   val windowWidth = windowSize.width
-   val windowHeight = windowSize.height
-   println(windowWidth)
-   println(windowHeight)
-
-   val animatedOpacity by animateFloatAsState(
-      label = "Scrim Opacity Animation",
-      targetValue = if (isShowing) SCRIM_DIM_OPACITY else 0f
-   )
-
-   Box(
-      modifier = modifier
-         .offset(y = (-10).dp)
-         .size(windowWidth.dp, windowHeight.dp)
-         .border(10.dp, Color.Red)
-         .background(
-            color = MaterialTheme.colorScheme.scrim.copy(alpha = animatedOpacity)
-         )
-   )
 }

@@ -10,7 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavBackStackEntry
 import com.wahyusembiring.habit.R
-import com.wahyusembiring.habit.domain.utils.GetterUtil.routeName
+import com.wahyusembiring.habit.domain.utils.GetterUtil.routeSimpleClassName
 import com.wahyusembiring.habit.presentation.screen.Screen
 
 @Composable
@@ -19,7 +19,7 @@ fun TopAppBar(
    onMenuClick: () -> Unit
 ) {
    if (navBackStackEntry == null) return
-   val screenName = when (navBackStackEntry.routeName) {
+   val screenName = when (navBackStackEntry.routeSimpleClassName) {
       Screen.Home::class.simpleName -> stringResource(R.string.home)
       else -> return
    }
