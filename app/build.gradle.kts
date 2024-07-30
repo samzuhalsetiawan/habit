@@ -67,6 +67,7 @@ dependencies {
    implementation(libs.androidx.ui.graphics)
    implementation(libs.androidx.ui.tooling.preview)
    implementation(libs.androidx.material3)
+   implementation(libs.androidx.ui.text.google.fonts)
    testImplementation(libs.junit)
    androidTestImplementation(libs.androidx.junit)
    androidTestImplementation(libs.androidx.espresso.core)
@@ -91,4 +92,14 @@ dependencies {
 
 //   Kotlin Serialization
    implementation(libs.kotlin.serialization.json)
+
+//   Coil image loader
+   implementation(libs.coil.compose)
+
+//   Compose Color Picker
+   implementation(libs.compose.colorpicker)
+
+//   boguszpawlowski compose calendar
+   implementation(libs.boguszpawlowski.compose.calendar)
+   implementation(libs.boguszpawlowski.kotlix.datetime)
 }
