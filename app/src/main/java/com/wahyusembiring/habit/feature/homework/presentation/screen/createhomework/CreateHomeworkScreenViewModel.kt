@@ -8,14 +8,17 @@ import com.wahyusembiring.habit.feature.homework.domain.model.Homework
 import com.wahyusembiring.habit.feature.homework.domain.repository.HomeworkRepository
 import com.wahyusembiring.habit.feature.subject.domain.model.Subject
 import com.wahyusembiring.habit.feature.subject.domain.repository.SubjectRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
+import javax.inject.Inject
 
-class CreateHomeworkScreenViewModel(
+@HiltViewModel
+class CreateHomeworkScreenViewModel @Inject constructor(
    private val homeworkRepository: HomeworkRepository,
    private val subjectRepository: SubjectRepository
 ) : ViewModel() {
@@ -40,6 +43,7 @@ class CreateHomeworkScreenViewModel(
          is CreateHomeworkUIEvent.OnPickAttachmentButtonClicked -> showPopUp(
             CreateHomeworkScreenPopUp.AttachmentPicker
          )
+
          is CreateHomeworkUIEvent.OnSaveHomeworkConfirmed -> onSaveHomeworkConfirmed()
       }
    }

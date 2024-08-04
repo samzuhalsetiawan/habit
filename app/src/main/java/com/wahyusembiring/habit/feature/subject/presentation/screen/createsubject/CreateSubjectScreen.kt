@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -52,16 +53,7 @@ fun NavGraphBuilder.createSubjectScreen(
    navController: NavHostController
 ) {
    composable<Screen.CreateSubject> {
-      val viewModel: CreateSubjectViewModel = viewModel(
-         factory = viewModelFactory {
-            addInitializer(CreateSubjectViewModel::class) {
-               CreateSubjectViewModel(
-                  subjectRepository = App.appModule.subjectRepository
-               )
-            }
-            build()
-         }
-      )
+      val viewModel: CreateSubjectViewModel = hiltViewModel(it)
       CreateSubjectScreen(
          navController = navController,
          viewModel = viewModel

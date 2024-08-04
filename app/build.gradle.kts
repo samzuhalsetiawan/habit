@@ -103,8 +103,9 @@ dependencies {
 //   boguszpawlowski compose calendar
    implementation(libs.boguszpawlowski.compose.calendar)
    implementation(libs.boguszpawlowski.kotlix.datetime)
-   
+
    // Dagger Hilt
    implementation(libs.hilt.android)
+   implementation(libs.hilt.navigation.compose)
    ksp(libs.hilt.android.compiler)
 }

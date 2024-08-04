@@ -19,8 +19,11 @@ import com.wahyusembiring.habit.core.presentation.composable.topappbar.TopAppBar
 import com.wahyusembiring.habit.core.domain.util.GetterUtil.routeSimpleClassName
 import com.wahyusembiring.habit.core.presentation.composable.navigationdrawer.rememberNavigationDrawerState
 import com.wahyusembiring.habit.theme.HabitTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)

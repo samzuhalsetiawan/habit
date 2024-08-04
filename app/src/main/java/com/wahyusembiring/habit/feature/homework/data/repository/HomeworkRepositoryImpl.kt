@@ -5,8 +5,9 @@ import com.wahyusembiring.habit.feature.homework.data.local.HomeworkDao
 import com.wahyusembiring.habit.feature.homework.domain.model.Homework
 import com.wahyusembiring.habit.feature.homework.domain.repository.HomeworkRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class HomeworkRepositoryImpl(
+class HomeworkRepositoryImpl @Inject constructor(
    private val homeworkDao: HomeworkDao
 ) : HomeworkRepository {
 

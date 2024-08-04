@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.habit.feature.subject.domain.model.Subject
 import com.wahyusembiring.habit.feature.subject.domain.repository.SubjectRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CreateSubjectViewModel(
+@HiltViewModel
+class CreateSubjectViewModel @Inject constructor(
    private val subjectRepository: SubjectRepository
 ) : ViewModel() {
 

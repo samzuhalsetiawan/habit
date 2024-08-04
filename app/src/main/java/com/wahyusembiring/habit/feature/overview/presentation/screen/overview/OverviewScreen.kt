@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -33,14 +34,7 @@ fun NavGraphBuilder.overviewScreen(
    navController: NavHostController
 ) {
    composable<Screen.Overview> {
-      val overviewViewModel: OverviewViewModel = viewModel(
-         factory = viewModelFactory {
-            addInitializer(OverviewViewModel::class) {
-               OverviewViewModel(App.appModule.homeworkRepository)
-            }
-            build()
-         }
-      )
+      val overviewViewModel: OverviewViewModel = hiltViewModel(it)
       OverviewScreen(
          viewModel = overviewViewModel,
          navController = navController

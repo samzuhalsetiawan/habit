@@ -1,5 +1,6 @@
 package com.wahyusembiring.habit.di
 
+import android.app.Application
 import android.content.Context
 import com.wahyusembiring.habit.core.data.local.MainDatabase
 import com.wahyusembiring.habit.feature.homework.data.local.HomeworkDao
@@ -8,31 +9,44 @@ import com.wahyusembiring.habit.feature.homework.domain.repository.HomeworkRepos
 import com.wahyusembiring.habit.feature.subject.data.SubjectRepositoryImpl
 import com.wahyusembiring.habit.feature.subject.data.local.SubjectDao
 import com.wahyusembiring.habit.feature.subject.domain.repository.SubjectRepository
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-interface AppModule {
-   val mainDatabase: MainDatabase
-   val homeworkRepository: HomeworkRepository
-   val homeworkDao: HomeworkDao
-   val subjectRepository: SubjectRepository
-   val subjectDao: SubjectDao
-}
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
 
-class AppModuleImpl(
-   private val appContext: Context
-) : AppModule {
-   override val mainDatabase: MainDatabase by lazy {
-      MainDatabase.getSingleton(appContext)
+   @Provides
+   @Singleton
+   fun provideMainDatabase(application: Application): MainDatabase {
+      return MainDatabase.getSingleton(application.applicationContext)
    }
-   override val homeworkRepository: HomeworkRepository by lazy {
-      HomeworkRepositoryImpl(homeworkDao)
+
+   @Provides
+   @Singleton
+   fun provideHomeworkDao(mainDatabase: MainDatabase): HomeworkDao {
+      return mainDatabase.homeworkDao
    }
-   override val homeworkDao: HomeworkDao by lazy {
-      mainDatabase.homeworkDao
+
+   @Provides
+   @Singleton
+   fun provideHomeworkRepository(homeworkDao: HomeworkDao): HomeworkRepository {
+      return HomeworkRepositoryImpl(homeworkDao)
    }
-   override val subjectDao: SubjectDao by lazy {
-      mainDatabase.subjectDao
+
+   @Provides
+   @Singleton
+   fun provideSubjectDao(mainDatabase: MainDatabase): SubjectDao {
+      return mainDatabase.subjectDao
    }
-   override val subjectRepository: SubjectRepository by lazy {
-      SubjectRepositoryImpl(subjectDao)
+
+   @Provides
+   @Singleton
+   fun provideSubjectRepository(subjectDao: SubjectDao): SubjectRepository {
+      return SubjectRepositoryImpl(subjectDao)
    }
+
 }

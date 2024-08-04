@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -46,18 +47,7 @@ fun NavGraphBuilder.createHomeworkScreen(
    navController: NavHostController
 ) {
    composable<Screen.CreateHomework> {
-      val viewModel: CreateHomeworkScreenViewModel = viewModel(
-         viewModelStoreOwner = it,
-         factory = viewModelFactory {
-            addInitializer(CreateHomeworkScreenViewModel::class) {
-               CreateHomeworkScreenViewModel(
-                  homeworkRepository = App.appModule.homeworkRepository,
-                  subjectRepository = App.appModule.subjectRepository
-               )
-            }
-            build()
-         }
-      )
+      val viewModel: CreateHomeworkScreenViewModel = hiltViewModel(it)
       CreateHomeworkScreen(
          navController = navController,
          viewModel = viewModel
