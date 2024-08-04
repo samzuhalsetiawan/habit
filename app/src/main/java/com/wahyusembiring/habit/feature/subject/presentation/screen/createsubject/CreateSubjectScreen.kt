@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import com.wahyusembiring.habit.App
 import com.wahyusembiring.habit.R
 import com.wahyusembiring.habit.core.presentation.Screen
+import com.wahyusembiring.habit.core.presentation.composable.alertdialog.confirmation.ConfirmationAlertDialog
 import com.wahyusembiring.habit.core.presentation.composable.alertdialog.error.ErrorAlertDialog
 import com.wahyusembiring.habit.core.presentation.composable.alertdialog.information.InformationAlertDialog
 import com.wahyusembiring.habit.core.presentation.composable.alertdialog.loading.LoadingAlertDialog
@@ -142,7 +143,7 @@ private fun PopUpHandler(
          )
       }
 
-      CreateSubjectScreenPopUp.NameIsRequired -> {
+      is CreateSubjectScreenPopUp.NameIsRequired -> {
          ErrorAlertDialog(
             message = stringResource(R.string.subject_name_is_required),
             buttonText = stringResource(id = R.string.ok),
@@ -163,7 +164,7 @@ private fun PopUpHandler(
          )
       }
 
-      CreateSubjectScreenPopUp.RoomIsRequired -> {
+      is CreateSubjectScreenPopUp.RoomIsRequired -> {
          ErrorAlertDialog(
             message = stringResource(R.string.room_is_required),
             buttonText = stringResource(id = R.string.ok),
@@ -184,7 +185,7 @@ private fun PopUpHandler(
          )
       }
 
-      CreateSubjectScreenPopUp.SaveSubjectSuccess -> {
+      is CreateSubjectScreenPopUp.SaveSubjectSuccess -> {
          InformationAlertDialog(
             title = stringResource(id = R.string.success),
             message = stringResource(R.string.subject_saved),
@@ -206,8 +207,21 @@ private fun PopUpHandler(
          )
       }
 
-      CreateSubjectScreenPopUp.SaveSubjectLoading -> {
+      is CreateSubjectScreenPopUp.SaveSubjectLoading -> {
          LoadingAlertDialog(stringResource(id = R.string.saving))
+      }
+
+      is CreateSubjectScreenPopUp.SaveSubjectConfirmation -> {
+         ConfirmationAlertDialog(
+            onPositiveButtonClick = { /*TODO*/ },
+            onNegativeButtonClick = { /*TODO*/ },
+            title = "Save subject",
+            message = "Are you sure you want to save this subject?",
+            positiveButtonText = stringResource(id = R.string.save),
+            negativeButtonText = stringResource(id = R.string.cancel),
+         ) {
+
+         }
       }
 
       null -> Unit

@@ -12,6 +12,7 @@ sealed class CreateHomeworkUIEvent {
    data class OnSubjectSelected(val subject: Subject) : CreateHomeworkUIEvent()
    data class OnAttachmentsConfirmed(val attachments: List<Attachment>) : CreateHomeworkUIEvent()
    data object OnSaveHomeworkButtonClicked : CreateHomeworkUIEvent()
+   data object OnSaveHomeworkConfirmed : CreateHomeworkUIEvent()
    data object OnPickDateButtonClicked : CreateHomeworkUIEvent()
    data object OnPickTimeButtonClicked : CreateHomeworkUIEvent()
    data object OnPickSubjectButtonClicked : CreateHomeworkUIEvent()

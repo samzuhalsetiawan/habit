@@ -27,11 +27,12 @@ class CreateSubjectViewModel(
             CreateSubjectScreenPopUp.ColorPicker
          )
 
-         is CreateSubjectScreenUIEvent.OnSaveButtonClicked -> onSaveSubject()
+         is CreateSubjectScreenUIEvent.OnSaveButtonClicked -> showPopUp(CreateSubjectScreenPopUp.SaveSubjectConfirmation)
+         CreateSubjectScreenUIEvent.onSaveSubjectConfirmed -> onSaveSubjectConfirmed()
       }
    }
 
-   private fun onSaveSubject() {
+   private fun onSaveSubjectConfirmed() {
       viewModelScope.launch {
          try {
             showPopUp(CreateSubjectScreenPopUp.SaveSubjectLoading)

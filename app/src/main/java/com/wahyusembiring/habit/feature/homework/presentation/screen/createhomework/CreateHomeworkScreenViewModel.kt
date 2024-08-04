@@ -32,7 +32,7 @@ class CreateHomeworkScreenViewModel(
          is CreateHomeworkUIEvent.OnTimeSelected -> onTimeSelected(event.time)
          is CreateHomeworkUIEvent.OnSubjectSelected -> onSubjectSelected(event.subject)
          is CreateHomeworkUIEvent.OnAttachmentsConfirmed -> onAttachmentsConfirmed(event.attachments)
-         is CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked -> onSaveHomework()
+         is CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked -> showPopUp(CreateHomeworkScreenPopUp.SaveHomeworkConfirmation)
          is CreateHomeworkUIEvent.OnPickDateButtonClicked -> showPopUp(CreateHomeworkScreenPopUp.DatePicker)
          is CreateHomeworkUIEvent.OnPickTimeButtonClicked -> showPopUp(CreateHomeworkScreenPopUp.TimePicker)
          is CreateHomeworkUIEvent.OnPickSubjectButtonClicked -> showPopUp(CreateHomeworkScreenPopUp.SubjectPicker)
@@ -40,33 +40,21 @@ class CreateHomeworkScreenViewModel(
          is CreateHomeworkUIEvent.OnPickAttachmentButtonClicked -> showPopUp(
             CreateHomeworkScreenPopUp.AttachmentPicker
          )
-
+         is CreateHomeworkUIEvent.OnSaveHomeworkConfirmed -> onSaveHomeworkConfirmed()
       }
    }
 
-   private fun onSaveHomework() {
+   private fun onSaveHomeworkConfirmed() {
       viewModelScope.launch {
          try {
-            _state.update {
-               it.copy(popUp = CreateHomeworkScreenPopUp.SaveHomeworkLoading)
-            }
+            showPopUp(CreateHomeworkScreenPopUp.SaveHomeworkLoading)
             saveHomework()
-            _state.update {
-               it.copy(popUp = CreateHomeworkScreenPopUp.SaveHomeworkSuccess)
-            }
+            showPopUp(CreateHomeworkScreenPopUp.SaveHomeworkSuccess)
          } catch (e: MissingRequiredFieldException) {
             when (e) {
-               is MissingRequiredFieldException.Title -> _state.update {
-                  it.copy(popUp = CreateHomeworkScreenPopUp.HomeworkTitleIsRequired)
-               }
-
-               is MissingRequiredFieldException.Date -> _state.update {
-                  it.copy(popUp = CreateHomeworkScreenPopUp.DateIsRequired)
-               }
-
-               is MissingRequiredFieldException.Subject -> _state.update {
-                  it.copy(popUp = CreateHomeworkScreenPopUp.SubjectIsRequired)
-               }
+               is MissingRequiredFieldException.Title -> showPopUp(CreateHomeworkScreenPopUp.HomeworkTitleIsRequired)
+               is MissingRequiredFieldException.Date -> showPopUp(CreateHomeworkScreenPopUp.DateIsRequired)
+               is MissingRequiredFieldException.Subject -> showPopUp(CreateHomeworkScreenPopUp.SubjectIsRequired)
             }
          }
       }

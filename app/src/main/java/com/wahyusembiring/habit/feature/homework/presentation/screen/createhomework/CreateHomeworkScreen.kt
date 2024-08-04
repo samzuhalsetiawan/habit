@@ -1,13 +1,19 @@
 package com.wahyusembiring.habit.feature.homework.presentation.screen.createhomework
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -32,6 +38,8 @@ import com.wahyusembiring.habit.core.presentation.composable.modalbottomsheet.pi
 import com.wahyusembiring.habit.core.presentation.composable.modalbottomsheet.picksubject.PickSubjectModalBottomSheet
 import com.wahyusembiring.habit.core.presentation.composable.picker.timepicker.TimePicker
 import com.wahyusembiring.habit.feature.subject.domain.model.Subject
+import com.wahyusembiring.habit.theme.HabitTheme
+import com.wahyusembiring.habit.theme.spacing
 import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.createHomeworkScreen(
@@ -66,6 +74,7 @@ fun CreateHomeworkScreen(
    val context = LocalContext.current
 
    CreateHomeworkScreen(
+      modifier = Modifier,
       state = state,
       onUIEvent = viewModel::onUIEvent,
       navigateBack = { navController.popBackStack() },
@@ -75,47 +84,54 @@ fun CreateHomeworkScreen(
 
 @Composable
 private fun CreateHomeworkScreen(
+   modifier: Modifier = Modifier,
    state: CreateHomeworkScreenUIState,
    onUIEvent: (CreateHomeworkUIEvent) -> Unit,
    navigateBack: () -> Unit,
    navigateToCreateSubjectScreen: () -> Unit,
 ) {
 
-   Column {
+   Column(
+      modifier = modifier.fillMaxSize()
+   ) {
       CloseAndSaveHeader(
          onCloseButtonClicked = { navigateBack() },
          onSaveButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked) },
          closeButtonDescription = stringResource(R.string.close_add_homework_sheet)
       )
-      TitleInputTextField(
-         label = stringResource(R.string.homework_title),
-         title = state.homeworkTitle,
-         onTitleChange = { onUIEvent(CreateHomeworkUIEvent.OnHomeworkTitleChanged(it)) }
-      )
-      AddDateButton(
-         date = state.date,
-         onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickDateButtonClicked) }
-      )
-      AddReminderButton(
-         time = state.time,
-         onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickTimeButtonClicked) }
-      )
-      AddSubjectButton(
-         subject = state.subject,
-         onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickSubjectButtonClicked) }
-      )
-      AddAttachmentButton(
-         attachments = state.attachments,
-         onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickAttachmentButtonClicked) }
-      )
+      Column(
+         modifier = Modifier.padding(MaterialTheme.spacing.Medium)
+      ) {
+         TitleInputTextField(
+            label = stringResource(R.string.homework_title),
+            title = state.homeworkTitle,
+            onTitleChange = { onUIEvent(CreateHomeworkUIEvent.OnHomeworkTitleChanged(it)) }
+         )
+         AddDateButton(
+            date = state.date,
+            onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickDateButtonClicked) }
+         )
+         AddReminderButton(
+            time = state.time,
+            onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickTimeButtonClicked) }
+         )
+         AddSubjectButton(
+            subject = state.subject,
+            onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickSubjectButtonClicked) }
+         )
+         AddAttachmentButton(
+            attachments = state.attachments,
+            onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickAttachmentButtonClicked) }
+         )
 
-      PopUpHandler(
-         popUp = state.popUp,
-         onUIEvent = onUIEvent,
-         navigateToCreateSubjectScreen = { navigateToCreateSubjectScreen() },
-         subjects = state.subjects
-      )
+         PopUpHandler(
+            popUp = state.popUp,
+            onUIEvent = onUIEvent,
+            navigateToCreateSubjectScreen = { navigateToCreateSubjectScreen() },
+            subjects = state.subjects
+         )
 
+      }
    }
 }
 
@@ -168,7 +184,7 @@ private fun PopUpHandler(
 
       CreateHomeworkScreenPopUp.SaveHomeworkConfirmation -> {
          ConfirmationAlertDialog(
-            onPositiveButtonClick = { onUIEvent(CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked) },
+            onPositiveButtonClick = { onUIEvent(CreateHomeworkUIEvent.OnSaveHomeworkConfirmed) },
             onNegativeButtonClick = {
                onUIEvent(
                   CreateHomeworkUIEvent.HidePopUp(
@@ -226,5 +242,18 @@ private fun PopUpHandler(
       }
 
       null -> Unit
+   }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CreateHomeworkScreenPreview() {
+   HabitTheme {
+      CreateHomeworkScreen(
+         state = CreateHomeworkScreenUIState(),
+         onUIEvent = {},
+         navigateBack = {},
+         navigateToCreateSubjectScreen = {}
+      )
    }
 }

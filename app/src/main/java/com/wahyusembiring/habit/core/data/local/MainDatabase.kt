@@ -43,7 +43,7 @@ abstract class MainDatabase : RoomDatabase() {
                MainDatabase::class.java,
                DATABASE_NAME
             )
-               .fallbackToDestructiveMigration()
+               .fallbackToDestructiveMigration(true)
                .build().also { INSTANCE = it }
          }
       }

@@ -6,6 +6,7 @@ plugins {
    alias(libs.plugins.compose.compiler)
    alias(libs.plugins.kotlin.serialization)
    alias(libs.plugins.kotlin.parcelize)
+   alias(libs.plugins.hilt.android.plugin)
 }
 
 android {
@@ -102,4 +103,8 @@ dependencies {
 //   boguszpawlowski compose calendar
    implementation(libs.boguszpawlowski.compose.calendar)
    implementation(libs.boguszpawlowski.kotlix.datetime)
+   
+   // Dagger Hilt
+   implementation(libs.hilt.android)
+   ksp(libs.hilt.android.compiler)
 }

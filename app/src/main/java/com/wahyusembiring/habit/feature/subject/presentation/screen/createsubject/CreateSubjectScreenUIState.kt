@@ -18,4 +18,5 @@ sealed class CreateSubjectScreenPopUp {
    data object SaveSubjectSuccess : CreateSubjectScreenPopUp()
    data object NameIsRequired : CreateSubjectScreenPopUp()
    data object RoomIsRequired : CreateSubjectScreenPopUp()
+   data object SaveSubjectConfirmation : CreateSubjectScreenPopUp()
 }
