@@ -12,34 +12,52 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 
 internal fun Project.configureKotlinAndroid(
-   commonExtension: CommonExtension<*, *, *, *, *, *>,
+   commonExtention: CommonExtension<*, *, *, *, *, *>
 ) {
-   commonExtension.apply {
-      compileSdk = 34
+   commonExtention.apply {
+      compileSdk = Config.COMPILE_SDK
 
       defaultConfig {
-         minSdk = 24
+         minSdk = Config.MIN_SDK
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+         vectorDrawables {
+            useSupportLibrary = true
+         }
+      }
+
+      buildTypes {
+         getByName("release") {
+            isMinifyEnabled = false
+            proguardFiles(
+               getDefaultProguardFile("proguard-android-optimize.txt"),
+               "proguard-rules.pro"
+            )
+         }
       }
 
       compileOptions {
          sourceCompatibility = JavaVersion.VERSION_1_8
          targetCompatibility = JavaVersion.VERSION_1_8
       }
+
+      packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
+      configureKotlin<KotlinAndroidProjectExtension>()
+
    }
-   configureKotlin<KotlinAndroidProjectExtension>()
 }
 
 private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin() = configure<T> {
    // Treat all Kotlin warnings as errors (disabled by default)
    // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
-   val warningAsErrors: String? by project
+   val warningsAsErrors: String? by project
    when (this) {
       is KotlinAndroidProjectExtension -> compilerOptions
       is KotlinJvmProjectExtension -> compilerOptions
       else -> error("Unsupported project extension $this ${T::class}")
    }.apply {
       jvmTarget = JvmTarget.JVM_1_8
-      allWarningsAsErrors = warningAsErrors.toBoolean()
+      allWarningsAsErrors = warningsAsErrors.toBoolean()
       freeCompilerArgs.add(
          // Enable experimental coroutines APIs, including Flow
          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",

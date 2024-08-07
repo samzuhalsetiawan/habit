@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Habit"
 include(":app")
+include(":core:ui")
