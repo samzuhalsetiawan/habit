@@ -28,21 +28,21 @@ dependencies {
 
 gradlePlugin {
    plugins {
-      register("androidApplicationCompose") {
-         id = "habit.android.application.compose"
-         implementationClass = "AndroidApplicationComposeConventionPlugin"
-      }
       register("androidApplication") {
          id = "habit.android.application"
          implementationClass = "AndroidApplicationConventionPlugin"
       }
-      register("androidLibraryCompose") {
-         id = "habit.android.library.compose"
-         implementationClass = "AndroidLibraryComposeConventionPlugin"
+      register("androidApplicationCompose") {
+         id = "habit.android.application.compose"
+         implementationClass = "AndroidApplicationComposeConventionPlugin"
       }
       register("androidLibrary") {
          id = "habit.android.library"
          implementationClass = "AndroidLibraryConventionPlugin"
+      }
+      register("androidLibraryCompose") {
+         id = "habit.android.library.compose"
+         implementationClass = "AndroidLibraryComposeConventionPlugin"
       }
       register("daggerHilt") {
          id = "habit.dagger.hilt"

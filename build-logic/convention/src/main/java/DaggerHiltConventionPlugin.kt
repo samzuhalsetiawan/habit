@@ -1,5 +1,3 @@
-package com
-
 import com.wahyusembiring.habit.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,6 +15,7 @@ class DaggerHiltConventionPlugin : Plugin<Project> {
          dependencies {
             add("implementation", libs.findLibrary("hilt.android").get())
             add("ksp", libs.findLibrary("hilt.android.compiler").get())
+            add("implementation", libs.findLibrary("hilt.navigation.compose").get())
          }
       }
    }

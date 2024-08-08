@@ -1,64 +1,70 @@
 plugins {
-   alias(libs.plugins.android.application)
-   alias(libs.plugins.jetbrains.kotlin.android)
-   alias(libs.plugins.kotlin.ksp)
-   alias(libs.plugins.room.plugin)
-   alias(libs.plugins.compose.compiler)
+   alias(libs.plugins.habit.android.application)
+   alias(libs.plugins.habit.android.application.compose)
+   alias(libs.plugins.habit.dagger.hilt)
+   alias(libs.plugins.habit.android.room)
+//
+//   alias(libs.plugins.android.application)
+//   alias(libs.plugins.jetbrains.kotlin.android)
+//   alias(libs.plugins.kotlin.ksp)
+//   alias(libs.plugins.room.plugin)
+//   alias(libs.plugins.compose.compiler)
    alias(libs.plugins.kotlin.serialization)
    alias(libs.plugins.kotlin.parcelize)
-   alias(libs.plugins.hilt.android.plugin)
+//   alias(libs.plugins.hilt.android.plugin)
 }
 
 android {
    namespace = "com.wahyusembiring.habit"
-   compileSdk = 34
+//   compileSdk = 34
 
    defaultConfig {
       applicationId = "com.wahyusembiring.habit"
-      minSdk = 24
-      targetSdk = 34
+//      minSdk = 24
+//      targetSdk = 34
       versionCode = 1
       versionName = "1.0"
 
-      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-      vectorDrawables {
-         useSupportLibrary = true
-      }
+//      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+//      vectorDrawables {
+//         useSupportLibrary = true
+//      }
    }
 
-   buildTypes {
-      release {
-         isMinifyEnabled = false
-         proguardFiles(
-            getDefaultProguardFile("proguard-android-optimize.txt"),
-            "proguard-rules.pro"
-         )
-      }
-   }
-   compileOptions {
-      sourceCompatibility = JavaVersion.VERSION_1_8
-      targetCompatibility = JavaVersion.VERSION_1_8
-   }
-   kotlinOptions {
-      jvmTarget = "1.8"
-   }
-   buildFeatures {
-      compose = true
-   }
-   composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.1"
-   }
-   packaging {
-      resources {
-         excludes += "/META-INF/{AL2.0,LGPL2.1}"
-      }
-   }
-   room {
-      schemaDirectory("$projectDir/schemas")
-   }
+//   buildTypes {
+//      release {
+//         isMinifyEnabled = false
+//         proguardFiles(
+//            getDefaultProguardFile("proguard-android-optimize.txt"),
+//            "proguard-rules.pro"
+//         )
+//      }
+//   }
+//   compileOptions {
+//      sourceCompatibility = JavaVersion.VERSION_1_8
+//      targetCompatibility = JavaVersion.VERSION_1_8
+//   }
+//   kotlinOptions {
+//      jvmTarget = "1.8"
+//   }
+//   buildFeatures {
+//      compose = true
+//   }
+//   composeOptions {
+//      kotlinCompilerExtensionVersion = "1.5.1"
+//   }
+//   packaging {
+//      resources {
+//         excludes += "/META-INF/{AL2.0,LGPL2.1}"
+//      }
+//   }
+//   room {
+//      schemaDirectory("$projectDir/schemas")
+//   }
 }
 
 dependencies {
+   implementation(project(":core:ui"))
 
    implementation(libs.androidx.core.ktx)
    implementation(libs.androidx.lifecycle.runtime.ktx)
