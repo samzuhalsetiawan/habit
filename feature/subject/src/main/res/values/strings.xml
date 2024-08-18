@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="subject_name">Subject name</string>
+    <string name="room">Room</string>
+    <string name="subject_name_is_required">Subject name is required</string>
+    <string name="ok">Ok</string>
+    <string name="room_is_required">Room is required</string>
+    <string name="success">Success</string>
+    <string name="subject_saved">Subject saved</string>
+    <string name="saving">Saving...</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="color">Color</string>
+    <string name="back">Back</string>
+    <string name="are_you_sure_you_want_to_save_this_subject">Are you sure you want to save this subject?</string>
+    <string name="save_subject">Save subject</string>
+</resources>

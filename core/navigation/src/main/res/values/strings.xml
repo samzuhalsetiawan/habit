@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_task">Create Task</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="add_exam_schedule">Add exam schedule</string>
+    <string name="add_homework">Add homework</string>
+</resources>

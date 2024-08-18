@@ -32,17 +32,13 @@ gradlePlugin {
          id = "habit.android.application"
          implementationClass = "AndroidApplicationConventionPlugin"
       }
-      register("androidApplicationCompose") {
-         id = "habit.android.application.compose"
-         implementationClass = "AndroidApplicationComposeConventionPlugin"
+      register("androidCompose") {
+         id = "habit.android.compose"
+         implementationClass = "AndroidComposeConventionPlugin"
       }
       register("androidLibrary") {
          id = "habit.android.library"
          implementationClass = "AndroidLibraryConventionPlugin"
-      }
-      register("androidLibraryCompose") {
-         id = "habit.android.library.compose"
-         implementationClass = "AndroidLibraryComposeConventionPlugin"
       }
       register("daggerHilt") {
          id = "habit.dagger.hilt"
@@ -51,6 +47,22 @@ gradlePlugin {
       register("androidRoom") {
          id = "habit.android.room"
          implementationClass = "AndroidRoomConventionPlugin"
+      }
+      register("testing") {
+         id = "habit.testing"
+         implementationClass = "TestingConventionPlugin"
+      }
+      register("androidLifecycle") {
+         id = "habit.android.lifecycle"
+         implementationClass = "AndroidLifecycleConventionPlugin"
+      }
+      register("kotlinSerialization") {
+         id = "habit.kotlin.serialization"
+         implementationClass = "KotlinSerializationConventionPlugin"
+      }
+      register("androidNavigation") {
+         id = "habit.android.navigation"
+         implementationClass = "AndroidNavigationConventionPlugin"
       }
       register("androidFeature") {
          id = "habit.android.feature"

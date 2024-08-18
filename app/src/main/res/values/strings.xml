@@ -72,6 +72,7 @@
     <string name="subject_saved">Subject saved</string>
     <string name="room_is_required">Room is required</string>
     <string name="subject_name_is_required">Subject name is required</string>
+    <string name="overview">Overview</string>
 
     <string-array name="home_screen_tabs">
         <item>All Jurnal</item>

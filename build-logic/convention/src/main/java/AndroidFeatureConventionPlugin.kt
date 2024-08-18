@@ -14,12 +14,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
          dependencies {
             add("implementation", project(":core:ui"))
-
-            add("implementation", libs.findLibrary("lifecycle.viewmodel").get())
-            add("implementation", libs.findLibrary("lifecycle.viewmodel.compose").get())
-            add("implementation", libs.findLibrary("lifecycle.viewmodel.savedstate").get())
-            add("ksp", libs.findLibrary("lifecycle.compiler").get())
-            add("implementation", libs.findLibrary("lifecycle.runtime.compose").get())
          }
       }
    }

@@ -1,25 +1,28 @@
 package com.wahyusembiring.habit
 
+import com.android.build.api.dsl.ApplicationDefaultConfig
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 
-internal fun Project.configureKotlinAndroid(
+internal fun Project.configureAndroidKotlin(
    commonExtention: CommonExtension<*, *, *, *, *, *>
 ) {
    commonExtention.apply {
       compileSdk = Config.COMPILE_SDK
 
       defaultConfig {
+         if (this is ApplicationDefaultConfig) {
+            targetSdk = Config.TARGET_SDK
+         }
          minSdk = Config.MIN_SDK
-         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
          vectorDrawables {
             useSupportLibrary = true
          }
@@ -42,25 +45,18 @@ internal fun Project.configureKotlinAndroid(
 
       packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 
-      configureKotlin<KotlinAndroidProjectExtension>()
+      configureKotlinOptions<KotlinAndroidProjectExtension>()
 
    }
 }
 
-private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin() = configure<T> {
-   // Treat all Kotlin warnings as errors (disabled by default)
-   // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
-   val warningsAsErrors: String? by project
-   when (this) {
-      is KotlinAndroidProjectExtension -> compilerOptions
-      is KotlinJvmProjectExtension -> compilerOptions
-      else -> error("Unsupported project extension $this ${T::class}")
-   }.apply {
-      jvmTarget = JvmTarget.JVM_1_8
-      allWarningsAsErrors = warningsAsErrors.toBoolean()
-      freeCompilerArgs.add(
-         // Enable experimental coroutines APIs, including Flow
-         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-      )
+private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlinOptions() =
+   configure<T> {
+      when (this) {
+         is KotlinAndroidProjectExtension -> compilerOptions
+         is KotlinJvmProjectExtension -> compilerOptions
+         else -> error("Unsupported project extension $this ${T::class}")
+      }.apply {
+         jvmTarget = JvmTarget.JVM_1_8
+      }
    }
-}

@@ -14,8 +14,8 @@ class DaggerHiltConventionPlugin : Plugin<Project> {
 
          dependencies {
             add("implementation", libs.findLibrary("hilt.android").get())
+//            add("implementation", libs.findLibrary("javax-inject").get())
             add("ksp", libs.findLibrary("hilt.android.compiler").get())
-            add("implementation", libs.findLibrary("hilt.navigation.compose").get())
          }
       }
    }

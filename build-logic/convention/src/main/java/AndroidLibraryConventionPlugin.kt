@@ -1,5 +1,7 @@
 import com.android.build.api.dsl.LibraryExtension
-import com.wahyusembiring.habit.configureKotlinAndroid
+import com.wahyusembiring.habit.androidLibraryExtension
+import com.wahyusembiring.habit.configureAndroidKotlin
+import com.wahyusembiring.habit.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -15,17 +17,18 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.android")
          }
 
-         extensions.configure<LibraryExtension> {
-            configureKotlinAndroid(this)
+         androidLibraryExtension {
+            configureAndroidKotlin(this)
             defaultConfig {
                consumerProguardFiles("consumer-rules.pro")
             }
          }
 
          dependencies {
-            add("androidTestImplementation", kotlin("test"))
-            add("testImplementation", kotlin("test"))
+            add("implementation", libs.findLibrary("androidx-core-ktx").get())
+            add("implementation", libs.findLibrary("kotlinx-coroutine").get())
          }
+
       }
    }
 }

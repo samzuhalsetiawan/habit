@@ -1,8 +1,11 @@
 import com.android.build.api.dsl.ApplicationExtension
-import com.wahyusembiring.habit.configureKotlinAndroid
+import com.wahyusembiring.habit.androidApplicationExtension
+import com.wahyusembiring.habit.configureAndroidKotlin
+import com.wahyusembiring.habit.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
 
@@ -13,10 +16,15 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.android")
          }
 
-         extensions.configure<ApplicationExtension> {
-            configureKotlinAndroid(this)
-            defaultConfig.targetSdk = 34
+         androidApplicationExtension {
+            configureAndroidKotlin(this)
          }
+
+         dependencies {
+            add("implementation", libs.findLibrary("androidx-core-ktx").get())
+            add("implementation", libs.findLibrary("kotlinx-coroutine").get())
+         }
+
       }
 
    }

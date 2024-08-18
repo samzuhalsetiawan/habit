@@ -1,8 +1,7 @@
 plugins {
-//   alias(libs.plugins.android.library)
-//   alias(libs.plugins.jetbrains.kotlin.android)
    alias(libs.plugins.habit.android.library)
-   alias(libs.plugins.habit.android.library.compose)
+   alias(libs.plugins.habit.android.compose)
+   alias(libs.plugins.habit.testing)
 }
 
 android {
@@ -10,11 +9,15 @@ android {
 }
 
 dependencies {
+   implementation(project(":core:common"))
+   implementation(project(":core:data"))
 
-//   implementation(libs.androidx.core.ktx)
-//   implementation(libs.androidx.appcompat)
-//   implementation(libs.material)
-//   testImplementation(libs.junit)
-//   androidTestImplementation(libs.androidx.junit)
-//   androidTestImplementation(libs.androidx.espresso.core)
+   implementation(libs.androidx.activity.compose)
+   implementation(libs.androidx.ui.text.google.fonts)
+
+   //   Coil image loader
+   implementation(libs.coil.compose)
+
+   //   Compose Color Picker
+   implementation(libs.compose.colorpicker)
 }

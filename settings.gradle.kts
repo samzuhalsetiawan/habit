@@ -24,3 +24,10 @@ dependencyResolutionManagement {
 rootProject.name = "Habit"
 include(":app")
 include(":core:ui")
+include(":core:navigation")
+include(":core:navigation")
+include(":core:common")
+include(":feature:subject")
+include(":core:data")
+include(":feature:homework")
+include(":feature:overview")
