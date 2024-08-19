@@ -17,6 +17,7 @@
     <string name="remind_me_at">Remind me at</string>
     <string name="add_subject">Add subject</string>
     <string name="save">Save</string>
+    <string name="saving">Saving…</string>
     <string name="add_new_subject">Add new subject</string>
     <string name="pick_a_subject">Pick a subject</string>
     <string name="home">Home</string>
@@ -33,4 +34,9 @@
     <string name="close_color_picker">Close color picker</string>
     <string name="when_do_you_want_to_be_reminded">When do you want to be reminded?</string>
     <string name="menu">Menu</string>
+    <string name="written_test">Written Test</string>
+    <string name="oral_test">Oral Test</string>
+    <string name="practical_test">Practical Test</string>
+    <string name="pick_test_category">Pick test category</string>
+    <string name="exam_category">Exam category</string>
 </resources>

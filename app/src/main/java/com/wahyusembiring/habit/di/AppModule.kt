@@ -1,12 +1,15 @@
 package com.wahyusembiring.habit.di
 
 import android.app.Application
+import com.wahyusembiring.data.local.ExamDao
 import com.wahyusembiring.data.local.MainDatabase
 import com.wahyusembiring.data.local.HomeworkDao
 import com.wahyusembiring.data.local.SubjectDao
+import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.implementation.HomeworkRepositoryImpl
 import com.wahyusembiring.data.repository.HomeworkRepository
 import com.wahyusembiring.data.repository.SubjectRepository
+import com.wahyusembiring.data.repository.implementation.ExamRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.SubjectRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -46,6 +49,18 @@ object AppModule {
    @Singleton
    fun provideSubjectRepository(subjectDao: SubjectDao): SubjectRepository {
       return SubjectRepositoryImpl(subjectDao)
+   }
+
+   @Provides
+   @Singleton
+   fun provideExamDao(mainDatabase: MainDatabase): ExamDao {
+      return mainDatabase.examDao
+   }
+
+   @Provides
+   @Singleton
+   fun provideExamRepository(examDao: ExamDao): ExamRepository {
+      return ExamRepositoryImpl(examDao)
    }
 
 }

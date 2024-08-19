@@ -1,4 +1,4 @@
-package com.wahyusembiring.ui.component.modalbottomsheet.component
+package com.wahyusembiring.ui.component.button
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.wahyusembiring.data.model.Time
 import com.wahyusembiring.ui.R
-import java.util.Date
 
 @Composable
 fun AddReminderButton(

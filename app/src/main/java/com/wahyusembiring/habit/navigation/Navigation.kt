@@ -4,6 +4,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.wahyusembiring.exam.ExamScreen
+import com.wahyusembiring.exam.ExamScreenViewModel
 import com.wahyusembiring.homework.CreateHomeworkScreen
 import com.wahyusembiring.overview.OverviewScreen
 import com.wahyusembiring.homework.CreateHomeworkScreenViewModel
@@ -44,6 +46,18 @@ fun NavGraphBuilder.createSubjectScreen(
       CreateSubjectScreen(
          viewModel = viewModel,
          onNavigateBack = { navController.popBackStack() }
+      )
+   }
+}
+
+fun NavGraphBuilder.examScreen(
+   navController: NavHostController
+) {
+   composable<Screen.CreateExam> {
+      val viewModel: ExamScreenViewModel = hiltViewModel(it)
+      ExamScreen(
+         viewModel = viewModel,
+         navigateBack = { navController.popBackStack() }
       )
    }
 }

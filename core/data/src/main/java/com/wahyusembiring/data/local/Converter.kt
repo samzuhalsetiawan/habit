@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.room.TypeConverter
 import com.wahyusembiring.data.model.AttachmentType
+import com.wahyusembiring.data.model.ExamCategory
 import com.wahyusembiring.data.model.OfficeHour
 import com.wahyusembiring.data.model.Time
 import kotlinx.serialization.encodeToString
@@ -82,6 +83,16 @@ class Converter {
    @TypeConverter
    fun stringToUri(string: String): Uri {
       return Uri.parse(string)
+   }
+
+   @TypeConverter
+   fun examCategoryToString(category: ExamCategory): String {
+      return category.name
+   }
+
+   @TypeConverter
+   fun stringToExamCategory(string: String): ExamCategory {
+      return ExamCategory.valueOf(string)
    }
 
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-   namespace = "com.wahyusembiring.homework"
+   namespace = "com.wahyusembiring.exam"
 }
 
 dependencies { }

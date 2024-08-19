@@ -5,17 +5,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.wahyusembiring.data.model.Attachment
-import com.wahyusembiring.data.model.Homework
-
+import com.wahyusembiring.data.model.Exam
 
 @Entity(
-   tableName = "homework_attachment",
-   primaryKeys = ["homework_id", "attachment_id"],
+   tableName = "exam_attachment",
+   primaryKeys = ["exam_id", "attachment_id"],
    foreignKeys = [
       ForeignKey(
-         entity = Homework::class,
+         entity = Exam::class,
          parentColumns = ["id"],
-         childColumns = ["homework_id"],
+         childColumns = ["exam_id"],
          onDelete = ForeignKey.CASCADE,
          onUpdate = ForeignKey.CASCADE
       ),
@@ -28,10 +27,10 @@ import com.wahyusembiring.data.model.Homework
       )
    ]
 )
-data class HomeworkAttachmentCrosRef(
+data class ExamAttachmentCrossRef(
 
-   @ColumnInfo(name = "homework_id")
-   val homeworkId: Int,
+   @ColumnInfo(name = "exam_id")
+   val examId: Int,
 
    @ColumnInfo(name = "attachment_id")
    val attachmentId: Uri

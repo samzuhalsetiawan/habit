@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.wahyusembiring.data.model.Attachment
+import com.wahyusembiring.data.model.Exam
 import com.wahyusembiring.data.model.Homework
 import com.wahyusembiring.data.model.Lecture
 import com.wahyusembiring.data.model.Subject
@@ -14,11 +15,13 @@ import com.wahyusembiring.data.model.Subject
    entities = [
       Homework::class,
       HomeworkAttachmentCrosRef::class,
+      ExamAttachmentCrossRef::class,
       Attachment::class,
       Subject::class,
-      Lecture::class
+      Lecture::class,
+      Exam::class
    ],
-   version = 1,
+   version = 2,
    exportSchema = false
 )
 @TypeConverters(Converter::class)
@@ -26,6 +29,7 @@ abstract class MainDatabase : RoomDatabase() {
 
    abstract val homeworkDao: HomeworkDao
    abstract val subjectDao: SubjectDao
+   abstract val examDao: ExamDao
 
    companion object {
       private const val DATABASE_NAME = "habit.db"

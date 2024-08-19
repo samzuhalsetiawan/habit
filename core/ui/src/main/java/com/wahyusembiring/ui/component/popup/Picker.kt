@@ -2,6 +2,7 @@ package com.wahyusembiring.ui.component.popup
 
 import androidx.compose.ui.graphics.Color
 import com.wahyusembiring.data.model.Attachment
+import com.wahyusembiring.data.model.ExamCategory
 import com.wahyusembiring.data.model.Subject
 import com.wahyusembiring.data.model.Time
 import kotlinx.coroutines.CompletableDeferred
@@ -30,6 +31,8 @@ sealed class Picker<T> : PopUp {
    class AttachmentPicker : Picker<List<Attachment>>()
 
    class SubjectPicker : Picker<Subject>()
+
+   class ExamCategoryPicker : Picker<ExamCategory>()
 
    sealed class Result<T> {
       data class Picked<T>(val value: T) : Result<T>()

@@ -16,6 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.wahyusembiring.navigation.R
 import com.wahyusembiring.navigation.Screen
+import com.wahyusembiring.navigation.component.floatingactionbutton.component.MultiFloatingActionButton
+import com.wahyusembiring.navigation.component.floatingactionbutton.component.Scrim
 
 
 enum class ClickedFAB {
@@ -30,7 +32,7 @@ fun HomeworkExamAndReminderFAB(
    HomeworkExamAndReminderFAB {
       when (it) {
          ClickedFAB.REMINDER -> Unit
-         ClickedFAB.EXAM -> Unit
+         ClickedFAB.EXAM -> navController.navigate(Screen.CreateExam)
          ClickedFAB.HOMEWORK -> navController.navigate(Screen.CreateHomework)
       }
    }
@@ -42,8 +44,8 @@ private fun HomeworkExamAndReminderFAB(
 ) {
    var isExpanded by remember { mutableStateOf(false) }
 
-   com.wahyusembiring.navigation.component.floatingactionbutton.component.Scrim(isVisible = isExpanded)
-   com.wahyusembiring.navigation.component.floatingactionbutton.component.MultiFloatingActionButton(
+   Scrim(isVisible = isExpanded)
+   MultiFloatingActionButton(
       mainFloatingActionButton = {
          MainFloatingActionButton(
             onClick = { isExpanded = !isExpanded },

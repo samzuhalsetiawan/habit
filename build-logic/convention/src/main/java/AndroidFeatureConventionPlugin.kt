@@ -9,11 +9,15 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
       with(target) {
          with(pluginManager) {
             apply("habit.android.library")
+            apply("habit.android.compose")
             apply("habit.dagger.hilt")
+            apply("habit.testing")
          }
 
          dependencies {
             add("implementation", project(":core:ui"))
+            add("implementation", project(":core:common"))
+            add("implementation", project(":core:data"))
          }
       }
    }

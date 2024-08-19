@@ -1,6 +1,5 @@
-package com.wahyusembiring.ui.component.modalbottomsheet.component
+package com.wahyusembiring.ui.component.button
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.File
@@ -35,7 +33,6 @@ import com.wahyusembiring.data.model.Link
 import com.wahyusembiring.data.model.Photo
 import com.wahyusembiring.ui.R
 import com.wahyusembiring.ui.theme.spacing
-import java.net.URI
 
 @Composable
 fun AddAttachmentButton(

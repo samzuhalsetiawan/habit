@@ -3,6 +3,7 @@ package com.wahyusembiring.ui.component.popup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.wahyusembiring.data.model.ExamCategory
 import com.wahyusembiring.data.model.Subject
 import com.wahyusembiring.ui.component.popup.alertdialog.confirmation.ConfirmationAlertDialog
 import com.wahyusembiring.ui.component.popup.alertdialog.error.ErrorAlertDialog
@@ -11,6 +12,7 @@ import com.wahyusembiring.ui.component.popup.alertdialog.loading.LoadingAlertDia
 import com.wahyusembiring.ui.component.popup.picker.attachmentpicker.AttachmentPicker
 import com.wahyusembiring.ui.component.popup.picker.colorpicker.ColorPicker
 import com.wahyusembiring.ui.component.popup.picker.datepicker.DatePicker
+import com.wahyusembiring.ui.component.popup.picker.examcategorypicker.ExamCategoryPicker
 import com.wahyusembiring.ui.component.popup.picker.subjectpicker.SubjectPicker
 import com.wahyusembiring.ui.component.popup.picker.timepicker.TimePicker
 
@@ -21,6 +23,7 @@ sealed interface PopUp
 fun PopUpHandler(
    popUps: List<PopUp>,
    initialColorForColorPicker: Color = Color.Black,
+   initialCategoryForExamCategoryPicker: ExamCategory = ExamCategory.WRITTEN,
    subjects: List<Subject> = emptyList(),
    navigateToCreateSubjectScreen: () -> Unit = {},
 ) {
@@ -96,6 +99,14 @@ fun PopUpHandler(
                onColorConfirmed = popUp::onPicked,
                onDismissRequest = popUp::dismiss,
                initialColor = initialColorForColorPicker,
+            )
+         }
+
+         is Picker.ExamCategoryPicker -> {
+            ExamCategoryPicker(
+               onDismissRequest = popUp::dismiss,
+               onCategoryPicked = popUp::onPicked,
+               initialCategory = initialCategoryForExamCategoryPicker
             )
          }
       }
