@@ -11,6 +11,8 @@ import com.wahyusembiring.overview.OverviewScreen
 import com.wahyusembiring.homework.CreateHomeworkScreenViewModel
 import com.wahyusembiring.navigation.Screen
 import com.wahyusembiring.overview.OverviewViewModel
+import com.wahyusembiring.reminder.CreateReminderScreen
+import com.wahyusembiring.reminder.CreateReminderScreenViewModel
 import com.wahyusembiring.subject.CreateSubjectScreen
 import com.wahyusembiring.subject.CreateSubjectViewModel
 
@@ -56,6 +58,18 @@ fun NavGraphBuilder.examScreen(
    composable<Screen.CreateExam> {
       val viewModel: ExamScreenViewModel = hiltViewModel(it)
       ExamScreen(
+         viewModel = viewModel,
+         navigateBack = { navController.popBackStack() }
+      )
+   }
+}
+
+fun NavGraphBuilder.createReminderScreen(
+   navController: NavHostController
+) {
+   composable<Screen.CreateReminder> {
+      val viewModel: CreateReminderScreenViewModel = hiltViewModel(it)
+      CreateReminderScreen(
          viewModel = viewModel,
          navigateBack = { navController.popBackStack() }
       )

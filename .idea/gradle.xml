@@ -33,6 +33,7 @@
             <option value="$PROJECT_DIR$/feature/exam" />
             <option value="$PROJECT_DIR$/feature/homework" />
             <option value="$PROJECT_DIR$/feature/overview" />
+            <option value="$PROJECT_DIR$/feature/reminder" />
             <option value="$PROJECT_DIR$/feature/subject" />
           </set>
         </option>

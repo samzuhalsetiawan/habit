@@ -9,6 +9,7 @@ import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.Exam
 import com.wahyusembiring.data.model.Homework
 import com.wahyusembiring.data.model.Lecture
+import com.wahyusembiring.data.model.Reminder
 import com.wahyusembiring.data.model.Subject
 
 @Database(
@@ -16,12 +17,14 @@ import com.wahyusembiring.data.model.Subject
       Homework::class,
       HomeworkAttachmentCrosRef::class,
       ExamAttachmentCrossRef::class,
+      ReminderAttachmentCrossRef::class,
       Attachment::class,
       Subject::class,
       Lecture::class,
-      Exam::class
+      Exam::class,
+      Reminder::class,
    ],
-   version = 2,
+   version = 3,
    exportSchema = false
 )
 @TypeConverters(Converter::class)
@@ -30,6 +33,7 @@ abstract class MainDatabase : RoomDatabase() {
    abstract val homeworkDao: HomeworkDao
    abstract val subjectDao: SubjectDao
    abstract val examDao: ExamDao
+   abstract val reminderDao: ReminderDao
 
    companion object {
       private const val DATABASE_NAME = "habit.db"

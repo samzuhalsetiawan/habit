@@ -36,6 +36,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wahyusembiring.ui.component.button.ChooseColorButton
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.spacing
 
@@ -70,95 +71,60 @@ private fun CreateSubjectScreen(
          onBackButtonClicked = { onNavigateBack() },
          onSaveButtonClicked = { onUIEvent(CreateSubjectScreenUIEvent.OnSaveButtonClicked) }
       )
-      OutlinedTextField(
+      Column(
          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.spacing.Medium),
-         label = {
-            Text(text = stringResource(R.string.subject_name))
-         },
-         leadingIcon = {
-            Icon(
-               painter = painterResource(id = com.wahyusembiring.ui.R.drawable.ic_title),
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.Medium)
+      ) {
+         OutlinedTextField(
+            modifier = Modifier
+               .fillMaxWidth(),
+            label = {
+               Text(text = stringResource(R.string.subject_name))
+            },
+            leadingIcon = {
+               Icon(
+                  painter = painterResource(id = com.wahyusembiring.ui.R.drawable.ic_title),
 //               painter = painterResource(id = R.drawable.ic_back_arrow),
-               contentDescription = stringResource(R.string.subject_name),
-               tint = MaterialTheme.colorScheme.primary
-            )
-         },
-         singleLine = true,
-         value = state.name,
-         onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnSubjectNameChanged(it)) },
-      )
-      OutlinedTextField(
-         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.spacing.Medium),
-         leadingIcon = {
-            Icon(
-               painter = painterResource(id = R.drawable.ic_location),
-               contentDescription = stringResource(R.string.room),
-               tint = MaterialTheme.colorScheme.primary
-            )
-         },
-         placeholder = {
-            Text(text = stringResource(R.string.room))
-         },
-         singleLine = true,
-         value = state.room,
-         onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnRoomChanged(it)) },
-         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
+                  contentDescription = stringResource(R.string.subject_name),
+                  tint = MaterialTheme.colorScheme.primary
+               )
+            },
+            singleLine = true,
+            value = state.name,
+            onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnSubjectNameChanged(it)) },
          )
-      )
-      ChooseColorButton(
-         color = state.color,
-         onClick = { onUIEvent(CreateSubjectScreenUIEvent.OnPickColorButtonClicked) }
-      )
+         OutlinedTextField(
+            modifier = Modifier
+               .fillMaxWidth(),
+            leadingIcon = {
+               Icon(
+                  painter = painterResource(id = R.drawable.ic_location),
+                  contentDescription = stringResource(R.string.room),
+                  tint = MaterialTheme.colorScheme.primary
+               )
+            },
+            placeholder = {
+               Text(text = stringResource(R.string.room))
+            },
+            singleLine = true,
+            value = state.room,
+            onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnRoomChanged(it)) },
+            colors = OutlinedTextFieldDefaults.colors(
+               focusedBorderColor = Color.Transparent,
+               unfocusedBorderColor = Color.Transparent
+            )
+         )
+         ChooseColorButton(
+            color = state.color,
+            onClick = { onUIEvent(CreateSubjectScreenUIEvent.OnPickColorButtonClicked) }
+         )
+      }
    }
 
    PopUpHandler(
       popUps = state.popUps,
       initialColorForColorPicker = state.color
-   )
-}
-
-
-@Composable
-private fun ChooseColorButton(
-   color: Color,
-   onClick: () -> Unit
-) {
-   ListItem(
-      modifier = Modifier
-         .clickable(onClick = onClick)
-         .padding(horizontal = MaterialTheme.spacing.Medium),
-      colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-      leadingContent = {
-         Box(
-            modifier = Modifier
-               .size(MaterialTheme.spacing.Medium)
-               .background(
-                  color = color,
-                  shape = RoundedCornerShape(50)
-               )
-               .clip(RoundedCornerShape(50))
-               .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(50))
-         )
-      },
-      headlineContent = {
-         Text(
-            text = stringResource(R.string.color),
-            color = color,
-            style = TextStyle(
-               shadow = Shadow(
-                  color = Color.Black,
-                  offset = Offset(2f, 2f),
-                  blurRadius = 4f
-               )
-            )
-         )
-      }
    )
 }
 

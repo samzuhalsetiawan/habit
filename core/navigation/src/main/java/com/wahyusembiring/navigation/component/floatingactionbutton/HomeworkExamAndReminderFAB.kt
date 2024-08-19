@@ -31,7 +31,7 @@ fun HomeworkExamAndReminderFAB(
 
    HomeworkExamAndReminderFAB {
       when (it) {
-         ClickedFAB.REMINDER -> Unit
+         ClickedFAB.REMINDER -> navController.navigate(Screen.CreateReminder)
          ClickedFAB.EXAM -> navController.navigate(Screen.CreateExam)
          ClickedFAB.HOMEWORK -> navController.navigate(Screen.CreateHomework)
       }

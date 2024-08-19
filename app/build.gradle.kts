@@ -32,6 +32,7 @@ dependencies {
    implementation(project(":feature:subject"))
    implementation(project(":feature:overview"))
    implementation(project(":feature:exam"))
+   implementation(project(":feature:reminder"))
 
 //   boguszpawlowski compose calendar
    implementation(libs.boguszpawlowski.compose.calendar)

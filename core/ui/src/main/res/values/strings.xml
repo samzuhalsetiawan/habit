@@ -39,4 +39,5 @@
     <string name="practical_test">Practical Test</string>
     <string name="pick_test_category">Pick test category</string>
     <string name="exam_category">Exam category</string>
+    <string name="color">Color</string>
 </resources>

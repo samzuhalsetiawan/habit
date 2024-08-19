@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.wahyusembiring.habit.navigation.createHomeworkScreen
+import com.wahyusembiring.habit.navigation.createReminderScreen
 import com.wahyusembiring.habit.navigation.createSubjectScreen
 import com.wahyusembiring.habit.navigation.examScreen
 import com.wahyusembiring.habit.navigation.overviewScreen
@@ -71,6 +72,7 @@ class MainActivity : ComponentActivity() {
                      overviewScreen(navController)
                      createSubjectScreen(navController)
                      examScreen(navController)
+                     createReminderScreen(navController)
                   }
                }
             }

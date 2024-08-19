@@ -4,12 +4,15 @@ import android.app.Application
 import com.wahyusembiring.data.local.ExamDao
 import com.wahyusembiring.data.local.MainDatabase
 import com.wahyusembiring.data.local.HomeworkDao
+import com.wahyusembiring.data.local.ReminderDao
 import com.wahyusembiring.data.local.SubjectDao
 import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.implementation.HomeworkRepositoryImpl
 import com.wahyusembiring.data.repository.HomeworkRepository
+import com.wahyusembiring.data.repository.ReminderRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.data.repository.implementation.ExamRepositoryImpl
+import com.wahyusembiring.data.repository.implementation.ReminderRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.SubjectRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -61,6 +64,18 @@ object AppModule {
    @Singleton
    fun provideExamRepository(examDao: ExamDao): ExamRepository {
       return ExamRepositoryImpl(examDao)
+   }
+
+   @Provides
+   @Singleton
+   fun provideReminderDao(mainDatabase: MainDatabase): ReminderDao {
+      return mainDatabase.reminderDao
+   }
+
+   @Provides
+   @Singleton
+   fun provideReminderRepository(reminderDao: ReminderDao): ReminderRepository {
+      return ReminderRepositoryImpl(reminderDao)
    }
 
 }
