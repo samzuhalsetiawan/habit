@@ -1,8 +1,14 @@
 package com.wahyusembiring.overview
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,95 +17,79 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wahyusembiring.overview.component.eventcard.EventCard
 import com.wahyusembiring.ui.component.tab.PrimaryTab
+import com.wahyusembiring.ui.theme.HabitTheme
+import com.wahyusembiring.ui.theme.spacing
+import java.util.Date
 
 
 @Composable
 fun OverviewScreen(
-   viewModel: OverviewViewModel
+    viewModel: OverviewViewModel
 ) {
 
-   val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-   OverviewScreen(
-      state = state,
-      onUIEvent = { viewModel.onUIEvent(it) }
-   )
+    OverviewScreen(
+        state = state,
+        onUIEvent = { viewModel.onUIEvent(it) }
+    )
 }
 
 @Composable
 private fun OverviewScreen(
-   modifier: Modifier = Modifier,
-   state: OverviewScreenUIState,
-   onUIEvent: (OverviewScreenUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    state: OverviewScreenUIState,
+    onUIEvent: (OverviewScreenUIEvent) -> Unit,
 ) {
-   val activeTab = remember { mutableIntStateOf(0) }
-
-   Column(
-      modifier = Modifier.fillMaxSize()
-   ) {
-      PrimaryTab(
-         selectedTabState = activeTab,
-         titles = state.tabTitles
-      )
-      EmptyTaskPlaceholder()
-   }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(3) {
+            DaySectionHeader()
+            EventCard(
+                modifier = Modifier.padding(
+                    horizontal = MaterialTheme.spacing.Large,
+                    vertical = MaterialTheme.spacing.Medium
+                )
+            )
+        }
+    }
 }
 
 @Composable
-private fun EmptyTaskPlaceholder() {
-   Box(
-      modifier = Modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center
-   ) {
-      Text(
-         text = stringResource(R.string.you_dont_have_any_task_yet)
-      )
-   }
+private fun DaySectionHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaterialTheme.spacing.Medium),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = "Today",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.tertiary
+        )
+        Text(
+            text = "Aug 17, 2024",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
 }
 
-//@Composable
-//private fun ListOfTaskColumn(
-//   tasks: List<Task>,
-//   onDeleteTaskRequest: (Task) -> Unit,
-//   onTaskClicked: (Task) -> Unit
-//) {
-//   DeleteableColumnList(
-//      items = tasks,
-//      onItemDeleteRequest = onDeleteTaskRequest
-//   ) {
-//      TaskItem(
-//         task = it,
-//         onTaskClicked = onTaskClicked
-//      )
-//   }
-//}
-//
-//@Composable
-//private fun TaskItem(
-//   task: Task,
-//   onTaskClicked: (Task) -> Unit
-//) {
-//   ListItem(
-//      modifier = Modifier.clickable {
-//         onTaskClicked(task)
-//      },
-//      headlineContent = { Text(task.title) },
-//      trailingContent = {
-//         Box(
-//            modifier = Modifier
-//               .background(
-//                  color = MaterialTheme.colorScheme.secondaryContainer,
-//                  shape = RoundedCornerShape(50)
-//               )
-//               .padding(5.dp, 1.dp)
-//         ) {
-//            Text(
-//               text = "Selesai",
-//               style = MaterialTheme.typography.labelSmall
-//            )
-//         }
-//      }
-//   )
-//}
+@Preview(showBackground = true)
+@Composable
+private fun OverviewScreenPreview() {
+    HabitTheme {
+        OverviewScreen(
+            state = OverviewScreenUIState(),
+            onUIEvent = {}
+        )
+    }
+}

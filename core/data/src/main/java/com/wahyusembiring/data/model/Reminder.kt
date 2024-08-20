@@ -21,4 +21,4 @@ data class Reminder(
    val color: Color,
 
    val description: String,
-)
+) : Event

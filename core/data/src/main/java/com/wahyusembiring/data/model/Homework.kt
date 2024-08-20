@@ -32,4 +32,4 @@ data class Homework(
    val subject: Int,
 
    val description: String,
-)
+) : Event
