@@ -2,14 +2,7 @@ package com.wahyusembiring.datetime
 
 import com.wahyusembiring.datetime.formatter.Formatter
 import com.wahyusembiring.datetime.formatter.FormattingStyle
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.DAY_OF_MONTH
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.DAY_OF_MONTH_WITH_ZERO
 import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.DAY_OF_WEEK
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.DAY_OF_WEEK_SHORT
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.MONTH_NAME
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.MONTH_NAME_SHORT
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.YEAR
-import com.wahyusembiring.datetime.formatter.java.JavaPatternSymbol.YEAR_SHORT
 import com.wahyusembiring.datetime.formatter.java.JavaFormatter
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -29,6 +22,11 @@ class Moment private constructor(
     val hour: Int = localDateTime.hour
 
     val minute: Int = localDateTime.minute
+
+    val day: Day = Day(
+        dayOfMonth = localDateTime.dayOfMonth,
+        dayOfWeek = toString(DAY_OF_WEEK)
+    )
 
     operator fun plus(duration: Duration): Moment {
         return by(instant = instant + duration)

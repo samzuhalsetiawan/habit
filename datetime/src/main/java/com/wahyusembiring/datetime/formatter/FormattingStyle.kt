@@ -20,6 +20,6 @@ enum class FormattingStyle {
     /**
      * Example: Mon, 1 Jan 23
      */
-    INDO_FULL_SHORT
+    INDO_FULL_SHORT,
 
 }
