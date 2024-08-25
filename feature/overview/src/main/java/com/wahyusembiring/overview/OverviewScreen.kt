@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wahyusembiring.datetime.Moment
+import com.wahyusembiring.datetime.formatter.FormattingStyle
 import com.wahyusembiring.overview.component.eventcard.EventCard
 import com.wahyusembiring.ui.component.tab.PrimaryTab
 import com.wahyusembiring.ui.theme.HabitTheme
@@ -46,23 +49,48 @@ private fun OverviewScreen(
     state: OverviewScreenUIState,
     onUIEvent: (OverviewScreenUIEvent) -> Unit,
 ) {
+    val moment = remember { Moment.now() }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(3) {
-            DaySectionHeader()
-            EventCard(
-                modifier = Modifier.padding(
-                    horizontal = MaterialTheme.spacing.Large,
-                    vertical = MaterialTheme.spacing.Medium
+        repeat(7) {
+            item {
+                val title = when (it) {
+                    0 -> stringResource(R.string.today)
+                    1 -> stringResource(R.string.tomorrow)
+                }
+
+                DaySectionHeader(
+                    title = stringResource(R.string.today),
+                    date = moment.toString(FormattingStyle.INDO_FULL)
                 )
-            )
+            }
+            item {
+                EventCard(
+                    modifier = Modifier.padding(
+                        horizontal = MaterialTheme.spacing.Medium,
+                        vertical = MaterialTheme.spacing.Small
+                    ),
+                    events = state.todayEvents,
+                    onEventCheckedChange = { event, isChecked ->
+                        if (isChecked) {
+                            onUIEvent(OverviewScreenUIEvent.OnMarkEventAsCompleted(event))
+                        } else {
+                            onUIEvent(OverviewScreenUIEvent.OnMarkEventAsUncompleted(event))
+                        }
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun DaySectionHeader() {
+private fun DaySectionHeader(
+    title: String,
+    date: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,13 +99,13 @@ private fun DaySectionHeader() {
         verticalAlignment = Alignment.Bottom
     ) {
         Text(
-            text = "Today",
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.tertiary
         )
         Text(
-            text = "Aug 17, 2024",
+            text = date,
             style = MaterialTheme.typography.bodyMedium,
         )
     }

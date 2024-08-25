@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface HomeworkRepository {
 
-   suspend fun getAllHomeworkAsFlow(): Flow<List<Homework>>
+    fun getAllHomeworkAsFlow(): Flow<List<Homework>>
 
-   suspend fun saveHomework(
-      homework: Homework,
-      attachments: List<Attachment>
-   )
+    suspend fun saveHomework(
+        homework: Homework,
+        attachments: List<Attachment>
+    )
+
+    suspend fun updateHomework(homework: Homework)
 
 }

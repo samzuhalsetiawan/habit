@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface ReminderRepository {
 
-   suspend fun getRemindersAsFlow(): Flow<List<Reminder>>
+    fun getRemindersAsFlow(): Flow<List<Reminder>>
 
-   suspend fun saveReminderWithAttachments(
-      reminder: Reminder,
-      attachments: List<Attachment>
-   )
+    suspend fun saveReminderWithAttachments(
+        reminder: Reminder,
+        attachments: List<Attachment>
+    )
+
+    suspend fun updateReminder(reminder: Reminder)
 
 }

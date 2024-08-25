@@ -7,6 +7,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":datetime"))
+
+    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
 }

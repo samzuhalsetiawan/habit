@@ -7,29 +7,31 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity(
-   tableName = "homework",
-   foreignKeys = [
-      ForeignKey(
-         entity = Subject::class,
-         parentColumns = ["id"],
-         childColumns = ["subject"],
-         onDelete = ForeignKey.CASCADE,
-         onUpdate = ForeignKey.CASCADE
-      )
-   ]
+    tableName = "homework",
+    foreignKeys = [
+        ForeignKey(
+            entity = Subject::class,
+            parentColumns = ["id"],
+            childColumns = ["subject"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ]
 )
 data class Homework(
-   @PrimaryKey(autoGenerate = true)
-   val id: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
 
-   val title: String,
+    val title: String,
 
-   @ColumnInfo(name = "due_date")
-   val dueDate: Date,
+    @ColumnInfo(name = "due_date")
+    val dueDate: Date,
 
-   val reminder: Time?,
+    val reminder: Time?,
 
-   val subject: Int,
+    val subject: Int,
 
-   val description: String,
-) : Event
+    val completed: Boolean = false,
+
+    val description: String,
+)

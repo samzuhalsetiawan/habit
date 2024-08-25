@@ -8,21 +8,25 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ReminderRepositoryImpl @Inject constructor(
-   private val reminderDao: ReminderDao
+    private val reminderDao: ReminderDao
 ) : ReminderRepository {
 
-   override suspend fun getRemindersAsFlow(): Flow<List<Reminder>> {
-      return reminderDao.getAllReminderAsFlow()
-   }
+    override fun getRemindersAsFlow(): Flow<List<Reminder>> {
+        return reminderDao.getAllReminderAsFlow()
+    }
 
-   override suspend fun saveReminderWithAttachments(
-      reminder: Reminder,
-      attachments: List<Attachment>
-   ) {
-      if (attachments.isEmpty()) {
-         reminderDao.insertReminder(reminder)
-      } else {
-         reminderDao.insertReminderWithAttachments(reminder, attachments)
-      }
-   }
+    override suspend fun saveReminderWithAttachments(
+        reminder: Reminder,
+        attachments: List<Attachment>
+    ) {
+        if (attachments.isEmpty()) {
+            reminderDao.insertReminder(reminder)
+        } else {
+            reminderDao.insertReminderWithAttachments(reminder, attachments)
+        }
+    }
+
+    override suspend fun updateReminder(reminder: Reminder) {
+        reminderDao.updateReminder(reminder)
+    }
 }

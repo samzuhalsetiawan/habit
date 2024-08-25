@@ -5,6 +5,7 @@ import com.wahyusembiring.data.model.Exam
 import kotlinx.coroutines.flow.Flow
 
 interface ExamRepository {
-   suspend fun getAllExamsAsFlow(): Flow<List<Exam>>
-   suspend fun saveExam(exam: Exam, attachments: List<Attachment>)
+    fun getAllExamsAsFlow(): Flow<List<Exam>>
+    suspend fun saveExam(exam: Exam, attachments: List<Attachment>)
+    suspend fun updateExam(exam: Exam)
 }

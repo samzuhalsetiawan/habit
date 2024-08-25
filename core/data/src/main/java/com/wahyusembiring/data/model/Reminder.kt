@@ -9,16 +9,18 @@ import java.util.Date
 
 @Entity(tableName = "reminder")
 data class Reminder(
-   @PrimaryKey(autoGenerate = true)
-   val id: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
 
-   val title: String,
+    val title: String,
 
-   val date: Date,
+    val date: Date,
 
-   val time: Time,
+    val time: Time,
 
-   val color: Color,
+    val color: Color,
 
-   val description: String,
-) : Event
+    val completed: Boolean = false,
+
+    val description: String,
+)
