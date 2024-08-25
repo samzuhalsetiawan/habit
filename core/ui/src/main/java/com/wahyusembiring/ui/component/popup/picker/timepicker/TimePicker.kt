@@ -22,79 +22,78 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import com.wahyusembiring.data.model.Time
-import com.wahyusembiring.common.util.getCurrentDateTime
+import com.wahyusembiring.datetime.Moment
 import com.wahyusembiring.ui.R
 import com.wahyusembiring.ui.theme.spacing
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePicker(
-   modifier: Modifier = Modifier,
-   onTimeSelected: (time: Time) -> Unit,
-   onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    onTimeSelected: (time: Time) -> Unit,
+    onDismissRequest: () -> Unit,
 ) {
-   val currentDateTime = remember { getCurrentDateTime() }
-   val timePickerState = rememberTimePickerState(
-      initialHour = currentDateTime.get(Calendar.HOUR_OF_DAY),
-      initialMinute = currentDateTime.get(Calendar.MINUTE)
-   )
+    val moment = remember { Moment.now() }
+    val timePickerState = rememberTimePickerState(
+        initialHour = moment.hour,
+        initialMinute = moment.minute
+    )
 
-   Dialog(onDismissRequest = onDismissRequest) {
-      Surface(
-         modifier = modifier,
-         color = AlertDialogDefaults.containerColor,
-         shape = AlertDialogDefaults.shape,
-         tonalElevation = AlertDialogDefaults.TonalElevation
-      ) {
-         Column(
-            modifier = Modifier.padding(vertical = MaterialTheme.spacing.Large),
-            horizontalAlignment = Alignment.CenterHorizontally,
-         ) {
-            Text(
-               modifier = Modifier
-                  .padding(horizontal = MaterialTheme.spacing.Large)
-                  .padding(bottom = MaterialTheme.spacing.Medium),
-               color = MaterialTheme.colorScheme.primary,
-               text = stringResource(R.string.when_do_you_want_to_be_reminded)
-            )
-            androidx.compose.material3.TimePicker(state = timePickerState)
-            Row(
-               modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = MaterialTheme.spacing.Large),
-               horizontalArrangement = Arrangement.End
+    Dialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            modifier = modifier,
+            color = AlertDialogDefaults.containerColor,
+            shape = AlertDialogDefaults.shape,
+            tonalElevation = AlertDialogDefaults.TonalElevation
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = MaterialTheme.spacing.Large),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-               TextButton(onClick = onDismissRequest) {
-                  Text(text = stringResource(id = R.string.cancel))
-               }
-               TextButton(
-                  onClick = {
-                     val time = Time(timePickerState.hour, timePickerState.minute)
-                     onTimeSelected(time)
-                     onDismissRequest()
-                  }
-               ) {
-                  Text(text = stringResource(id = R.string.confirm))
-               }
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = MaterialTheme.spacing.Large)
+                        .padding(bottom = MaterialTheme.spacing.Medium),
+                    color = MaterialTheme.colorScheme.primary,
+                    text = stringResource(R.string.when_do_you_want_to_be_reminded)
+                )
+                androidx.compose.material3.TimePicker(state = timePickerState)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.spacing.Large),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismissRequest) {
+                        Text(text = stringResource(id = R.string.cancel))
+                    }
+                    TextButton(
+                        onClick = {
+                            val time = Time(timePickerState.hour, timePickerState.minute)
+                            onTimeSelected(time)
+                            onDismissRequest()
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.confirm))
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun TimePickerPreview() {
-   MaterialTheme {
-      Box(
-         modifier = Modifier.fillMaxSize(),
-         contentAlignment = Alignment.Center
-      ) {
-         TimePicker(
-            onTimeSelected = {},
-            onDismissRequest = {},
-         )
-      }
-   }
+    MaterialTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            TimePicker(
+                onTimeSelected = {},
+                onDismissRequest = {},
+            )
+        }
+    }
 }
