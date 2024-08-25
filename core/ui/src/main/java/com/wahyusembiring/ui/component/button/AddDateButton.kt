@@ -17,60 +17,65 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.wahyusembiring.common.DateAndTimePattern
-import com.wahyusembiring.common.util.formatToString
+import com.wahyusembiring.datetime.Moment
+import com.wahyusembiring.datetime.formatter.FormattingStyle
 import com.wahyusembiring.ui.R
 import java.util.Date
 
 
 @Composable
 fun AddDateButton(
-   modifier: Modifier = Modifier,
-   date: Date?,
-   onClicked: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    date: Date?,
+    onClicked: (() -> Unit)? = null,
 ) {
-   ListItem(
-      modifier = modifier
-         .then(
-            if (onClicked != null) {
-               Modifier.clickable { onClicked() }
-            } else {
-               Modifier
-            }
-         ),
-      leadingContent = {
-         Icon(
-            painter = painterResource(id = R.drawable.ic_date_picker),
-            contentDescription = stringResource(R.string.pick_date),
-            tint = MaterialTheme.colorScheme.primary
-         )
-      },
-      headlineContent = {
-         if (date != null) {
-            Column {
-               Text(text = date.formatToString(DateAndTimePattern.SIMPLE_DATE))
-            }
-         } else {
-            Text(
-               color = TextFieldDefaults.colors().disabledTextColor,
-               text = stringResource(R.string.add_date),
+    ListItem(
+        modifier = modifier
+            .then(
+                if (onClicked != null) {
+                    Modifier.clickable { onClicked() }
+                } else {
+                    Modifier
+                }
+            ),
+        leadingContent = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_date_picker),
+                contentDescription = stringResource(R.string.pick_date),
+                tint = MaterialTheme.colorScheme.primary
             )
-         }
-      }
-   )
+        },
+        headlineContent = {
+            if (date != null) {
+                Column {
+//               Text(text = date.formatToString(DateAndTimePattern.SIMPLE_DATE))
+                    Text(
+                        text = Moment.fromEpochMilliseconds(date.time)
+                            .toString(FormattingStyle.INDO_FULL)
+                    )
+                }
+            } else {
+                Text(
+                    color = TextFieldDefaults.colors().disabledTextColor,
+                    text = stringResource(R.string.add_date),
+                )
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun AddDatePreview() {
-   MaterialTheme {
-      Surface {
-         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-         ) {
-            val date = Date(System.currentTimeMillis())
-            AddDateButton(date = date)
-         }
-      }
-   }
+    MaterialTheme {
+        Surface {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                val date = Date(System.currentTimeMillis())
+                AddDateButton(date = date)
+            }
+        }
+    }
 }
