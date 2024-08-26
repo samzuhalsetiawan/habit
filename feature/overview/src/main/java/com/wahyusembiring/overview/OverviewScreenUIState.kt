@@ -4,6 +4,7 @@ import com.wahyusembiring.data.model.Exam
 import com.wahyusembiring.data.model.Homework
 import com.wahyusembiring.data.model.Reminder
 import com.wahyusembiring.overview.model.Event
+import com.wahyusembiring.overview.model.Section
 
 data class OverviewScreenUIState(
     val todayEvents: List<Event> = emptyList(),

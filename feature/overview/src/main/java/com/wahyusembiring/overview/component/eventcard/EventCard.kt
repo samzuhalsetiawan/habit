@@ -170,7 +170,7 @@ private fun BodyEventList(
         ) {
             Box(
                 modifier = Modifier
-                    .size(16.dp)
+                    .size(8.dp)
                     .background(
                         color = subjectColor,
                         shape = RoundedCornerShape(50)

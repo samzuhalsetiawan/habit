@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,6 +30,7 @@ import com.wahyusembiring.ui.component.tab.PrimaryTab
 import com.wahyusembiring.ui.theme.HabitTheme
 import com.wahyusembiring.ui.theme.spacing
 import java.util.Date
+import kotlin.time.Duration.Companion.days
 
 
 @Composable
@@ -43,6 +46,7 @@ fun OverviewScreen(
     )
 }
 
+@Suppress("t")
 @Composable
 private fun OverviewScreen(
     modifier: Modifier = Modifier,
@@ -52,27 +56,38 @@ private fun OverviewScreen(
     val moment = remember { Moment.now() }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         repeat(7) {
             item {
+                val currentMoment = moment + it.days
                 val title = when (it) {
                     0 -> stringResource(R.string.today)
                     1 -> stringResource(R.string.tomorrow)
+                    else -> currentMoment.day.dayOfWeek
                 }
-
-                DaySectionHeader(
-                    title = stringResource(R.string.today),
-                    date = moment.toString(FormattingStyle.INDO_FULL)
-                )
-            }
-            item {
+                val date = when (it) {
+                    0, 1 -> currentMoment.toString(FormattingStyle.INDO_FULL)
+                    else -> currentMoment.toString(FormattingStyle.INDO_MEDIUM)
+                }
+                val events = when (it) {
+                    0 -> state.todayEvents
+                    1 -> state.tomorrowEvents
+                    2 -> state.next2DaysEvents
+                    3 -> state.next3DaysEvents
+                    4 -> state.next4DaysEvents
+                    5 -> state.next5DaysEvents
+                    6 -> state.next6DaysEvents
+                    else -> emptyList()
+                }
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.Medium))
+                DaySectionHeader(title, date)
                 EventCard(
                     modifier = Modifier.padding(
-                        horizontal = MaterialTheme.spacing.Medium,
+                        horizontal = MaterialTheme.spacing.Large,
                         vertical = MaterialTheme.spacing.Small
                     ),
-                    events = state.todayEvents,
+                    events = events,
                     onEventCheckedChange = { event, isChecked ->
                         if (isChecked) {
                             onUIEvent(OverviewScreenUIEvent.OnMarkEventAsCompleted(event))
