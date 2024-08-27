@@ -28,6 +28,8 @@ class Moment private constructor(
         dayOfWeek = toString(DAY_OF_WEEK)
     )
 
+    val epochMilliseconds: Long = instant.toEpochMilliseconds()
+
     operator fun plus(duration: Duration): Moment {
         return by(instant = instant + duration)
     }

@@ -3,6 +3,7 @@ package com.wahyusembiring.data.repository.implementation
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.Homework
 import com.wahyusembiring.data.local.HomeworkDao
+import com.wahyusembiring.data.model.Subject
 import com.wahyusembiring.data.repository.HomeworkRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -11,8 +12,12 @@ class HomeworkRepositoryImpl @Inject constructor(
     private val homeworkDao: HomeworkDao
 ) : HomeworkRepository {
 
-    override fun getAllHomeworkAsFlow(): Flow<List<Homework>> {
-        return homeworkDao.getAllHomeworkAsFlow()
+    override fun getAllHomework(minDate: Long?, maxDate: Long?): Flow<Map<Homework, Subject>> {
+        return if (minDate == null || maxDate == null) {
+            homeworkDao.getAllHomeworkWithSubject()
+        } else {
+            homeworkDao.getAllHomeworkWithSubject(minDate, maxDate)
+        }
     }
 
     override suspend fun saveHomework(

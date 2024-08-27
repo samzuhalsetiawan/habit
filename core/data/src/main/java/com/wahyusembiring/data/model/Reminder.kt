@@ -23,4 +23,4 @@ data class Reminder(
     val completed: Boolean = false,
 
     val description: String,
-)
+) : Event

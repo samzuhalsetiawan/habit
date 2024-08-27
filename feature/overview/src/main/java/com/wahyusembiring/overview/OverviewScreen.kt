@@ -78,7 +78,7 @@ private fun OverviewScreen(
                     4 -> state.next4DaysEvents
                     5 -> state.next5DaysEvents
                     6 -> state.next6DaysEvents
-                    else -> emptyList()
+                    else -> emptyMap()
                 }
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.Medium))
                 DaySectionHeader(title, date)

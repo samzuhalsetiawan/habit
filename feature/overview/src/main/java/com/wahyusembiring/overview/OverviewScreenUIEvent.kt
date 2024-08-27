@@ -1,6 +1,7 @@
 package com.wahyusembiring.overview
 
-import com.wahyusembiring.overview.model.Event
+import com.wahyusembiring.data.model.Event
+
 
 sealed class OverviewScreenUIEvent {
     data class OnMarkEventAsCompleted(val event: Event) : OverviewScreenUIEvent()

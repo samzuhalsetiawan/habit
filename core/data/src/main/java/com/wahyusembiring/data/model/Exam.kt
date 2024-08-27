@@ -35,7 +35,7 @@ data class Exam(
     val completed: Boolean = false,
 
     val description: String,
-)
+) : Event
 
 enum class ExamCategory {
     WRITTEN, ORAL, PRACTICAL

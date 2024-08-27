@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -38,18 +39,23 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.imageLoader
+import com.wahyusembiring.data.model.Event
 import com.wahyusembiring.data.model.Exam
 import com.wahyusembiring.data.model.Homework
 import com.wahyusembiring.data.model.Reminder
+import com.wahyusembiring.data.model.Subject
 import com.wahyusembiring.overview.R
-import com.wahyusembiring.overview.model.Event
 import com.wahyusembiring.ui.theme.spacing
 
 @Composable
 fun EventCard(
     modifier: Modifier = Modifier,
-    events: List<Event> = emptyList(),
-    onEventCheckedChange: (event: Event, isChecked: Boolean) -> Unit = { _, _ -> }
+    events: Map<Event, Subject?> = emptyMap(),
+    onEventCheckedChange: (event: Event, isChecked: Boolean) -> Unit = { _, _ -> },
+    onShowMoreClick: () -> Unit = {},
+    onAddEventClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier.fillMaxWidth()
@@ -63,7 +69,10 @@ fun EventCard(
                 onEventCheckedChange = onEventCheckedChange
             )
         }
-        Footer()
+        Footer(
+            onShowMoreClick = onShowMoreClick,
+            onAddEventClick = onAddEventClick
+        )
     }
 }
 
@@ -104,7 +113,7 @@ private fun Header() {
 
 @Composable
 private fun Body(
-    events: List<Event>,
+    events: Map<Event, Subject?>,
     onEventCheckedChange: (event: Event, isChecked: Boolean) -> Unit
 ) {
     Column(
@@ -112,15 +121,41 @@ private fun Body(
             .fillMaxWidth()
             .padding(horizontal = MaterialTheme.spacing.Medium),
     ) {
-        for (event in events) {
-            BodyEventList(
-                isChecked = event.isCompleted,
-                onCheckedChange = { onEventCheckedChange(event, it) },
-                title = event.title,
-                subjectColor = event.subject.color,
-                subjectName = event.subject.name,
-                eventType = event.eventType.displayName.asString()
-            )
+        for (entry in events) {
+            when (val event = entry.key) {
+                is Exam -> {
+                    BodyEventList(
+                        isChecked = event.completed,
+                        onCheckedChange = { onEventCheckedChange(event, it) },
+                        title = event.title,
+                        subjectColor = entry.value?.color,
+                        subjectName = entry.value?.name,
+                        eventType = stringResource(R.string.exam)
+                    )
+                }
+
+                is Homework -> {
+                    BodyEventList(
+                        isChecked = event.completed,
+                        onCheckedChange = { onEventCheckedChange(event, it) },
+                        title = event.title,
+                        subjectColor = entry.value?.color,
+                        subjectName = entry.value?.name,
+                        eventType = stringResource(R.string.homework)
+                    )
+                }
+
+                is Reminder -> {
+                    BodyEventList(
+                        isChecked = event.completed,
+                        onCheckedChange = { onEventCheckedChange(event, it) },
+                        title = event.title,
+                        subjectColor = entry.value?.color,
+                        subjectName = entry.value?.name,
+                        eventType = stringResource(R.string.reminder)
+                    )
+                }
+            }
         }
     }
 }
@@ -130,8 +165,8 @@ private fun BodyEventList(
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     title: String,
-    subjectColor: Color,
-    subjectName: String,
+    subjectColor: Color?,
+    subjectName: String?,
     eventType: String
 ) {
     var checkBoxWidth by remember { mutableIntStateOf(0) }
@@ -168,19 +203,21 @@ private fun BodyEventList(
                 .padding(start = checkBoxWidth.dp / 2),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .background(
-                        color = subjectColor,
-                        shape = RoundedCornerShape(50)
-                    )
-            )
-            Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
-            Text(
-                text = subjectName,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            if (subjectName != null && subjectColor != null) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .background(
+                            color = subjectColor,
+                            shape = RoundedCornerShape(50)
+                        )
+                )
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
+                Text(
+                    text = subjectName,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
             Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
             Text(
                 text = "($eventType)",
@@ -197,10 +234,11 @@ private fun NoEventBody() {
             .fillMaxWidth()
             .padding(horizontal = MaterialTheme.spacing.Medium),
     ) {
-        Image(
+        AsyncImage(
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.Medium),
-            painter = painterResource(id = R.drawable.relaxing),
-            contentDescription = null
+            model = R.drawable.relaxing,
+            contentDescription = stringResource(R.string.no_event_picture),
+            imageLoader = LocalContext.current.imageLoader
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.Medium))
         Text(
@@ -216,7 +254,10 @@ private fun NoEventBody() {
 }
 
 @Composable
-private fun Footer() {
+private fun Footer(
+    onShowMoreClick: () -> Unit = {},
+    onAddEventClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -224,7 +265,7 @@ private fun Footer() {
         horizontalArrangement = Arrangement.Center
     ) {
         TextButton(
-            onClick = { /*TODO*/ }
+            onClick = onShowMoreClick
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_read_more),
@@ -235,7 +276,7 @@ private fun Footer() {
         }
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
         Button(
-            onClick = { /*TODO*/ }
+            onClick = onAddEventClick
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_add),

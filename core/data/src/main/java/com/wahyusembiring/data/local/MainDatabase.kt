@@ -24,7 +24,7 @@ import com.wahyusembiring.data.model.Subject
         Exam::class,
         Reminder::class,
     ],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converter::class)

@@ -11,8 +11,12 @@ class ReminderRepositoryImpl @Inject constructor(
     private val reminderDao: ReminderDao
 ) : ReminderRepository {
 
-    override fun getRemindersAsFlow(): Flow<List<Reminder>> {
-        return reminderDao.getAllReminderAsFlow()
+    override fun getAllReminder(minDate: Long?, maxDate: Long?): Flow<List<Reminder>> {
+        return if (minDate == null || maxDate == null) {
+            reminderDao.getAllReminder()
+        } else {
+            reminderDao.getAllReminder(minDate, maxDate)
+        }
     }
 
     override suspend fun saveReminderWithAttachments(

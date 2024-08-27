@@ -15,7 +15,15 @@ import kotlinx.coroutines.flow.Flow
 interface ReminderDao {
 
     @Query("SELECT * FROM reminder")
-    fun getAllReminderAsFlow(): Flow<List<Reminder>>
+    fun getAllReminder(): Flow<List<Reminder>>
+
+    @Query(
+        "SELECT * " +
+                "FROM reminder " +
+                "WHERE date >= :minDate AND date <= :maxDate " +
+                "ORDER BY date ASC"
+    )
+    fun getAllReminder(minDate: Long, maxDate: Long): Flow<List<Reminder>>
 
     @Insert(
         entity = Reminder::class,

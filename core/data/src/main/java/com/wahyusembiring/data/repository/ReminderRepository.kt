@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface ReminderRepository {
 
-    fun getRemindersAsFlow(): Flow<List<Reminder>>
+    fun getAllReminder(
+        minDate: Long? = null,
+        maxDate: Long? = null
+    ): Flow<List<Reminder>>
 
     suspend fun saveReminderWithAttachments(
         reminder: Reminder,

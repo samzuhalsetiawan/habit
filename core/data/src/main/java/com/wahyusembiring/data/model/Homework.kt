@@ -34,4 +34,4 @@ data class Homework(
     val completed: Boolean = false,
 
     val description: String,
-)
+) : Event

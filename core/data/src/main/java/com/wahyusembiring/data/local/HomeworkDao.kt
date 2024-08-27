@@ -9,6 +9,7 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.Homework
+import com.wahyusembiring.data.model.Subject
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,8 +49,21 @@ interface HomeworkDao {
     }
 
     @Query(
-        "SELECT * FROM homework"
+        "SELECT * " +
+                "FROM homework " +
+                "JOIN subject " +
+                "ON homework.subject = subject.id"
     )
-    fun getAllHomeworkAsFlow(): Flow<List<Homework>>
+    fun getAllHomeworkWithSubject(): Flow<Map<Homework, Subject>>
+
+    @Query(
+        "SELECT * " +
+                "FROM homework " +
+                "JOIN subject " +
+                "ON homework.subject = subject.id " +
+                "WHERE due_date >= :minDate AND due_date <= :maxDate " +
+                "ORDER BY due_date ASC"
+    )
+    fun getAllHomeworkWithSubject(minDate: Long, maxDate: Long): Flow<Map<Homework, Subject>>
 
 }

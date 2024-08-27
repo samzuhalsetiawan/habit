@@ -11,4 +11,5 @@
     <string name="homework">Homework</string>
     <string name="reminder">Reminder</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="no_event_picture">No event picture</string>
 </resources>
