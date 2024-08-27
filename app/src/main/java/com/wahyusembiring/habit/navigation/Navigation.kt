@@ -9,6 +9,8 @@ import com.wahyusembiring.exam.ExamScreenViewModel
 import com.wahyusembiring.homework.CreateHomeworkScreen
 import com.wahyusembiring.overview.OverviewScreen
 import com.wahyusembiring.homework.CreateHomeworkScreenViewModel
+import com.wahyusembiring.kanban.KanbanBoardScreen
+import com.wahyusembiring.kanban.KanbanBoardScreenViewModel
 import com.wahyusembiring.navigation.Screen
 import com.wahyusembiring.overview.OverviewViewModel
 import com.wahyusembiring.reminder.CreateReminderScreen
@@ -17,61 +19,72 @@ import com.wahyusembiring.subject.CreateSubjectScreen
 import com.wahyusembiring.subject.CreateSubjectViewModel
 
 fun NavGraphBuilder.createHomeworkScreen(
-   navController: NavHostController
+    navController: NavHostController
 ) {
-   composable<Screen.CreateHomework> {
-      val viewModel: CreateHomeworkScreenViewModel = hiltViewModel(it)
-      CreateHomeworkScreen(
-         viewModel = viewModel,
-         navigateBack = { navController.popBackStack() },
-         navigateToCreateSubjectScreen = { navController.navigate(Screen.CreateSubject) }
-      )
-   }
+    composable<Screen.CreateHomework> {
+        val viewModel: CreateHomeworkScreenViewModel = hiltViewModel(it)
+        CreateHomeworkScreen(
+            viewModel = viewModel,
+            navigateBack = { navController.popBackStack() },
+            navigateToCreateSubjectScreen = { navController.navigate(Screen.CreateSubject) }
+        )
+    }
 }
 
 fun NavGraphBuilder.overviewScreen(
-   navController: NavHostController
+    navController: NavHostController
 ) {
-   composable<Screen.Overview> {
-      val overviewViewModel: OverviewViewModel = hiltViewModel(it)
-      OverviewScreen(
-         viewModel = overviewViewModel
-      )
-   }
+    composable<Screen.Overview> {
+        val overviewViewModel: OverviewViewModel = hiltViewModel(it)
+        OverviewScreen(
+            viewModel = overviewViewModel
+        )
+    }
 }
 
 fun NavGraphBuilder.createSubjectScreen(
-   navController: NavHostController
+    navController: NavHostController
 ) {
-   composable<Screen.CreateSubject> {
-      val viewModel: CreateSubjectViewModel = hiltViewModel(it)
-      CreateSubjectScreen(
-         viewModel = viewModel,
-         onNavigateBack = { navController.popBackStack() }
-      )
-   }
+    composable<Screen.CreateSubject> {
+        val viewModel: CreateSubjectViewModel = hiltViewModel(it)
+        CreateSubjectScreen(
+            viewModel = viewModel,
+            onNavigateBack = { navController.popBackStack() }
+        )
+    }
 }
 
 fun NavGraphBuilder.examScreen(
-   navController: NavHostController
+    navController: NavHostController
 ) {
-   composable<Screen.CreateExam> {
-      val viewModel: ExamScreenViewModel = hiltViewModel(it)
-      ExamScreen(
-         viewModel = viewModel,
-         navigateBack = { navController.popBackStack() }
-      )
-   }
+    composable<Screen.CreateExam> {
+        val viewModel: ExamScreenViewModel = hiltViewModel(it)
+        ExamScreen(
+            viewModel = viewModel,
+            navigateBack = { navController.popBackStack() }
+        )
+    }
 }
 
 fun NavGraphBuilder.createReminderScreen(
-   navController: NavHostController
+    navController: NavHostController
 ) {
-   composable<Screen.CreateReminder> {
-      val viewModel: CreateReminderScreenViewModel = hiltViewModel(it)
-      CreateReminderScreen(
-         viewModel = viewModel,
-         navigateBack = { navController.popBackStack() }
-      )
-   }
+    composable<Screen.CreateReminder> {
+        val viewModel: CreateReminderScreenViewModel = hiltViewModel(it)
+        CreateReminderScreen(
+            viewModel = viewModel,
+            navigateBack = { navController.popBackStack() }
+        )
+    }
+}
+
+fun NavGraphBuilder.kanbanBoardScreen(
+    navController: NavHostController
+) {
+    composable<Screen.KanbanBoard> {
+        val viewModel: KanbanBoardScreenViewModel = hiltViewModel(it)
+        KanbanBoardScreen(
+            viewModel = viewModel
+        )
+    }
 }

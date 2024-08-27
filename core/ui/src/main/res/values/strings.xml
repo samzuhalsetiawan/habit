@@ -21,7 +21,7 @@
     <string name="add_new_subject">Add new subject</string>
     <string name="pick_a_subject">Pick a subject</string>
     <string name="home">Home</string>
-    <string name="agenda">Agenda</string>
+    <string name="kanban">Kanban</string>
     <string name="calendar">Calendar</string>
     <string name="timetable">Timetable</string>
     <string name="grades">Grades</string>
