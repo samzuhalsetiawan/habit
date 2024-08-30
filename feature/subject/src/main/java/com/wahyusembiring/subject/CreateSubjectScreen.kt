@@ -20,6 +20,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.wahyusembiring.ui.component.button.ChooseColorButton
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.spacing
@@ -43,124 +45,127 @@ import com.wahyusembiring.ui.theme.spacing
 
 @Composable
 fun CreateSubjectScreen(
-   onNavigateBack: () -> Unit,
-   viewModel: CreateSubjectViewModel,
+    viewModel: CreateSubjectViewModel,
+    navController: NavHostController
 ) {
-   val state by viewModel.state.collectAsStateWithLifecycle()
-   val context = LocalContext.current
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-   CreateSubjectScreen(
-      modifier = Modifier.fillMaxSize(),
-      state = state,
-      onUIEvent = { viewModel.onUIEvent(it) },
-      onNavigateBack = onNavigateBack
-   )
+    CreateSubjectScreen(
+        modifier = Modifier.fillMaxSize(),
+        state = state,
+        onUIEvent = {
+            when (it) {
+                is CreateSubjectScreenUIEvent.OnNavigateBack -> navController.popBackStack()
+                else -> viewModel.onUIEvent(it)
+            }
+        }
+    )
 }
 
 @Composable
 private fun CreateSubjectScreen(
-   modifier: Modifier = Modifier,
-   state: CreateSubjectScreenUIState,
-   onUIEvent: (CreateSubjectScreenUIEvent) -> Unit,
-   onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    state: CreateSubjectScreenUIState,
+    onUIEvent: (CreateSubjectScreenUIEvent) -> Unit,
 ) {
-   Column(
-      modifier = modifier
-   ) {
-      BackAndSaveHeader(
-         onBackButtonClicked = { onNavigateBack() },
-         onSaveButtonClicked = { onUIEvent(CreateSubjectScreenUIEvent.OnSaveButtonClicked) }
-      )
-      Column(
-         modifier = Modifier
-            .fillMaxSize()
-            .padding(MaterialTheme.spacing.Medium)
-      ) {
-         OutlinedTextField(
-            modifier = Modifier
-               .fillMaxWidth(),
-            label = {
-               Text(text = stringResource(R.string.subject_name))
-            },
-            leadingIcon = {
-               Icon(
-                  painter = painterResource(id = com.wahyusembiring.ui.R.drawable.ic_title),
-//               painter = painterResource(id = R.drawable.ic_back_arrow),
-                  contentDescription = stringResource(R.string.subject_name),
-                  tint = MaterialTheme.colorScheme.primary
-               )
-            },
-            singleLine = true,
-            value = state.name,
-            onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnSubjectNameChanged(it)) },
-         )
-         OutlinedTextField(
-            modifier = Modifier
-               .fillMaxWidth(),
-            leadingIcon = {
-               Icon(
-                  painter = painterResource(id = R.drawable.ic_location),
-                  contentDescription = stringResource(R.string.room),
-                  tint = MaterialTheme.colorScheme.primary
-               )
-            },
-            placeholder = {
-               Text(text = stringResource(R.string.room))
-            },
-            singleLine = true,
-            value = state.room,
-            onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnRoomChanged(it)) },
-            colors = OutlinedTextFieldDefaults.colors(
-               focusedBorderColor = Color.Transparent,
-               unfocusedBorderColor = Color.Transparent
+    Scaffold { paddingValues ->
+        Column(
+            modifier = modifier.padding(paddingValues)
+        ) {
+            BackAndSaveHeader(
+                onBackButtonClicked = { onUIEvent(CreateSubjectScreenUIEvent.OnNavigateBack) },
+                onSaveButtonClicked = { onUIEvent(CreateSubjectScreenUIEvent.OnSaveButtonClicked) }
             )
-         )
-         ChooseColorButton(
-            color = state.color,
-            onClick = { onUIEvent(CreateSubjectScreenUIEvent.OnPickColorButtonClicked) }
-         )
-      }
-   }
+            Column(
+                modifier = Modifier
+                   .fillMaxSize()
+                   .padding(MaterialTheme.spacing.Medium)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = {
+                        Text(text = stringResource(R.string.subject_name))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = com.wahyusembiring.ui.R.drawable.ic_title),
+//               painter = painterResource(id = R.drawable.ic_back_arrow),
+                            contentDescription = stringResource(R.string.subject_name),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    singleLine = true,
+                    value = state.name,
+                    onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnSubjectNameChanged(it)) },
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_location),
+                            contentDescription = stringResource(R.string.room),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    placeholder = {
+                        Text(text = stringResource(R.string.room))
+                    },
+                    singleLine = true,
+                    value = state.room,
+                    onValueChange = { onUIEvent(CreateSubjectScreenUIEvent.OnRoomChanged(it)) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent
+                    )
+                )
+                ChooseColorButton(
+                    color = state.color,
+                    onClick = { onUIEvent(CreateSubjectScreenUIEvent.OnPickColorButtonClicked) }
+                )
+            }
+        }
 
-   PopUpHandler(
-      popUps = state.popUps,
-      initialColorForColorPicker = state.color
-   )
+        PopUpHandler(
+            popUps = state.popUps,
+            initialColorForColorPicker = state.color
+        )
+    }
 }
 
 @Composable
 private fun BackAndSaveHeader(
-   onBackButtonClicked: () -> Unit,
-   onSaveButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
+    onSaveButtonClicked: () -> Unit
 ) {
-   Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-   ) {
-      IconButton(
-         onClick = onBackButtonClicked
-      ) {
-         Icon(
-            painter = painterResource(R.drawable.ic_back_arrow),
-            contentDescription = stringResource(R.string.back)
-         )
-      }
-      Button(
-         modifier = Modifier.padding(end = MaterialTheme.spacing.Medium),
-         onClick = onSaveButtonClicked
-      ) {
-         Text(text = stringResource(id = R.string.save))
-      }
-   }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            onClick = onBackButtonClicked
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_back_arrow),
+                contentDescription = stringResource(R.string.back)
+            )
+        }
+        Button(
+            modifier = Modifier.padding(end = MaterialTheme.spacing.Medium),
+            onClick = onSaveButtonClicked
+        ) {
+            Text(text = stringResource(id = R.string.save))
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun CreateSubjectScreenPreview() {
-   CreateSubjectScreen(
-      state = CreateSubjectScreenUIState(),
-      onUIEvent = {},
-      onNavigateBack = {}
-   )
+    CreateSubjectScreen(
+        state = CreateSubjectScreenUIState(),
+        onUIEvent = {},
+    )
 }

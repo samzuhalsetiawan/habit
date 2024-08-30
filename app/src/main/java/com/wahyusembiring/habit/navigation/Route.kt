@@ -1,9 +1,12 @@
 package com.wahyusembiring.habit.navigation
 
+import androidx.compose.material3.DrawerState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.exam.ExamScreen
 import com.wahyusembiring.exam.ExamScreenViewModel
 import com.wahyusembiring.homework.CreateHomeworkScreen
@@ -11,7 +14,6 @@ import com.wahyusembiring.overview.OverviewScreen
 import com.wahyusembiring.homework.CreateHomeworkScreenViewModel
 import com.wahyusembiring.kanban.KanbanBoardScreen
 import com.wahyusembiring.kanban.KanbanBoardScreenViewModel
-import com.wahyusembiring.navigation.Screen
 import com.wahyusembiring.overview.OverviewViewModel
 import com.wahyusembiring.reminder.CreateReminderScreen
 import com.wahyusembiring.reminder.CreateReminderScreenViewModel
@@ -25,19 +27,21 @@ fun NavGraphBuilder.createHomeworkScreen(
         val viewModel: CreateHomeworkScreenViewModel = hiltViewModel(it)
         CreateHomeworkScreen(
             viewModel = viewModel,
-            navigateBack = { navController.popBackStack() },
-            navigateToCreateSubjectScreen = { navController.navigate(Screen.CreateSubject) }
+            navController = navController
         )
     }
 }
 
 fun NavGraphBuilder.overviewScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    drawerState: DrawerState
 ) {
     composable<Screen.Overview> {
         val overviewViewModel: OverviewViewModel = hiltViewModel(it)
         OverviewScreen(
-            viewModel = overviewViewModel
+            viewModel = overviewViewModel,
+            drawerState = drawerState,
+            navController = navController
         )
     }
 }
@@ -49,7 +53,7 @@ fun NavGraphBuilder.createSubjectScreen(
         val viewModel: CreateSubjectViewModel = hiltViewModel(it)
         CreateSubjectScreen(
             viewModel = viewModel,
-            onNavigateBack = { navController.popBackStack() }
+            navController = navController
         )
     }
 }
@@ -61,7 +65,7 @@ fun NavGraphBuilder.examScreen(
         val viewModel: ExamScreenViewModel = hiltViewModel(it)
         ExamScreen(
             viewModel = viewModel,
-            navigateBack = { navController.popBackStack() }
+            navController = navController
         )
     }
 }
@@ -73,7 +77,7 @@ fun NavGraphBuilder.createReminderScreen(
         val viewModel: CreateReminderScreenViewModel = hiltViewModel(it)
         CreateReminderScreen(
             viewModel = viewModel,
-            navigateBack = { navController.popBackStack() }
+            navController = navController
         )
     }
 }

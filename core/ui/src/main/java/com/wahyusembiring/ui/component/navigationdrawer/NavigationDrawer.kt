@@ -1,4 +1,4 @@
-package com.wahyusembiring.navigation.component.navigationdrawer
+package com.wahyusembiring.ui.component.navigationdrawer
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,10 +26,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,48 +34,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
-import com.wahyusembiring.navigation.Screen
 import com.wahyusembiring.ui.R
 import com.wahyusembiring.ui.theme.spacing
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun NavigationDrawer(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    navigationDrawerState: NavigationDrawerState,
-    content: @Composable () -> Unit,
-) {
-    NavigationDrawer(
-        modifier = modifier,
-        navigationDrawerState = navigationDrawerState,
-        drawerItems = DrawerItem.defaultItems,
-        content = content,
-    ) {
-        when (it.title) {
-            R.string.home -> navController.navigate(Screen.Overview)
-            R.string.kanban -> navController.navigate(Screen.KanbanBoard)
-        }
-    }
-}
-
-@Composable
-private fun NavigationDrawer(
-    modifier: Modifier = Modifier,
-    navigationDrawerState: NavigationDrawerState,
-    drawerItems: List<DrawerItem> = emptyList(),
-    content: @Composable () -> Unit,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    isGesturesEnabled: Boolean = true,
+    selectedDrawerItem: DrawerItem,
+    drawerItems: List<DrawerItem> = DrawerItem.defaultItems,
     onDrawerItemClick: (DrawerItem) -> Unit = {},
+    content: @Composable () -> Unit,
 ) {
     ModalNavigationDrawer(
         modifier = modifier,
-        drawerState = navigationDrawerState.materialDrawerState,
-        gesturesEnabled = navigationDrawerState.slideGestureEnabled,
+        drawerState = drawerState,
+        gesturesEnabled = isGesturesEnabled,
         drawerContent = {
             NavigationDrawerContent(
                 drawerItems = drawerItems,
-                onDrawerItemClick = onDrawerItemClick
+                selectedDrawerItem = selectedDrawerItem,
+                onDrawerItemClick = onDrawerItemClick,
             )
         },
         content = content
@@ -89,6 +67,7 @@ private fun NavigationDrawer(
 @Composable
 private fun NavigationDrawerContent(
     drawerItems: List<DrawerItem> = emptyList(),
+    selectedDrawerItem: DrawerItem,
     onDrawerItemClick: (DrawerItem) -> Unit = {}
 ) {
     ModalDrawerSheet(
@@ -100,6 +79,7 @@ private fun NavigationDrawerContent(
         HorizontalDivider()
         DrawerBody(
             drawerItems = drawerItems,
+            selectedDrawerItem = selectedDrawerItem,
             onDrawerItemClick = onDrawerItemClick
         )
     }
@@ -133,9 +113,9 @@ private fun DrawerHeader() {
 @Composable
 private fun ColumnScope.DrawerBody(
     drawerItems: List<DrawerItem> = emptyList(),
+    selectedDrawerItem: DrawerItem,
     onDrawerItemClick: (DrawerItem) -> Unit = {}
 ) {
-    var selectedDrawerItem by remember { mutableStateOf(drawerItems.first()) }
     val scrollState = rememberScrollState()
 
     Column(
@@ -158,7 +138,6 @@ private fun ColumnScope.DrawerBody(
                 label = { Text(text = stringResource(id = drawerItem.title)) },
                 selected = selectedDrawerItem == drawerItem,
                 onClick = {
-                    selectedDrawerItem = drawerItem
                     onDrawerItemClick(drawerItem)
                 }
             )
@@ -176,6 +155,7 @@ private fun MainNavigationDrawerPreview() {
     val drawerItems = DrawerItem.defaultItems
     NavigationDrawerContent(
         drawerItems = drawerItems,
+        selectedDrawerItem = drawerItems.first(),
         onDrawerItemClick = {}
     )
 }

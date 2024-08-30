@@ -23,7 +23,6 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
-    implementation(project(":core:navigation"))
     implementation(project(":core:data"))
 
     implementation(libs.androidx.activity.compose)

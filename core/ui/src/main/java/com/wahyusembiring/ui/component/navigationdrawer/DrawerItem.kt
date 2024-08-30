@@ -1,18 +1,15 @@
-package com.wahyusembiring.navigation.component.navigationdrawer
+package com.wahyusembiring.ui.component.navigationdrawer
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.ui.R
-import com.wahyusembiring.ui.util.UIText
+import kotlin.reflect.KClass
 
 data class DrawerItem(
     @StringRes val title: Int,
     @DrawableRes val icon: Int? = null,
+    val screen: KClass<out Screen> = Screen.Overview::class,
     val category: Category
 ) {
     enum class Category {
@@ -25,11 +22,13 @@ data class DrawerItem(
                 DrawerItem(
                     title = R.string.home,
                     icon = R.drawable.ic_home,
+                    screen = Screen.Overview::class,
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(
                     title = R.string.kanban,
                     icon = R.drawable.ic_kanban,
+                    screen = Screen.KanbanBoard::class,
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(

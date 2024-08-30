@@ -48,6 +48,14 @@ import com.wahyusembiring.data.model.Reminder
 import com.wahyusembiring.data.model.Subject
 import com.wahyusembiring.overview.R
 import com.wahyusembiring.ui.theme.spacing
+import com.wahyusembiring.ui.util.UIText
+
+
+data class EventCard(
+    val title: UIText,
+    val date: UIText,
+    val events: Map<Event, Subject?>
+)
 
 @Composable
 fun EventCard(

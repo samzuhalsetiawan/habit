@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.wahyusembiring.common.DateAndTimePattern
 import com.wahyusembiring.datetime.Moment
 import com.wahyusembiring.datetime.formatter.FormattingStyle
 import com.wahyusembiring.ui.R
@@ -48,7 +47,6 @@ fun AddDateButton(
         headlineContent = {
             if (date != null) {
                 Column {
-//               Text(text = date.formatToString(DateAndTimePattern.SIMPLE_DATE))
                     Text(
                         text = Moment.fromEpochMilliseconds(date.time)
                             .toString(FormattingStyle.INDO_FULL)

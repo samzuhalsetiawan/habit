@@ -40,4 +40,7 @@
     <string name="pick_test_category">Pick test category</string>
     <string name="exam_category">Exam category</string>
     <string name="color">Color</string>
+    <string name="create_task">Create Task</string>
+    <string name="add_exam_schedule">Add exam schedule</string>
+    <string name="add_homework">Add homework</string>
 </resources>

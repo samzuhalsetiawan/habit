@@ -1,4 +1,4 @@
-package com.wahyusembiring.navigation.util
+package com.wahyusembiring.habit.util
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination

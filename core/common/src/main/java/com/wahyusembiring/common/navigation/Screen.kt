@@ -1,4 +1,4 @@
-package com.wahyusembiring.navigation
+package com.wahyusembiring.common.navigation
 
 import kotlinx.serialization.Serializable
 

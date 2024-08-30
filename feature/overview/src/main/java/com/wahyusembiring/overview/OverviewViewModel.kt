@@ -1,6 +1,6 @@
 package com.wahyusembiring.overview
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.common.util.launch
@@ -13,11 +13,12 @@ import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.HomeworkRepository
 import com.wahyusembiring.data.repository.ReminderRepository
 import com.wahyusembiring.datetime.Moment
+import com.wahyusembiring.datetime.formatter.FormattingStyle
+import com.wahyusembiring.overview.component.eventcard.EventCard
 import com.wahyusembiring.overview.util.inside
 import com.wahyusembiring.overview.util.until
+import com.wahyusembiring.ui.util.UIText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,8 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import java.time.Clock
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 
@@ -81,15 +80,32 @@ class OverviewViewModel @Inject constructor(
     init {
         launch {
             eventsFlow.collect { events ->
-                _state.update {
-                    it.copy(
-                        todayEvents = events inside (0.days until 1.days),
-                        tomorrowEvents = events inside (1.days until 2.days),
-                        next2DaysEvents = events inside (2.days until 3.days),
-                        next3DaysEvents = events inside (3.days until 4.days),
-                        next4DaysEvents = events inside (4.days until 5.days),
-                        next5DaysEvents = events inside (5.days until 6.days),
-                        next6DaysEvents = events inside (6.days until 7.days)
+                _state.update { state ->
+                    state.copy(
+                        eventCards = List(6) {
+                            val currentMoment = Moment.now() + it.days
+                            EventCard(
+                                title = when (it) {
+                                    0 -> UIText.StringResource(R.string.today)
+                                    1 -> UIText.StringResource(R.string.tomorrow)
+                                    else -> UIText.DynamicString(currentMoment.day.dayOfWeek)
+                                },
+                                date = when (it) {
+                                    0, 1 -> UIText.DynamicString(
+                                        currentMoment.toString(
+                                            FormattingStyle.INDO_FULL
+                                        )
+                                    )
+
+                                    else -> UIText.DynamicString(
+                                        currentMoment.toString(
+                                            FormattingStyle.INDO_MEDIUM
+                                        )
+                                    )
+                                },
+                                events = events inside (it.days until (it + 1).days)
+                            )
+                        }
                     )
                 }
             }
@@ -105,6 +121,8 @@ class OverviewViewModel @Inject constructor(
             is OverviewScreenUIEvent.OnMarkEventAsUncompleted -> launch {
                 onMarkEventAsUncompleted(event.event)
             }
+
+            else -> Unit
         }
     }
 
