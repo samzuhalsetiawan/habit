@@ -8,11 +8,12 @@ import com.wahyusembiring.ui.component.popup.PopUp
 import java.util.Date
 
 data class ExamScreenUIState(
-   val name: String = "",
-   val date: Date? = null,
-   val time: Time? = null,
-   val subject: Subject? = null,
-   val category: ExamCategory = ExamCategory.WRITTEN,
-   val attachments: List<Attachment> = emptyList(),
-   val popUps: List<PopUp> = emptyList(),
+    val name: String = "",
+    val date: Date? = null,
+    val time: Time? = null,
+    val subjects: List<Subject> = emptyList(),
+    val subject: Subject? = null,
+    val category: ExamCategory = ExamCategory.WRITTEN,
+    val attachments: List<Attachment> = emptyList(),
+    val popUps: List<PopUp> = emptyList(),
 )

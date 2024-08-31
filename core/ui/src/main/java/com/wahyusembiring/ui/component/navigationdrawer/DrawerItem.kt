@@ -34,6 +34,7 @@ data class DrawerItem(
                 DrawerItem(
                     title = R.string.calendar,
                     icon = R.drawable.ic_calendar,
+                    screen = Screen.Calendar::class,
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(

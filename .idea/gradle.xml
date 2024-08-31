@@ -30,6 +30,7 @@
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/datetime" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/calendar" />
             <option value="$PROJECT_DIR$/feature/exam" />
             <option value="$PROJECT_DIR$/feature/homework" />
             <option value="$PROJECT_DIR$/feature/kanban" />

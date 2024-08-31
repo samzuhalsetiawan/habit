@@ -26,4 +26,7 @@ sealed class Screen {
     @Serializable
     data object Timetable : Screen()
 
+    @Serializable
+    data object Calendar : Screen()
+
 }

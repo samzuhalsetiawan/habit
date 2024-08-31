@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.ui.component.button.AddAttachmentButton
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
@@ -35,6 +36,7 @@ fun ExamScreen(
         state = state,
         onUIEvent = {
             when (it) {
+                is ExamScreenUIEvent.OnNavigate -> navController.navigate(it.screen)
                 is ExamScreenUIEvent.OnNavigateBack -> navController.popBackStack()
                 else -> viewModel.onUIEvent(it)
             }
@@ -103,6 +105,10 @@ private fun ExamScreen(
         PopUpHandler(
             popUps = state.popUps,
             initialCategoryForExamCategoryPicker = state.category,
+            subjects = state.subjects,
+            navigateToCreateSubjectScreen = {
+                onUIEvent(ExamScreenUIEvent.OnNavigate(Screen.CreateSubject))
+            }
         )
     }
 }

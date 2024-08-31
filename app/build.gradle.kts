@@ -18,6 +18,10 @@ android {
         versionName = "1.0"
     }
 
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
+
 }
 
 dependencies {
@@ -33,13 +37,13 @@ dependencies {
     implementation(project(":feature:exam"))
     implementation(project(":feature:reminder"))
     implementation(project(":feature:kanban"))
+    implementation(project(":feature:calendar"))
 
-//   boguszpawlowski compose calendar
-    implementation(libs.boguszpawlowski.compose.calendar)
-    implementation(libs.boguszpawlowski.kotlix.datetime)
 
 //   Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
 }

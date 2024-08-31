@@ -9,6 +9,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.wahyusembiring.habit.navigation.calendarScreen
 import com.wahyusembiring.habit.navigation.createHomeworkScreen
 import com.wahyusembiring.habit.navigation.createReminderScreen
 import com.wahyusembiring.habit.navigation.createSubjectScreen
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
                         examScreen(navController)
                         createReminderScreen(navController)
                         kanbanBoardScreen(navController)
+                        calendarScreen(navController, drawerState)
                     }
                 )
             }

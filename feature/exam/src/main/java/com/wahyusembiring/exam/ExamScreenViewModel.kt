@@ -1,25 +1,34 @@
 package com.wahyusembiring.exam
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.common.util.launch
 import com.wahyusembiring.data.model.Exam
 import com.wahyusembiring.data.repository.ExamRepository
+import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.ui.component.popup.AlertDialog
 import com.wahyusembiring.ui.component.popup.Picker
 import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ExamScreenViewModel @Inject constructor(
-    private val examRepository: ExamRepository
+    private val examRepository: ExamRepository,
+    private val subjectRepository: SubjectRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ExamScreenUIState())
     val state = _state.asStateFlow()
+
+    private var getAllSubjectJob: Job? = null
+
 
     fun onUIEvent(event: ExamScreenUIEvent) {
         when (event) {
@@ -31,6 +40,16 @@ class ExamScreenViewModel @Inject constructor(
             is ExamScreenUIEvent.OnExamCategoryPickerClick -> launch { onExamCategoryPickerClick() }
             is ExamScreenUIEvent.OnSaveExamButtonClick -> launch { onSaveExamButtonClick() }
             else -> Unit
+        }
+    }
+
+    init {
+        getAllSubjectJob = viewModelScope.launch {
+            subjectRepository.getAllSubjectsAsFlow().collect { subjects ->
+                _state.update {
+                    it.copy(subjects = subjects)
+                }
+            }
         }
     }
 
@@ -162,6 +181,12 @@ class ExamScreenViewModel @Inject constructor(
 
     private fun hidePopUp(popUp: PopUp) {
         _state.value = _state.value.copy(popUps = _state.value.popUps - popUp)
+    }
+
+    override fun onCleared() {
+        getAllSubjectJob?.cancel()
+        getAllSubjectJob = null
+        super.onCleared()
     }
 
 }

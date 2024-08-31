@@ -9,23 +9,23 @@ import org.gradle.kotlin.dsl.dependencies
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
 
-   override fun apply(target: Project) {
-      with(target) {
-         with(pluginManager) {
-            apply("com.android.application")
-            apply("org.jetbrains.kotlin.android")
-         }
+    override fun apply(target: Project) {
+        with(target) {
+            with(pluginManager) {
+                apply("com.android.application")
+                apply("org.jetbrains.kotlin.android")
+            }
 
-         androidApplicationExtension {
-            configureAndroidKotlin(this)
-         }
+            androidApplicationExtension {
+                configureAndroidKotlin(this)
+            }
 
-         dependencies {
-            add("implementation", libs.findLibrary("androidx-core-ktx").get())
-            add("implementation", libs.findLibrary("kotlinx-coroutine").get())
-         }
+            dependencies {
+                add("implementation", libs.findLibrary("androidx-core-ktx").get())
+                add("implementation", libs.findLibrary("kotlinx-coroutine").get())
+            }
 
-      }
+        }
 
-   }
+    }
 }

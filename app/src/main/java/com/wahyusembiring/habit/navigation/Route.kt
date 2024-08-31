@@ -6,6 +6,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.wahyusembiring.calendar.CalendarScreen
+import com.wahyusembiring.calendar.CalendarScreenViewModel
 import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.exam.ExamScreen
 import com.wahyusembiring.exam.ExamScreenViewModel
@@ -89,6 +91,20 @@ fun NavGraphBuilder.kanbanBoardScreen(
         val viewModel: KanbanBoardScreenViewModel = hiltViewModel(it)
         KanbanBoardScreen(
             viewModel = viewModel
+        )
+    }
+}
+
+fun NavGraphBuilder.calendarScreen(
+    navController: NavHostController,
+    drawerState: DrawerState
+) {
+    composable<Screen.Calendar> {
+        val viewModel: CalendarScreenViewModel = hiltViewModel(it)
+        CalendarScreen(
+            viewModel = viewModel,
+            navController = navController,
+            drawerState = drawerState
         )
     }
 }

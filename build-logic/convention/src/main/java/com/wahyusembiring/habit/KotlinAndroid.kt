@@ -13,50 +13,50 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 
 internal fun Project.configureAndroidKotlin(
-   commonExtention: CommonExtension<*, *, *, *, *, *>
+    commonExtention: CommonExtension<*, *, *, *, *, *>
 ) {
-   commonExtention.apply {
-      compileSdk = Config.COMPILE_SDK
+    commonExtention.apply {
+        compileSdk = Config.COMPILE_SDK
 
-      defaultConfig {
-         if (this is ApplicationDefaultConfig) {
-            targetSdk = Config.TARGET_SDK
-         }
-         minSdk = Config.MIN_SDK
-         vectorDrawables {
-            useSupportLibrary = true
-         }
-      }
+        defaultConfig {
+            if (this is ApplicationDefaultConfig) {
+                targetSdk = Config.TARGET_SDK
+            }
+            minSdk = Config.MIN_SDK
+            vectorDrawables {
+                useSupportLibrary = true
+            }
+        }
 
-      buildTypes {
-         getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(
-               getDefaultProguardFile("proguard-android-optimize.txt"),
-               "proguard-rules.pro"
-            )
-         }
-      }
+        buildTypes {
+            getByName("release") {
+                isMinifyEnabled = false
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            }
+        }
 
-      compileOptions {
-         sourceCompatibility = JavaVersion.VERSION_1_8
-         targetCompatibility = JavaVersion.VERSION_1_8
-      }
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
 
-      packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 
-      configureKotlinOptions<KotlinAndroidProjectExtension>()
+        configureKotlinOptions<KotlinAndroidProjectExtension>()
 
-   }
+    }
 }
 
 private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlinOptions() =
-   configure<T> {
-      when (this) {
-         is KotlinAndroidProjectExtension -> compilerOptions
-         is KotlinJvmProjectExtension -> compilerOptions
-         else -> error("Unsupported project extension $this ${T::class}")
-      }.apply {
-         jvmTarget = JvmTarget.JVM_1_8
-      }
-   }
+    configure<T> {
+        when (this) {
+            is KotlinAndroidProjectExtension -> compilerOptions
+            is KotlinJvmProjectExtension -> compilerOptions
+            else -> error("Unsupported project extension $this ${T::class}")
+        }.apply {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+    }
