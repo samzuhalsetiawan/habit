@@ -6,12 +6,14 @@ import com.wahyusembiring.data.local.MainDatabase
 import com.wahyusembiring.data.local.HomeworkDao
 import com.wahyusembiring.data.local.ReminderDao
 import com.wahyusembiring.data.local.SubjectDao
+import com.wahyusembiring.data.repository.DataStoreRepository
 import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.implementation.HomeworkRepositoryImpl
 import com.wahyusembiring.data.repository.HomeworkRepository
 import com.wahyusembiring.data.repository.ReminderRepository
 import com.wahyusembiring.data.repository.SubjectRepository
+import com.wahyusembiring.data.repository.implementation.DataStoreRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.EventRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.ExamRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.ReminderRepositoryImpl
@@ -88,6 +90,12 @@ object AppModule {
         reminderDao: ReminderDao,
     ): EventRepository {
         return EventRepositoryImpl(examDao, homeworkDao, reminderDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreRepository(application: Application): DataStoreRepository {
+        return DataStoreRepositoryImpl(application.applicationContext)
     }
 
 }

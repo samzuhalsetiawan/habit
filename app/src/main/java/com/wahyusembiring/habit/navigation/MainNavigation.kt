@@ -10,15 +10,19 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.wahyusembiring.common.navigation.Screen
+import com.wahyusembiring.habit.MainViewModel
 
 @Composable
 fun MainNavigation(
+    mainViewModel: MainViewModel,
     navController: NavHostController,
     scaffoldPadding: PaddingValues,
     builder: NavGraphBuilder.() -> Unit
@@ -26,10 +30,11 @@ fun MainNavigation(
     val emphasizedDeceleratedEasing = remember {
         Easing { PathInterpolator(0.05f, 0.7f, 0.1f, 1f).getInterpolation(it) }
     }
+    val startDestination by mainViewModel.startDestination.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Overview,
+        startDestination = startDestination,
         enterTransition = {
             slideInHorizontally(
                 animationSpec = tween(

@@ -29,4 +29,7 @@ sealed class Screen {
     @Serializable
     data object Calendar : Screen()
 
+    @Serializable
+    data object OnBoarding : Screen()
+
 }

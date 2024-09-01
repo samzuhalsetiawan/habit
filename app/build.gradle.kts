@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":feature:reminder"))
     implementation(project(":feature:kanban"))
     implementation(project(":feature:calendar"))
+    implementation(project(":feature:onboarding"))
 
 
 //   Coil
@@ -45,5 +46,7 @@ dependencies {
     implementation(libs.coil.svg)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(libs.androidx.core.splashscreen)
 
 }

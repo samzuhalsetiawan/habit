@@ -3,6 +3,7 @@ package com.wahyusembiring.habit.navigation
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -16,6 +17,8 @@ import com.wahyusembiring.overview.OverviewScreen
 import com.wahyusembiring.homework.CreateHomeworkScreenViewModel
 import com.wahyusembiring.kanban.KanbanBoardScreen
 import com.wahyusembiring.kanban.KanbanBoardScreenViewModel
+import com.wahyusembiring.onboarding.OnBoardingScreen
+import com.wahyusembiring.onboarding.OnBoardingScreenViewModel
 import com.wahyusembiring.overview.OverviewViewModel
 import com.wahyusembiring.reminder.CreateReminderScreen
 import com.wahyusembiring.reminder.CreateReminderScreenViewModel
@@ -105,6 +108,18 @@ fun NavGraphBuilder.calendarScreen(
             viewModel = viewModel,
             navController = navController,
             drawerState = drawerState
+        )
+    }
+}
+
+fun NavGraphBuilder.onBoardingScreen(
+    navController: NavHostController
+) {
+    composable<Screen.OnBoarding> {
+        val viewModel: OnBoardingScreenViewModel = hiltViewModel(it)
+        OnBoardingScreen(
+            viewModel = viewModel,
+            navController = navController
         )
     }
 }

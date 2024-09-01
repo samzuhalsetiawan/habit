@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.wahyusembiring.habit.navigation.MainNavigation
 import com.wahyusembiring.common.navigation.Screen
+import com.wahyusembiring.habit.MainViewModel
 import com.wahyusembiring.habit.util.routeSimpleClassName
 import com.wahyusembiring.ui.component.navigationdrawer.DrawerItem
 import com.wahyusembiring.ui.component.navigationdrawer.NavigationDrawer
@@ -21,6 +22,7 @@ import kotlin.reflect.KClass
 
 @Composable
 fun MainScaffold(
+    mainViewModel: MainViewModel,
     navController: NavHostController,
     drawerState: DrawerState,
     screens: NavGraphBuilder.() -> Unit
@@ -47,7 +49,8 @@ fun MainScaffold(
             MainNavigation(
                 navController = navController,
                 scaffoldPadding = it,
-                builder = screens
+                builder = screens,
+                mainViewModel = mainViewModel
             )
         }
     }
