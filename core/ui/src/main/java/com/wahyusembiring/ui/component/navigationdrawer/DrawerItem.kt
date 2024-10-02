@@ -38,13 +38,15 @@ data class DrawerItem(
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(
-                    title = R.string.timetable,
-                    icon = R.drawable.ic_timetable,
+                    title = R.string.thesisplanner,
+                    icon = R.drawable.ic_thesisplanner,
+                    screen = Screen.ThesisSelection::class,
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(
                     title = R.string.grades,
                     icon = R.drawable.ic_grades,
+                    screen = Screen.Grades::class,
                     category = Category.CATEGORY_2
                 ),
                 DrawerItem(

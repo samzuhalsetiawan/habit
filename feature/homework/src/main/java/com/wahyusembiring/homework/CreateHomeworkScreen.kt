@@ -22,7 +22,7 @@ import com.wahyusembiring.ui.component.button.AddAttachmentButton
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
 import com.wahyusembiring.ui.component.button.AddSubjectButton
-import com.wahyusembiring.ui.component.modalbottomsheet.component.CloseAndSaveHeader
+import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.HabitTheme
 import com.wahyusembiring.ui.theme.spacing
@@ -59,13 +59,16 @@ private fun CreateHomeworkScreen(
     Scaffold { paddingValues ->
         Column(
             modifier = modifier
-               .padding(paddingValues)
-               .fillMaxSize()
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
-            CloseAndSaveHeader(
-                onCloseButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnNavigateBack) },
-                onSaveButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked) },
-                closeButtonDescription = stringResource(R.string.close_add_homework_sheet)
+            NavigationAndActionButtonHeader(
+                onNavigationButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnNavigateBack) },
+                onActionButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked) },
+                actionButtonText = if (state.isEditMode) stringResource(R.string.edit) else stringResource(
+                    R.string.save
+                ),
+                navigationButtonDescription = stringResource(R.string.close_add_homework_sheet)
             )
             Column(
                 modifier = Modifier.padding(MaterialTheme.spacing.Medium)

@@ -1,16 +1,13 @@
 package com.wahyusembiring.data.repository
 
-import com.wahyusembiring.data.model.Attachment
-import com.wahyusembiring.data.model.Exam
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.ExamWithSubject
+import com.wahyusembiring.data.model.entity.Exam
 import kotlinx.coroutines.flow.Flow
 
 interface ExamRepository {
-    fun getAllExam(
-        minDate: Long? = null,
-        maxDate: Long? = null
-    ): Flow<Map<Exam, Subject>>
-
-    suspend fun saveExam(exam: Exam, attachments: List<Attachment>)
+    fun getAllExamWithSubject(): Flow<List<ExamWithSubject>>
+    fun getExamById(id: Int): Flow<ExamWithSubject?>
+    suspend fun saveExam(exam: Exam): Long
     suspend fun updateExam(exam: Exam)
+    suspend fun deleteExam(exam: Exam)
 }

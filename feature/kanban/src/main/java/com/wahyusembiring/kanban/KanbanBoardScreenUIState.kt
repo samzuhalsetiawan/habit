@@ -1,14 +1,13 @@
 package com.wahyusembiring.kanban
 
-import com.wahyusembiring.data.model.Event
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.entity.Subject
 
 data class KanbanBoardScreenUIState(
-    val todayEvents: Map<Event, Subject?> = emptyMap(),
-    val tomorrowEvents: Map<Event, Subject?> = emptyMap(),
-    val next2DaysEvents: Map<Event, Subject?> = emptyMap(),
-    val next3DaysEvents: Map<Event, Subject?> = emptyMap(),
-    val next4DaysEvents: Map<Event, Subject?> = emptyMap(),
-    val next5DaysEvents: Map<Event, Subject?> = emptyMap(),
-    val next6DaysEvents: Map<Event, Subject?> = emptyMap(),
+    val todayEvents: List<Any> = emptyList(),
+    val tomorrowEvents: List<Any> = emptyList(),
+    val next2DaysEvents: List<Any> = emptyList(),
+    val next3DaysEvents: List<Any> = emptyList(),
+    val next4DaysEvents: List<Any> = emptyList(),
+    val next5DaysEvents: List<Any> = emptyList(),
+    val next6DaysEvents: List<Any> = emptyList(),
 )

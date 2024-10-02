@@ -16,13 +16,15 @@ import com.wahyusembiring.habit.navigation.createHomeworkScreen
 import com.wahyusembiring.habit.navigation.createReminderScreen
 import com.wahyusembiring.habit.navigation.createSubjectScreen
 import com.wahyusembiring.habit.navigation.examScreen
+import com.wahyusembiring.habit.navigation.gradesScreen
 import com.wahyusembiring.habit.navigation.kanbanBoardScreen
 import com.wahyusembiring.habit.navigation.onBoardingScreen
 import com.wahyusembiring.habit.navigation.overviewScreen
+import com.wahyusembiring.habit.navigation.thesisPlannerScreen
+import com.wahyusembiring.habit.navigation.thesisSelectionScreen
 import com.wahyusembiring.habit.scaffold.MainScaffold
 import com.wahyusembiring.ui.theme.HabitTheme
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -52,6 +54,9 @@ class MainActivity : ComponentActivity() {
                         kanbanBoardScreen(navController)
                         calendarScreen(navController, drawerState)
                         onBoardingScreen(navController)
+                        thesisSelectionScreen(navController, drawerState)
+                        thesisPlannerScreen(navController, drawerState)
+                        gradesScreen(navController, drawerState)
                     }
                 )
             }

@@ -19,7 +19,7 @@ class CalendarScreenViewModel @Inject constructor(
     private val _state = MutableStateFlow(CalendarScreenUIState())
     val state = _state.asStateFlow()
 
-    private val events = eventRepository.getEvents()
+    private val events = eventRepository.getAllEvent()
 
     init {
         viewModelScope.launch {

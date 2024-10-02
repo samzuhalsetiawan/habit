@@ -19,10 +19,8 @@ import androidx.navigation.NavHostController
 import com.wahyusembiring.ui.component.button.AddAttachmentButton
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
-import com.wahyusembiring.ui.component.button.AddSubjectButton
 import com.wahyusembiring.ui.component.button.ChooseColorButton
-import com.wahyusembiring.ui.component.button.ExamCategoryPickerButton
-import com.wahyusembiring.ui.component.modalbottomsheet.component.CloseAndSaveHeader
+import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.spacing
 
@@ -55,10 +53,15 @@ private fun CreateReminderScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            CloseAndSaveHeader(
-                onCloseButtonClicked = { onUIEvent(CreateReminderScreenUIEvent.OnNavigateBack) },
-                onSaveButtonClicked = { onUIEvent(CreateReminderScreenUIEvent.OnSaveButtonClicked) },
-                closeButtonDescription = stringResource(R.string.close_create_reminder_sheet)
+            NavigationAndActionButtonHeader(
+                onNavigationButtonClicked = { onUIEvent(CreateReminderScreenUIEvent.OnNavigateBack) },
+                actionButtonText = if (state.isEditMode) {
+                    stringResource(R.string.edit)
+                } else {
+                    stringResource(R.string.save)
+                },
+                onActionButtonClicked = { onUIEvent(CreateReminderScreenUIEvent.OnSaveButtonClicked) },
+                navigationButtonDescription = stringResource(R.string.close_create_reminder_sheet)
             )
             Column(
                 modifier = Modifier.padding(MaterialTheme.spacing.Medium)

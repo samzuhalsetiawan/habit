@@ -29,125 +29,125 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.File
+import com.wahyusembiring.data.model.Image
 import com.wahyusembiring.data.model.Link
-import com.wahyusembiring.data.model.Photo
 import com.wahyusembiring.ui.R
 import com.wahyusembiring.ui.theme.spacing
 
 @Composable
 fun AddAttachmentButton(
-   modifier: Modifier = Modifier,
-   attachments: List<Attachment>,
-   onClicked: (() -> Unit)? = null
+    modifier: Modifier = Modifier,
+    attachments: List<Attachment>,
+    onClicked: (() -> Unit)? = null
 ) {
-   Column {
-      ListItem(
-         modifier = modifier
-            .then(
-               if (onClicked != null) {
-                  Modifier.clickable { onClicked() }
-               } else {
-                  Modifier
-               }
-            ),
-         leadingContent = {
-            Icon(
-               painter = painterResource(id = R.drawable.ic_attachment),
-               contentDescription = stringResource(R.string.add_attachment),
-               tint = MaterialTheme.colorScheme.primary
-            )
-         },
-         headlineContent = {
-            Text(
-               color = TextFieldDefaults.colors().disabledTextColor,
-               text = stringResource(R.string.add_attachment),
-            )
-         }
-      )
-      AttachmentPreview(attachments)
-   }
+    Column {
+        ListItem(
+            modifier = modifier
+                .then(
+                    if (onClicked != null) {
+                        Modifier.clickable { onClicked() }
+                    } else {
+                        Modifier
+                    }
+                ),
+            leadingContent = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_attachment),
+                    contentDescription = stringResource(R.string.add_attachment),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            headlineContent = {
+                Text(
+                    color = TextFieldDefaults.colors().disabledTextColor,
+                    text = stringResource(R.string.add_attachment),
+                )
+            }
+        )
+        AttachmentPreview(attachments)
+    }
 }
 
 @Composable
 private fun AttachmentPreview(
-   attachments: List<Attachment> = emptyList()
+    attachments: List<Attachment> = emptyList()
 ) {
-   val urls = attachments.filterIsInstance<Link>()
-   val photos = attachments.filterIsInstance<Photo>()
-   val files = attachments.filterIsInstance<File>()
+    val urls = attachments.filterIsInstance<Link>()
+    val photos = attachments.filterIsInstance<Image>()
+    val files = attachments.filterIsInstance<File>()
 
-   LazyRow {
-      if (urls.isNotEmpty()) {
-         item {
-            Box(
-               modifier = Modifier
-                  .size(85.dp)
-                  .background(
-                     color = MaterialTheme.colorScheme.primaryContainer,
-                     shape = MaterialTheme.shapes.medium
-                  ),
-               contentAlignment = Alignment.Center
-            ) {
-               Text(
-                  style = MaterialTheme.typography.bodySmall,
-                  textAlign = TextAlign.Center,
-                  text = "+${urls.size}\n${stringResource(R.string.links)}"
-               )
+    LazyRow {
+        if (urls.isNotEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .size(85.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.medium
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        text = "+${urls.size}\n${stringResource(R.string.links)}"
+                    )
+                }
             }
-         }
-      }
-      item { Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small)) }
-      if (photos.isNotEmpty()) {
-         items(photos) {
-            Box(
-               modifier = Modifier
-                  .size(85.dp)
-                  .background(
-                     color = MaterialTheme.colorScheme.primaryContainer,
-                     shape = MaterialTheme.shapes.medium
-                  )
-                  .clip(MaterialTheme.shapes.medium),
-               contentAlignment = Alignment.Center
-            ) {
-               AsyncImage(
-                  modifier = Modifier.fillMaxSize(),
-                  model = it.uri,
-                  contentDescription = it.name,
-                  contentScale = ContentScale.Crop
-               )
+        }
+        item { Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small)) }
+        if (photos.isNotEmpty()) {
+            items(photos) {
+                Box(
+                    modifier = Modifier
+                        .size(85.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .clip(MaterialTheme.shapes.medium),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = it.uri,
+                        contentDescription = it.fileName,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
             }
-            Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
-         }
-      }
-      if (files.isNotEmpty()) {
-         item {
-            Box(
-               modifier = Modifier
-                  .size(85.dp)
-                  .background(
-                     color = MaterialTheme.colorScheme.primaryContainer,
-                     shape = MaterialTheme.shapes.medium
-                  ),
-               contentAlignment = Alignment.Center
-            ) {
-               Column(
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                  verticalArrangement = Arrangement.Center
-               ) {
-                  Icon(
-                     modifier = Modifier.size(MaterialTheme.spacing.Medium),
-                     painter = painterResource(id = R.drawable.ic_file),
-                     contentDescription = stringResource(R.string.file)
-                  )
-                  Spacer(modifier = Modifier.height(MaterialTheme.spacing.Small))
-                  Text(
-                     style = MaterialTheme.typography.bodySmall,
-                     textAlign = TextAlign.Center,
-                     text = "+${files.size} ${stringResource(R.string.files)}"
-                  )
-               }
+        }
+        if (files.isNotEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .size(85.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.medium
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(MaterialTheme.spacing.Medium),
+                            painter = painterResource(id = R.drawable.ic_file),
+                            contentDescription = stringResource(R.string.file)
+                        )
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.Small))
+                        Text(
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center,
+                            text = "+${files.size} ${stringResource(R.string.files)}"
+                        )
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 }

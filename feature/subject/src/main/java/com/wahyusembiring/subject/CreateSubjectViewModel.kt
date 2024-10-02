@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.common.util.launch
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.ui.component.popup.AlertDialog
 import com.wahyusembiring.ui.component.popup.Picker

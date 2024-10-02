@@ -3,13 +3,17 @@ package com.wahyusembiring.exam
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.common.util.launch
-import com.wahyusembiring.data.model.Exam
+import com.wahyusembiring.data.model.entity.Exam
+import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.ui.component.popup.AlertDialog
 import com.wahyusembiring.ui.component.popup.Picker
 import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +22,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class ExamScreenViewModel @Inject constructor(
-    private val examRepository: ExamRepository,
+@HiltViewModel(assistedFactory = ExamScreenViewModel.Factory::class)
+class ExamScreenViewModel @AssistedInject constructor(
+    @Assisted val examId: Int = -1,
+    private val eventRepository: EventRepository,
     private val subjectRepository: SubjectRepository
 ) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(examId: Int = -1): ExamScreenViewModel
+    }
 
     private val _state = MutableStateFlow(ExamScreenUIState())
     val state = _state.asStateFlow()
@@ -44,8 +54,27 @@ class ExamScreenViewModel @Inject constructor(
     }
 
     init {
+        if (examId != -1) {
+            viewModelScope.launch {
+                eventRepository.getExamById(examId).collect { examDto ->
+                    if (examDto == null) return@collect
+                    _state.update {
+                        it.copy(
+                            isEditMode = true,
+                            name = examDto.exam.title,
+                            date = examDto.exam.date,
+                            time = examDto.exam.reminder,
+                            subject = examDto.subject,
+                            category = examDto.exam.category,
+                            score = examDto.exam.score,
+                            attachments = examDto.exam.attachments
+                        )
+                    }
+                }
+            }
+        }
         getAllSubjectJob = viewModelScope.launch {
-            subjectRepository.getAllSubjectsAsFlow().collect { subjects ->
+            subjectRepository.getAllSubject().collect { subjects ->
                 _state.update {
                     it.copy(subjects = subjects)
                 }
@@ -54,10 +83,17 @@ class ExamScreenViewModel @Inject constructor(
     }
 
     private suspend fun onSaveExamButtonClick() {
-        val confirmationDalog = AlertDialog.Confirmation(
-            title = UIText.StringResource(R.string.save_exam),
-            message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_exam),
-        )
+        val confirmationDalog = if (examId == -1) {
+            AlertDialog.Confirmation(
+                title = UIText.StringResource(R.string.save_exam),
+                message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_exam),
+            )
+        } else {
+            AlertDialog.Confirmation(
+                title = UIText.StringResource(R.string.edit_exam),
+                message = UIText.StringResource(R.string.are_you_sure_you_want_to_edit_this_exam),
+            )
+        }
         showPopUp(confirmationDalog)
         when (confirmationDalog.result.await()) {
             AlertDialog.Result.Positive -> {
@@ -76,14 +112,18 @@ class ExamScreenViewModel @Inject constructor(
         showPopUp(loading)
         try {
             val exam = Exam(
+                id = if (examId != -1) examId else 0,
                 title = _state.value.name,
                 date = _state.value.date ?: throw MissingRequiredFieldException.Date(),
                 reminder = _state.value.time ?: throw MissingRequiredFieldException.Time(),
-                subject = _state.value.subject?.id ?: throw MissingRequiredFieldException.Subject(),
+                subjectId = _state.value.subject?.id
+                    ?: throw MissingRequiredFieldException.Subject(),
                 category = _state.value.category,
-                description = ""
+                description = "",
+                attachments = _state.value.attachments,
+                score = _state.value.score
             )
-            examRepository.saveExam(exam, _state.value.attachments)
+            eventRepository.saveExam(exam)
             hidePopUp(loading)
 
             val success = AlertDialog.Information(

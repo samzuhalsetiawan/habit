@@ -9,4 +9,8 @@
     <string name="time_is_required">Time is required</string>
     <string name="close_create_reminder_sheet">Close create reminder sheet</string>
     <string name="reminder_title">Reminder title</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="edit_reminder">Edit Reminder</string>
+    <string name="are_you_sure_you_want_to_edit_this_reminder">Are you sure you want to edit this reminder?</string>
 </resources>

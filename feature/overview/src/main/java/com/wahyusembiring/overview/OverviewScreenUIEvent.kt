@@ -1,12 +1,20 @@
 package com.wahyusembiring.overview
 
 import com.wahyusembiring.common.navigation.Screen
-import com.wahyusembiring.data.model.Event
+import com.wahyusembiring.data.model.ExamWithSubject
+import com.wahyusembiring.ui.component.scoredialog.ScoreDialog
 
 
 sealed class OverviewScreenUIEvent {
-    data class OnMarkEventAsCompleted(val event: Event) : OverviewScreenUIEvent()
-    data class OnMarkEventAsUncompleted(val event: Event) : OverviewScreenUIEvent()
+    data class OnEventCompletedStateChange(val event: Any, val isCompleted: Boolean) :
+        OverviewScreenUIEvent()
+
     data object OnHamburgerMenuClick : OverviewScreenUIEvent()
     data class OnNavigateTo(val screen: Screen) : OverviewScreenUIEvent()
+    data class OnDeleteEvent(val event: Any) : OverviewScreenUIEvent()
+    data class OnExamScorePicked(val exam: ExamWithSubject, val score: Int) :
+        OverviewScreenUIEvent()
+
+    data class OnMarkExamAsUndone(val exam: ExamWithSubject) : OverviewScreenUIEvent()
+    data class OnExamScoreDialogStateChange(val scoreDialog: ScoreDialog?) : OverviewScreenUIEvent()
 }

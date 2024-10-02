@@ -67,6 +67,8 @@ private fun onDrawerItemClick(
         Screen.Overview::class -> Screen.Overview
         Screen.KanbanBoard::class -> Screen.KanbanBoard
         Screen.Calendar::class -> Screen.Calendar
+        Screen.ThesisSelection::class -> Screen.ThesisSelection
+        Screen.Grades::class -> Screen.Grades
         else -> return
     }
     navController.navigate(screen) {

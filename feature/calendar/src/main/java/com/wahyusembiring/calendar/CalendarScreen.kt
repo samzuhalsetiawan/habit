@@ -1,16 +1,13 @@
 package com.wahyusembiring.calendar
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,39 +17,34 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.wahyusembiring.calendar.util.getEventsByDate
-import com.wahyusembiring.data.model.Event
-import com.wahyusembiring.data.model.Exam
-import com.wahyusembiring.data.model.Homework
-import com.wahyusembiring.data.model.Reminder
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.ExamWithSubject
+import com.wahyusembiring.data.model.HomeworkWithSubject
+import com.wahyusembiring.data.model.entity.Exam
+import com.wahyusembiring.data.model.entity.Homework
+import com.wahyusembiring.data.model.entity.Reminder
+import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.ui.component.topappbar.TopAppBar
 import com.wahyusembiring.ui.theme.spacing
 import com.wahyusembiring.ui.util.adjustHSL
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
 import io.github.boguszpawlowski.composecalendar.day.DefaultDay
-import io.github.boguszpawlowski.composecalendar.header.DefaultMonthHeader
 import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
@@ -182,12 +174,12 @@ private fun IncrementButton(
 @Composable
 private fun BoxScope.EventIndicator(
     dayState: DayState<DynamicSelectionState>,
-    events: Map<Event, Subject?>
+    events: List<Any>
 ) {
     val eventInThisDay = events.getEventsByDate(dayState.date)
-    val isThereAnyExam = eventInThisDay.any { it.key is Exam }
-    val isThereAnyHomework = eventInThisDay.any { it.key is Homework }
-    val isThereAnyReminder = eventInThisDay.any { it.key is Reminder }
+    val isThereAnyExam = eventInThisDay.any { it is ExamWithSubject }
+    val isThereAnyHomework = eventInThisDay.any { it is HomeworkWithSubject }
+    val isThereAnyReminder = eventInThisDay.any { it is Reminder }
 
     Row(
         modifier = Modifier

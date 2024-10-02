@@ -1,6 +1,7 @@
 package com.wahyusembiring.kanban
 
 import androidx.lifecycle.ViewModel
+import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.HomeworkRepository
 import com.wahyusembiring.data.repository.ReminderRepository
@@ -11,9 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class KanbanBoardScreenViewModel @Inject constructor(
-    private val homeworksRepository: HomeworkRepository,
-    private val examRepository: ExamRepository,
-    private val reminderRepository: ReminderRepository
+    private val eventRepository: EventRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(KanbanBoardScreenUIState())

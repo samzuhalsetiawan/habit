@@ -80,3 +80,10 @@ fun Color.adjustHSL(
     lightness?.let { hsl[2] = it }
     return Color(ColorUtils.HSLToColor(hsl))
 }
+
+fun Color.contrastColor(): Color {
+    val hsl = FloatArray(3)
+    ColorUtils.colorToHSL(toArgb(), hsl)
+    val brightness = hsl[2]
+    return if (brightness > 0.5f) Color.Black else Color.White
+}

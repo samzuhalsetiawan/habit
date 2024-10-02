@@ -22,7 +22,7 @@ import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
 import com.wahyusembiring.ui.component.button.AddSubjectButton
 import com.wahyusembiring.ui.component.button.ExamCategoryPickerButton
-import com.wahyusembiring.ui.component.modalbottomsheet.component.CloseAndSaveHeader
+import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.spacing
 
@@ -55,10 +55,15 @@ private fun ExamScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            CloseAndSaveHeader(
-                onCloseButtonClicked = { onUIEvent(ExamScreenUIEvent.OnNavigateBack) },
-                onSaveButtonClicked = { onUIEvent(ExamScreenUIEvent.OnSaveExamButtonClick) },
-                closeButtonDescription = stringResource(R.string.close_add_exam_sheet)
+            NavigationAndActionButtonHeader(
+                onNavigationButtonClicked = { onUIEvent(ExamScreenUIEvent.OnNavigateBack) },
+                actionButtonText = if (state.isEditMode) {
+                    stringResource(R.string.edit)
+                } else {
+                    stringResource(R.string.save)
+                },
+                onActionButtonClicked = { onUIEvent(ExamScreenUIEvent.OnSaveExamButtonClick) },
+                navigationButtonDescription = stringResource(R.string.close_add_exam_sheet)
             )
             Column(
                 modifier = Modifier.padding(MaterialTheme.spacing.Medium)

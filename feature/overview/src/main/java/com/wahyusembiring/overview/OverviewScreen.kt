@@ -1,31 +1,24 @@
 package com.wahyusembiring.overview
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,17 +28,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.wahyusembiring.common.navigation.Screen
-import com.wahyusembiring.datetime.Moment
-import com.wahyusembiring.datetime.formatter.FormattingStyle
+import com.wahyusembiring.data.model.ExamWithSubject
+import com.wahyusembiring.data.model.HomeworkWithSubject
+import com.wahyusembiring.data.model.entity.Reminder
 import com.wahyusembiring.overview.component.eventcard.EventCard
+import com.wahyusembiring.ui.component.scoredialog.ScoreDialog
 import com.wahyusembiring.ui.component.floatingactionbutton.HomeworkExamAndReminderFAB
-import com.wahyusembiring.ui.component.tab.PrimaryTab
 import com.wahyusembiring.ui.component.topappbar.TopAppBar
 import com.wahyusembiring.ui.theme.HabitTheme
 import com.wahyusembiring.ui.theme.spacing
 import kotlinx.coroutines.launch
-import java.util.Date
-import kotlin.time.Duration.Companion.days
 
 
 @Composable
@@ -82,6 +74,8 @@ private fun OverviewScreen(
     state: OverviewScreenUIState,
     onUIEvent: (OverviewScreenUIEvent) -> Unit,
 ) {
+    var fabExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,9 +85,12 @@ private fun OverviewScreen(
         },
         floatingActionButton = {
             HomeworkExamAndReminderFAB(
-                onReminderFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateReminder)) },
-                onExamFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateExam)) },
-                onHomeworkFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateHomework)) }
+                isExpanded = fabExpanded,
+                onClick = { fabExpanded = true },
+                onDismiss = { fabExpanded = false },
+                onReminderFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateReminder())) },
+                onExamFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateExam())) },
+                onHomeworkFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateHomework())) }
             )
         }
     ) {
@@ -106,6 +103,7 @@ private fun OverviewScreen(
 }
 
 
+@Suppress("t")
 @Composable
 private fun OverviewScreenMainContent(
     modifier: Modifier = Modifier,
@@ -113,6 +111,7 @@ private fun OverviewScreenMainContent(
     onUIEvent: (OverviewScreenUIEvent) -> Unit,
 ) {
     val context = LocalContext.current
+    var showScoreDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier.fillMaxSize()
@@ -131,16 +130,53 @@ private fun OverviewScreenMainContent(
                     horizontal = MaterialTheme.spacing.Large,
                     vertical = MaterialTheme.spacing.Small
                 ),
+                onEventClick = { event ->
+                    when (event) {
+                        is HomeworkWithSubject -> {
+                            onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateHomework(event.homework.id)))
+                        }
+
+                        is ExamWithSubject -> {
+                            onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateExam(event.exam.id)))
+                        }
+
+                        is Reminder -> {
+                            onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateReminder(event.id)))
+                        }
+
+                        else -> Unit
+                    }
+                },
+                onDeletedEventClick = { event ->
+                    onUIEvent(OverviewScreenUIEvent.OnDeleteEvent(event))
+                },
                 events = it.events,
                 onEventCheckedChange = { event, isChecked ->
-                    if (isChecked) {
-                        onUIEvent(OverviewScreenUIEvent.OnMarkEventAsCompleted(event))
-                    } else {
-                        onUIEvent(OverviewScreenUIEvent.OnMarkEventAsUncompleted(event))
-                    }
+                    onUIEvent(OverviewScreenUIEvent.OnEventCompletedStateChange(event, isChecked))
                 }
             )
         }
+    }
+    if (state.scoreDialog != null) {
+        ScoreDialog(
+            initialScore = state.scoreDialog.initialScore,
+            onMarkNotDoneYet = {
+                onUIEvent(
+                    OverviewScreenUIEvent.OnMarkExamAsUndone(state.scoreDialog.exam)
+                )
+            },
+            onDismissRequest = {
+                onUIEvent(
+                    OverviewScreenUIEvent
+                        .OnExamScoreDialogStateChange(null)
+                )
+            },
+            onScoreConfirmed = {
+                onUIEvent(
+                    OverviewScreenUIEvent.OnExamScorePicked(state.scoreDialog.exam, it)
+                )
+            }
+        )
     }
 }
 

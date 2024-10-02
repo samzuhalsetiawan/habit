@@ -1,14 +1,14 @@
 package com.wahyusembiring.overview
 
-import com.wahyusembiring.data.model.Event
-import com.wahyusembiring.data.model.Subject
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.wahyusembiring.overview.component.eventcard.EventCard
+import com.wahyusembiring.ui.component.scoredialog.ScoreDialog
 
 data class OverviewScreenUIState(
     val eventCards: List<EventCard> = emptyList(),
-    val popUp: OverviewScreenPopUp? = null,
+    val scoreDialog: ScoreDialog? = null
 )
-
-sealed class OverviewScreenPopUp {
-    data object OverviewLoading : OverviewScreenPopUp()
-}

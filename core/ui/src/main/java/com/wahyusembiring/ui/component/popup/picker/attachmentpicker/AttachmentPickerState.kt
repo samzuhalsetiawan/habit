@@ -15,31 +15,32 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 class AttachmentPickerState(
-   private val coroutineScope: CoroutineScope,
-   val materialSheetState: SheetState
+    private val coroutineScope: CoroutineScope,
+    val materialSheetState: SheetState
 ) {
-   var attachments: List<Attachment> by mutableStateOf(emptyList())
-      private set
+    var attachments: List<Attachment> by mutableStateOf(emptyList())
+        private set
 
-   fun addAttachment(vararg attachment: Attachment) {
-      attachments = (attachments + attachment).distinctBy { it.uri.toString() }
-   }
+    fun addAttachment(vararg attachment: Attachment) {
+        attachments = (attachments + attachment).distinctBy { it.uri.toString() }
+    }
 
-   fun hideBottomSheet(
-      onDismissRequest: () -> Unit
-   ) {
-      coroutineScope.launch { materialSheetState.hide() }.invokeOnCompletion { onDismissRequest() }
-   }
+    fun hideBottomSheet(
+        onDismissRequest: () -> Unit
+    ) {
+        coroutineScope.launch { materialSheetState.hide() }
+            .invokeOnCompletion { onDismissRequest() }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberAttachmentPickerState(
-   skipPartiallyExpanded: Boolean = false,
-   coroutineScope: CoroutineScope = rememberCoroutineScope(),
-   materialSheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded)
+    skipPartiallyExpanded: Boolean = false,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    materialSheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded)
 ): AttachmentPickerState {
-   return remember {
-      AttachmentPickerState(coroutineScope, materialSheetState)
-   }
+    return remember {
+        AttachmentPickerState(coroutineScope, materialSheetState)
+    }
 }

@@ -1,17 +1,22 @@
 package com.wahyusembiring.homework
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.Time
-import com.wahyusembiring.data.model.Homework
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.entity.Homework
+import com.wahyusembiring.data.model.entity.Subject
+import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.HomeworkRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.ui.component.popup.AlertDialog
 import com.wahyusembiring.ui.component.popup.Picker
 import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,11 +26,17 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
-@HiltViewModel
-class CreateHomeworkScreenViewModel @Inject constructor(
-    private val homeworkRepository: HomeworkRepository,
+@HiltViewModel(assistedFactory = CreateHomeworkScreenViewModel.Factory::class)
+class CreateHomeworkScreenViewModel @AssistedInject constructor(
+    @Assisted private val homeworkId: Int = -1,
+    private val eventRepository: EventRepository,
     private val subjectRepository: SubjectRepository
 ) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(homeworkId: Int = -1): CreateHomeworkScreenViewModel
+    }
 
     private var getAllSubjectJob: Job? = null
 
@@ -100,10 +111,17 @@ class CreateHomeworkScreenViewModel @Inject constructor(
 
     private suspend fun onSaveHomeworkButtonClick() {
         // Show confirmation dialog
-        val confirmationDialog = AlertDialog.Confirmation(
-            title = UIText.StringResource(R.string.save_homework),
-            message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_homework),
-        )
+        val confirmationDialog = if (homeworkId == -1) {
+            AlertDialog.Confirmation(
+                title = UIText.StringResource(R.string.save_homework),
+                message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_homework),
+            )
+        } else {
+            AlertDialog.Confirmation(
+                title = UIText.StringResource(R.string.edit_homework),
+                message = UIText.StringResource(R.string.are_you_sure_you_want_to_edit_this_homework),
+            )
+        }
         showPopUp(confirmationDialog)
         when (confirmationDialog.result.await()) {
             AlertDialog.Result.Positive -> {
@@ -144,13 +162,16 @@ class CreateHomeworkScreenViewModel @Inject constructor(
 
     private suspend fun saveHomework() {
         val homework = Homework(
+            id = if (homeworkId == -1) 0 else homeworkId,
             title = _state.value.homeworkTitle.ifBlank { throw MissingRequiredFieldException.Title() },
             dueDate = _state.value.date ?: throw MissingRequiredFieldException.Date(),
-            subject = _state.value.subject?.id ?: throw MissingRequiredFieldException.Subject(),
+            subjectId = _state.value.subject?.id ?: throw MissingRequiredFieldException.Subject(),
             reminder = _state.value.time,
-            description = _state.value.description
+            description = _state.value.description,
+            attachments = _state.value.attachments,
+            completed = _state.value.isCompleted
         )
-        homeworkRepository.saveHomework(homework, _state.value.attachments)
+        eventRepository.saveHomework(homework)
     }
 
     private fun showPopUp(popUp: PopUp) {
@@ -196,8 +217,26 @@ class CreateHomeworkScreenViewModel @Inject constructor(
     }
 
     init {
+        if (homeworkId != -1) {
+            viewModelScope.launch {
+                eventRepository.getHomeworkById(homeworkId).collect { homeworkDto ->
+                    if (homeworkDto == null) return@collect
+                    _state.update {
+                        it.copy(
+                            isEditMode = true,
+                            homeworkTitle = homeworkDto.homework.title,
+                            date = homeworkDto.homework.dueDate,
+                            time = homeworkDto.homework.reminder,
+                            subject = homeworkDto.subject,
+                            attachments = homeworkDto.homework.attachments,
+                            isCompleted = homeworkDto.homework.completed,
+                        )
+                    }
+                }
+            }
+        }
         getAllSubjectJob = viewModelScope.launch {
-            subjectRepository.getAllSubjectsAsFlow().collect { subjects ->
+            subjectRepository.getAllSubject().collect { subjects ->
                 _state.update {
                     it.copy(subjects = subjects)
                 }

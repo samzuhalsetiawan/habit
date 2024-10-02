@@ -1,7 +1,7 @@
 package com.wahyusembiring.overview.component.eventcard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,17 +38,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.imageLoader
-import com.wahyusembiring.data.model.Event
-import com.wahyusembiring.data.model.Exam
-import com.wahyusembiring.data.model.Homework
-import com.wahyusembiring.data.model.Reminder
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.ExamWithSubject
+import com.wahyusembiring.data.model.HomeworkWithSubject
+import com.wahyusembiring.data.model.entity.Exam
+import com.wahyusembiring.data.model.entity.Homework
+import com.wahyusembiring.data.model.entity.Reminder
+import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.overview.R
 import com.wahyusembiring.ui.theme.spacing
 import com.wahyusembiring.ui.util.UIText
@@ -54,16 +57,18 @@ import com.wahyusembiring.ui.util.UIText
 data class EventCard(
     val title: UIText,
     val date: UIText,
-    val events: Map<Event, Subject?>
+    val events: List<Any>
 )
 
 @Composable
 fun EventCard(
     modifier: Modifier = Modifier,
-    events: Map<Event, Subject?> = emptyMap(),
-    onEventCheckedChange: (event: Event, isChecked: Boolean) -> Unit = { _, _ -> },
+    events: List<Any> = emptyList(),
+    onEventCheckedChange: (event: Any, isChecked: Boolean) -> Unit = { _, _ -> },
     onShowMoreClick: () -> Unit = {},
-    onAddEventClick: () -> Unit = {}
+    onAddEventClick: () -> Unit = {},
+    onEventClick: (event: Any) -> Unit = {},
+    onDeletedEventClick: (event: Any) -> Unit = {}
 ) {
     Card(
         modifier = modifier.fillMaxWidth()
@@ -74,7 +79,9 @@ fun EventCard(
         } else {
             Body(
                 events = events,
-                onEventCheckedChange = onEventCheckedChange
+                onEventCheckedChange = onEventCheckedChange,
+                onClick = onEventClick,
+                onDeleteEventClick = onDeletedEventClick
             )
         }
         Footer(
@@ -121,45 +128,53 @@ private fun Header() {
 
 @Composable
 private fun Body(
-    events: Map<Event, Subject?>,
-    onEventCheckedChange: (event: Event, isChecked: Boolean) -> Unit
+    events: List<Any>,
+    onClick: (event: Any) -> Unit = {},
+    onDeleteEventClick: (event: Any) -> Unit = {},
+    onEventCheckedChange: (event: Any, isChecked: Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = MaterialTheme.spacing.Medium),
     ) {
-        for (entry in events) {
-            when (val event = entry.key) {
-                is Exam -> {
+        for (event in events) {
+            when (event) {
+                is ExamWithSubject -> {
                     BodyEventList(
-                        isChecked = event.completed,
+                        onClick = { onClick(event) },
+                        onDeletedClick = { onDeleteEventClick(event) },
+                        isChecked = event.exam.score != null,
                         onCheckedChange = { onEventCheckedChange(event, it) },
-                        title = event.title,
-                        subjectColor = entry.value?.color,
-                        subjectName = entry.value?.name,
+                        title = event.exam.title,
+                        subjectColor = event.subject.color,
+                        subjectName = event.subject.name,
                         eventType = stringResource(R.string.exam)
                     )
                 }
 
-                is Homework -> {
+                is HomeworkWithSubject -> {
                     BodyEventList(
-                        isChecked = event.completed,
+                        onClick = { onClick(event) },
+                        onDeletedClick = { onDeleteEventClick(event) },
+                        isChecked = event.homework.completed,
                         onCheckedChange = { onEventCheckedChange(event, it) },
-                        title = event.title,
-                        subjectColor = entry.value?.color,
-                        subjectName = entry.value?.name,
+                        title = event.homework.title,
+                        subjectColor = event.subject.color,
+                        subjectName = event.subject.name,
                         eventType = stringResource(R.string.homework)
                     )
                 }
 
                 is Reminder -> {
                     BodyEventList(
+                        onClick = { onClick(event) },
+                        onDeletedClick = { onDeleteEventClick(event) },
                         isChecked = event.completed,
                         onCheckedChange = { onEventCheckedChange(event, it) },
                         title = event.title,
-                        subjectColor = entry.value?.color,
-                        subjectName = entry.value?.name,
+                        subjectColor = null,
+                        subjectName = null,
                         eventType = stringResource(R.string.reminder)
                     )
                 }
@@ -173,27 +188,29 @@ private fun BodyEventList(
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     title: String,
+    onClick: () -> Unit = {},
+    onDeletedClick: () -> Unit = {},
     subjectColor: Color?,
     subjectName: String?,
     eventType: String
 ) {
     var checkBoxWidth by remember { mutableIntStateOf(0) }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .clickable {
+                onClick()
+            }
+    ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .toggleable(
-                    value = isChecked,
-                    onValueChange = onCheckedChange,
-                    role = Role.Checkbox
-                ),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
                 modifier = Modifier.onSizeChanged { checkBoxWidth = it.width },
                 checked = isChecked,
-                onCheckedChange = null
+                onCheckedChange = onCheckedChange
             )
             Spacer(modifier = Modifier.width(MaterialTheme.spacing.Small))
             Text(
@@ -204,6 +221,44 @@ private fun BodyEventList(
                     )
                 }
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Column {
+                var expanded by remember { mutableStateOf(false) }
+
+                IconButton(
+                    onClick = {
+                        expanded = true
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_more_vertical),
+                        contentDescription = null
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    }
+                ) {
+                    DropdownMenuItem(
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_delete),
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.delete),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        onClick = { onDeletedClick() }
+                    )
+                }
+            }
         }
         Row(
             modifier = Modifier

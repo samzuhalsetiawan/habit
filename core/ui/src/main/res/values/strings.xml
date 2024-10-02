@@ -23,7 +23,7 @@
     <string name="home">Home</string>
     <string name="kanban">Kanban</string>
     <string name="calendar">Calendar</string>
-    <string name="timetable">Timetable</string>
+    <string name="thesisplanner">Thesis Planner</string>
     <string name="grades">Grades</string>
     <string name="subjects">Subjects</string>
     <string name="attendance">Attendance</string>
@@ -43,4 +43,7 @@
     <string name="create_task">Create Task</string>
     <string name="add_exam_schedule">Add exam schedule</string>
     <string name="add_homework">Add homework</string>
+    <string name="enter_your_exam_score">Enter your exam score</string>
+    <string name="undone">Undone</string>
+    <string name="done">Done</string>
 </resources>

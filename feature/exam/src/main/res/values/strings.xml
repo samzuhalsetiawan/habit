@@ -9,4 +9,8 @@
     <string name="exam_name_cannot_be_empty">Exam name cannot be empty</string>
     <string name="exam_name">Exam Name</string>
     <string name="close_add_exam_sheet">Close Create Exam Sheet</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="edit_exam">Edit Exam</string>
+    <string name="are_you_sure_you_want_to_edit_this_exam">Are you sure you want to edit this exam?</string>
 </resources>

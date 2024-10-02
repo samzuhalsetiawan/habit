@@ -21,17 +21,19 @@ import com.wahyusembiring.ui.component.floatingactionbutton.component.SubFloatin
 
 @Composable
 fun HomeworkExamAndReminderFAB(
+    isExpanded: Boolean,
+    onClick: () -> Unit,
+    onDismiss: () -> Unit,
     onReminderFabClick: () -> Unit,
     onExamFabClick: () -> Unit,
     onHomeworkFabClick: () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
 
     Scrim(isVisible = isExpanded)
     MultiFloatingActionButton(
         mainFloatingActionButton = {
             MainFloatingActionButton(
-                onClick = { isExpanded = !isExpanded },
+                onClick = onClick,
                 isExpanded = isExpanded
             )
         },
@@ -39,15 +41,15 @@ fun HomeworkExamAndReminderFAB(
             SubFloatingActionButton(
                 isExpanded = isExpanded,
                 onReminderFabClick = {
-                    isExpanded = false
+                    onDismiss()
                     onReminderFabClick()
                 },
                 onExamFabClick = {
-                    isExpanded = false
+                    onDismiss()
                     onExamFabClick()
                 },
                 onHomeworkFabClick = {
-                    isExpanded = false
+                    onDismiss()
                     onHomeworkFabClick()
                 }
             )

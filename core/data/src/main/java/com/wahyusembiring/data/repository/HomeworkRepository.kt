@@ -1,22 +1,21 @@
 package com.wahyusembiring.data.repository
 
-import com.wahyusembiring.data.model.Attachment
-import com.wahyusembiring.data.model.Homework
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.HomeworkWithSubject
+import com.wahyusembiring.data.model.entity.Homework
 import kotlinx.coroutines.flow.Flow
 
 interface HomeworkRepository {
 
-    fun getAllHomework(
+    fun getAllHomeworkWithSubject(
         minDate: Long? = null,
         maxDate: Long? = null
-    ): Flow<Map<Homework, Subject>>
+    ): Flow<List<HomeworkWithSubject>>
 
-    suspend fun saveHomework(
-        homework: Homework,
-        attachments: List<Attachment>
-    )
+    fun getHomeworkById(id: Int): Flow<HomeworkWithSubject?>
+
+    suspend fun saveHomework(homework: Homework): Long
 
     suspend fun updateHomework(homework: Homework)
 
+    suspend fun deleteHomework(homework: Homework)
 }

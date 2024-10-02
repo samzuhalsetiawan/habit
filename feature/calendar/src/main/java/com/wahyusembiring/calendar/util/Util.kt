@@ -1,20 +1,22 @@
 package com.wahyusembiring.calendar.util
 
-import com.wahyusembiring.data.model.Event
-import com.wahyusembiring.data.model.Exam
-import com.wahyusembiring.data.model.Homework
-import com.wahyusembiring.data.model.Reminder
-import com.wahyusembiring.data.model.Subject
+import com.wahyusembiring.data.model.ExamWithSubject
+import com.wahyusembiring.data.model.HomeworkWithSubject
+import com.wahyusembiring.data.model.entity.Exam
+import com.wahyusembiring.data.model.entity.Homework
+import com.wahyusembiring.data.model.entity.Reminder
+import com.wahyusembiring.data.model.entity.Subject
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
-fun Map<Event, Subject?>.getEventsByDate(date: LocalDate): Map<Event, Subject?> {
+fun List<Any>.getEventsByDate(date: LocalDate): List<Any> {
     return this.filter {
-        val eventDate = when (it.key) {
-            is Exam -> (it.key as Exam).date
-            is Homework -> (it.key as Homework).dueDate
-            is Reminder -> (it.key as Reminder).date
+        val eventDate = when (it) {
+            is ExamWithSubject -> it.exam.date
+            is HomeworkWithSubject -> it.homework.dueDate
+            is Reminder -> it.date
+            else -> throw IllegalArgumentException("Invalid event type")
         }
         val eventLocalDate =
             Instant.ofEpochMilli(eventDate.time).atZone(ZoneId.systemDefault()).toLocalDate()
