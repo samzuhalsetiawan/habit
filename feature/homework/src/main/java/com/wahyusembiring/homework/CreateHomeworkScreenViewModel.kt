@@ -1,8 +1,10 @@
 package com.wahyusembiring.homework
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wahyusembiring.common.util.scheduleReminder
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.Time
 import com.wahyusembiring.data.model.entity.Homework
@@ -23,6 +25,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.Date
 import javax.inject.Inject
 
@@ -47,7 +53,10 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         viewModelScope.launch {
             when (event) {
                 is CreateHomeworkUIEvent.OnHomeworkTitleChanged -> onHomeworkTitleChanged(event.title)
-                is CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked -> onSaveHomeworkButtonClick()
+                is CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked -> onSaveHomeworkButtonClick(
+                    event.context
+                )
+
                 is CreateHomeworkUIEvent.OnPickDateButtonClicked -> onDatePickerClick()
                 is CreateHomeworkUIEvent.OnPickTimeButtonClicked -> onTimePickerClick()
                 is CreateHomeworkUIEvent.OnPickSubjectButtonClicked -> onSubjectPickerClick()
@@ -109,7 +118,9 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun onSaveHomeworkButtonClick() {
+    private suspend fun onSaveHomeworkButtonClick(
+        context: Context
+    ) {
         // Show confirmation dialog
         val confirmationDialog = if (homeworkId == -1) {
             AlertDialog.Confirmation(
@@ -126,7 +137,7 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         when (confirmationDialog.result.await()) {
             AlertDialog.Result.Positive -> {
                 hidePopUp(confirmationDialog)
-                onSaveHomeworkConfirmed()
+                onSaveHomeworkConfirmed(context)
             }
 
             AlertDialog.Result.Negative -> hidePopUp(confirmationDialog)
@@ -134,11 +145,13 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun onSaveHomeworkConfirmed() {
+    private suspend fun onSaveHomeworkConfirmed(
+        context: Context
+    ) {
         val loadingPopup = AlertDialog.Loading(UIText.StringResource(R.string.saving))
         try {
             showPopUp(loadingPopup)
-            saveHomework()
+            saveHomework(context)
             hidePopUp(loadingPopup)
 
             // Show success popup
@@ -160,7 +173,9 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun saveHomework() {
+    private suspend fun saveHomework(
+        context: Context
+    ) {
         val homework = Homework(
             id = if (homeworkId == -1) 0 else homeworkId,
             title = _state.value.homeworkTitle.ifBlank { throw MissingRequiredFieldException.Title() },
@@ -171,7 +186,18 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
             attachments = _state.value.attachments,
             completed = _state.value.isCompleted
         )
-        eventRepository.saveHomework(homework)
+        val newHomeworkId = eventRepository.saveHomework(homework)
+        if (homework.reminder != null) {
+            scheduleReminder(
+                context = context,
+                localDateTime = LocalDateTime.of(
+                    LocalDate.ofInstant(homework.dueDate.toInstant(), ZoneId.systemDefault()),
+                    LocalTime.of(homework.reminder!!.hour, homework.reminder!!.minute)
+                ),
+                title = homework.title,
+                reminderId = newHomeworkId.toInt()
+            )
+        }
     }
 
     private fun showPopUp(popUp: PopUp) {

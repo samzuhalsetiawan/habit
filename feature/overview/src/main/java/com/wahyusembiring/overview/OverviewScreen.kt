@@ -86,7 +86,7 @@ private fun OverviewScreen(
         floatingActionButton = {
             HomeworkExamAndReminderFAB(
                 isExpanded = fabExpanded,
-                onClick = { fabExpanded = true },
+                onClick = { fabExpanded = !fabExpanded },
                 onDismiss = { fabExpanded = false },
                 onReminderFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateReminder())) },
                 onExamFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateExam())) },
@@ -97,7 +97,7 @@ private fun OverviewScreen(
         OverviewScreenMainContent(
             modifier = modifier.padding(it),
             state = state,
-            onUIEvent = onUIEvent
+            onUIEvent = onUIEvent,
         )
     }
 }
@@ -111,7 +111,6 @@ private fun OverviewScreenMainContent(
     onUIEvent: (OverviewScreenUIEvent) -> Unit,
 ) {
     val context = LocalContext.current
-    var showScoreDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier.fillMaxSize()
@@ -153,7 +152,7 @@ private fun OverviewScreenMainContent(
                 events = it.events,
                 onEventCheckedChange = { event, isChecked ->
                     onUIEvent(OverviewScreenUIEvent.OnEventCompletedStateChange(event, isChecked))
-                }
+                },
             )
         }
     }

@@ -21,7 +21,7 @@ class MainViewModel @Inject constructor(
     private val _isAppReady = MutableStateFlow(false)
     val isAppReady: StateFlow<Boolean> = _isAppReady
 
-    private val _startDestination: MutableStateFlow<Screen> = MutableStateFlow(Screen.OnBoarding)
+    private val _startDestination: MutableStateFlow<Screen> = MutableStateFlow(Screen.Blank)
     val startDestination: StateFlow<Screen> = _startDestination
 
     init {

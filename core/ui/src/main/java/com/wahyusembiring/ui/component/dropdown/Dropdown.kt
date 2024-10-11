@@ -30,15 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toIntRect
 import com.wahyusembiring.ui.R
 import com.wahyusembiring.ui.theme.spacing
+import com.wahyusembiring.ui.util.UIText
 
 @Composable
-fun <T> Dropdown(
+fun <T : Any> Dropdown(
     modifier: Modifier = Modifier,
     items: List<T>,
-    selected: T = items.first(),
+    selected: T?,
     icons: ((item: T) -> Painter)? = null,
-    title: (item: T) -> String,
+    title: (item: T?) -> UIText,
     onItemClick: (item: T) -> Unit,
+    emptyContent: @Composable ColumnScope.() -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -62,7 +64,7 @@ fun <T> Dropdown(
                         horizontal = MaterialTheme.spacing.Medium,
                         vertical = MaterialTheme.spacing.Small
                     ),
-                text = title(selected)
+                text = title(selected).asString()
             )
             IconButton(
                 onClick = { expanded = !expanded }
@@ -80,6 +82,7 @@ fun <T> Dropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            if (items.isEmpty()) emptyContent()
             for (item in items) {
                 DropdownMenuItem(
                     leadingIcon = icons?.let {
@@ -87,7 +90,7 @@ fun <T> Dropdown(
                     },
                     text = {
                         Text(
-                            text = title(item),
+                            text = title(item).asString(),
                             color = if (item == selected) {
                                 MaterialTheme.colorScheme.primary
                             } else {

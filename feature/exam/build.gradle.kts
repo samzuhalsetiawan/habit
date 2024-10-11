@@ -1,9 +1,14 @@
 plugins {
-   alias(libs.plugins.habit.android.feature)
+    alias(libs.plugins.habit.android.feature)
 }
 
 android {
-   namespace = "com.wahyusembiring.exam"
+    namespace = "com.wahyusembiring.exam"
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
-dependencies { }
+dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+}

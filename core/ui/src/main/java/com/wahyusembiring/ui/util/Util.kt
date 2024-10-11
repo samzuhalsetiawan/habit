@@ -2,10 +2,18 @@ package com.wahyusembiring.ui.util
 
 import android.Manifest
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.WindowManager
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -86,4 +94,37 @@ fun Color.contrastColor(): Color {
     ColorUtils.colorToHSL(toArgb(), hsl)
     val brightness = hsl[2]
     return if (brightness > 0.5f) Color.Black else Color.White
+}
+
+tailrec fun Context.getActivity(): ComponentActivity? = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
+}
+
+private fun getVectorBitmap(context: Context, drawableId: Int): Bitmap? {
+
+    var bitmap: Bitmap? = null
+
+    when (val drawable = ContextCompat.getDrawable(context, drawableId)) {
+
+        is BitmapDrawable -> {
+            bitmap = drawable.bitmap
+        }
+
+        is VectorDrawable -> {
+
+            bitmap = Bitmap.createBitmap(
+                drawable.intrinsicWidth,
+                drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+            )
+
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+
+        }
+    }
+
+    return bitmap
 }

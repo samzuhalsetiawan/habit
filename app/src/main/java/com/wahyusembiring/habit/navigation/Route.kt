@@ -11,24 +11,28 @@ import com.wahyusembiring.calendar.CalendarScreenViewModel
 import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.exam.ExamScreen
 import com.wahyusembiring.exam.ExamScreenViewModel
-import com.wahyusembiring.grades.GradesScreen
-import com.wahyusembiring.grades.GradesScreenViewModel
+import com.wahyusembiring.subject.screen.main.SubjectScreen
+import com.wahyusembiring.subject.screen.main.SubjectScreenViewModel
 import com.wahyusembiring.homework.CreateHomeworkScreen
 import com.wahyusembiring.overview.OverviewScreen
 import com.wahyusembiring.homework.CreateHomeworkScreenViewModel
-import com.wahyusembiring.kanban.KanbanBoardScreen
-import com.wahyusembiring.kanban.KanbanBoardScreenViewModel
+import com.wahyusembiring.lecture.screen.addlecture.AddLectureScreen
+import com.wahyusembiring.lecture.screen.addlecture.AddLectureScreenViewModel
+import com.wahyusembiring.lecture.screen.main.LectureScreen
+import com.wahyusembiring.lecture.screen.main.LectureScreenViewModel
 import com.wahyusembiring.onboarding.OnBoardingScreen
 import com.wahyusembiring.onboarding.OnBoardingScreenViewModel
 import com.wahyusembiring.overview.OverviewViewModel
 import com.wahyusembiring.reminder.CreateReminderScreen
 import com.wahyusembiring.reminder.CreateReminderScreenViewModel
-import com.wahyusembiring.subject.CreateSubjectScreen
-import com.wahyusembiring.subject.CreateSubjectViewModel
+import com.wahyusembiring.subject.screen.create.CreateSubjectScreen
+import com.wahyusembiring.subject.screen.create.CreateSubjectViewModel
 import com.wahyusembiring.thesisplanner.screen.planner.ThesisPlannerScreen
 import com.wahyusembiring.thesisplanner.screen.planner.ThesisPlannerScreenViewModel
 import com.wahyusembiring.thesisplanner.screen.thesisselection.ThesisSelectionScreen
 import com.wahyusembiring.thesisplanner.screen.thesisselection.ThesisSelectionScreenViewModel
+
+fun NavGraphBuilder.blankScreen() = composable<Screen.Blank>(content = {})
 
 fun NavGraphBuilder.createHomeworkScreen(
     navController: NavHostController
@@ -111,17 +115,6 @@ fun NavGraphBuilder.createReminderScreen(
     }
 }
 
-fun NavGraphBuilder.kanbanBoardScreen(
-    navController: NavHostController
-) {
-    composable<Screen.KanbanBoard> {
-        val viewModel: KanbanBoardScreenViewModel = hiltViewModel(it)
-        KanbanBoardScreen(
-            viewModel = viewModel
-        )
-    }
-}
-
 fun NavGraphBuilder.calendarScreen(
     navController: NavHostController,
     drawerState: DrawerState
@@ -184,16 +177,42 @@ fun NavGraphBuilder.thesisPlannerScreen(
     }
 }
 
-fun NavGraphBuilder.gradesScreen(
+fun NavGraphBuilder.subjectScreen(
     navController: NavHostController,
     drawerState: DrawerState
 ) {
-    composable<Screen.Grades> {
-        val viewModel: GradesScreenViewModel = hiltViewModel(it)
-        GradesScreen(
+    composable<Screen.Subject> {
+        val viewModel: SubjectScreenViewModel = hiltViewModel(it)
+        SubjectScreen(
             viewModel = viewModel,
             navController = navController,
             drawerState = drawerState
+        )
+    }
+}
+
+fun NavGraphBuilder.lectureScreen(
+    navController: NavHostController,
+    drawerState: DrawerState
+) {
+    composable<Screen.Lecture> {
+        val viewModel: LectureScreenViewModel = hiltViewModel()
+        LectureScreen(
+            viewModel = viewModel,
+            navController = navController,
+            drawerState = drawerState
+        )
+    }
+}
+
+fun NavGraphBuilder.addLectureScreen(
+    navController: NavHostController
+) {
+    composable<Screen.AddLecture> {
+        val viewModel: AddLectureScreenViewModel = hiltViewModel()
+        AddLectureScreen(
+            viewModel = viewModel,
+            navController = navController
         )
     }
 }

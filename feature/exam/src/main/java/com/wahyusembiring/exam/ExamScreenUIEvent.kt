@@ -1,5 +1,6 @@
 package com.wahyusembiring.exam
 
+import android.content.Context
 import com.wahyusembiring.common.navigation.Screen
 
 sealed class ExamScreenUIEvent {
@@ -9,7 +10,7 @@ sealed class ExamScreenUIEvent {
     data object OnExamSubjectPickerClick : ExamScreenUIEvent()
     data object OnExamCategoryPickerClick : ExamScreenUIEvent()
     data object OnExamAttachmentPickerClick : ExamScreenUIEvent()
-    data object OnSaveExamButtonClick : ExamScreenUIEvent()
+    data class OnSaveExamButtonClick(val context: Context) : ExamScreenUIEvent()
     data object OnNavigateBack : ExamScreenUIEvent()
     data class OnNavigate(val screen: Screen) : ExamScreenUIEvent()
 }

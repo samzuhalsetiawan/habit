@@ -18,7 +18,6 @@ import com.wahyusembiring.ui.component.navigationdrawer.DrawerItem
 import com.wahyusembiring.ui.component.navigationdrawer.NavigationDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.reflect.KClass
 
 @Composable
 fun MainScaffold(
@@ -65,10 +64,11 @@ private fun onDrawerItemClick(
     coroutineScope.launch { drawerState.close() }
     val screen = when (drawerItem.screen) {
         Screen.Overview::class -> Screen.Overview
-        Screen.KanbanBoard::class -> Screen.KanbanBoard
         Screen.Calendar::class -> Screen.Calendar
         Screen.ThesisSelection::class -> Screen.ThesisSelection
-        Screen.Grades::class -> Screen.Grades
+        Screen.Subject::class -> Screen.Subject
+        Screen.Lecture::class -> Screen.Lecture
+        Screen.AddLecture::class -> Screen.AddLecture
         else -> return
     }
     navController.navigate(screen) {

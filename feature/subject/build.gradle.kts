@@ -1,9 +1,15 @@
 plugins {
-   alias(libs.plugins.habit.android.feature)
+    alias(libs.plugins.habit.android.feature)
 }
 
 android {
-   namespace = "com.wahyusembiring.subject"
+    namespace = "com.wahyusembiring.subject"
 }
 
-dependencies { }
+dependencies {
+    implementation(project(":datetime"))
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+}

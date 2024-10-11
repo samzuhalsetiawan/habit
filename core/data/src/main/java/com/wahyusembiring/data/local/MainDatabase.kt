@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.wahyusembiring.data.local.dao.ExamDao
 import com.wahyusembiring.data.local.dao.HomeworkDao
+import com.wahyusembiring.data.local.dao.LectureDao
 import com.wahyusembiring.data.local.dao.ReminderDao
 import com.wahyusembiring.data.local.dao.SubjectDao
 import com.wahyusembiring.data.local.dao.TaskDao
@@ -29,7 +30,7 @@ import com.wahyusembiring.data.model.entity.Thesis
         Thesis::class,
         Task::class
     ],
-    version = 13,
+    version = 15,
     exportSchema = false
 )
 @TypeConverters(Converter::class)
@@ -41,6 +42,7 @@ abstract class MainDatabase : RoomDatabase() {
     abstract val reminderDao: ReminderDao
     abstract val thesisDao: ThesisDao
     abstract val taskDao: TaskDao
+    abstract val lectureDao: LectureDao
 
     companion object {
         private const val DATABASE_NAME = "habit.db"

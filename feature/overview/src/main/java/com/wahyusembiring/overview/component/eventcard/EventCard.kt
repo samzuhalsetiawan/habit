@@ -65,8 +65,8 @@ fun EventCard(
     modifier: Modifier = Modifier,
     events: List<Any> = emptyList(),
     onEventCheckedChange: (event: Any, isChecked: Boolean) -> Unit = { _, _ -> },
-    onShowMoreClick: () -> Unit = {},
-    onAddEventClick: () -> Unit = {},
+//    onShowMoreClick: () -> Unit = {},
+//    onAddEventClick: () -> Unit = {},
     onEventClick: (event: Any) -> Unit = {},
     onDeletedEventClick: (event: Any) -> Unit = {}
 ) {
@@ -84,10 +84,11 @@ fun EventCard(
                 onDeleteEventClick = onDeletedEventClick
             )
         }
-        Footer(
-            onShowMoreClick = onShowMoreClick,
-            onAddEventClick = onAddEventClick
-        )
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.Large))
+//        Footer(
+//            onShowMoreClick = onShowMoreClick,
+//            onAddEventClick = onAddEventClick
+//        )
     }
 }
 

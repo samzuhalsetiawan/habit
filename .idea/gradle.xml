@@ -16,6 +16,7 @@
             </builds>
           </compositeBuild>
         </compositeConfiguration>
+        <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
@@ -34,7 +35,7 @@
             <option value="$PROJECT_DIR$/feature/exam" />
             <option value="$PROJECT_DIR$/feature/grades" />
             <option value="$PROJECT_DIR$/feature/homework" />
-            <option value="$PROJECT_DIR$/feature/kanban" />
+            <option value="$PROJECT_DIR$/feature/lecture" />
             <option value="$PROJECT_DIR$/feature/onboarding" />
             <option value="$PROJECT_DIR$/feature/overview" />
             <option value="$PROJECT_DIR$/feature/reminder" />

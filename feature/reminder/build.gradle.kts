@@ -1,9 +1,15 @@
 plugins {
-   alias(libs.plugins.habit.android.feature)
+    alias(libs.plugins.habit.android.feature)
 }
 
 android {
-   namespace = "com.wahyusembiring.reminder"
+    namespace = "com.wahyusembiring.reminder"
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
-dependencies { }
+dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+}

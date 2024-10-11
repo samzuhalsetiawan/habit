@@ -1,8 +1,10 @@
 package com.wahyusembiring.exam
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.common.util.launch
+import com.wahyusembiring.common.util.scheduleReminder
 import com.wahyusembiring.data.model.entity.Exam
 import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.ExamRepository
@@ -20,6 +22,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = ExamScreenViewModel.Factory::class)
@@ -48,7 +54,7 @@ class ExamScreenViewModel @AssistedInject constructor(
             is ExamScreenUIEvent.OnExamSubjectPickerClick -> launch { onExamSubjectPickerClick() }
             is ExamScreenUIEvent.OnExamAttachmentPickerClick -> launch { onExamAttachmentPickerClick() }
             is ExamScreenUIEvent.OnExamCategoryPickerClick -> launch { onExamCategoryPickerClick() }
-            is ExamScreenUIEvent.OnSaveExamButtonClick -> launch { onSaveExamButtonClick() }
+            is ExamScreenUIEvent.OnSaveExamButtonClick -> launch { onSaveExamButtonClick(event.context) }
             else -> Unit
         }
     }
@@ -82,7 +88,9 @@ class ExamScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun onSaveExamButtonClick() {
+    private suspend fun onSaveExamButtonClick(
+        context: Context
+    ) {
         val confirmationDalog = if (examId == -1) {
             AlertDialog.Confirmation(
                 title = UIText.StringResource(R.string.save_exam),
@@ -98,7 +106,7 @@ class ExamScreenViewModel @AssistedInject constructor(
         when (confirmationDalog.result.await()) {
             AlertDialog.Result.Positive -> {
                 hidePopUp(confirmationDalog)
-                saveExam()
+                saveExam(context)
             }
 
             AlertDialog.Result.Negative -> hidePopUp(confirmationDalog)
@@ -106,7 +114,9 @@ class ExamScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun saveExam() {
+    private suspend fun saveExam(
+        context: Context
+    ) {
         val loading =
             AlertDialog.Loading(UIText.StringResource(com.wahyusembiring.ui.R.string.saving))
         showPopUp(loading)
@@ -123,7 +133,16 @@ class ExamScreenViewModel @AssistedInject constructor(
                 attachments = _state.value.attachments,
                 score = _state.value.score
             )
-            eventRepository.saveExam(exam)
+            val newExamId = eventRepository.saveExam(exam)
+            scheduleReminder(
+                context = context,
+                localDateTime = LocalDateTime.of(
+                    LocalDate.ofInstant(exam.date.toInstant(), ZoneId.systemDefault()),
+                    LocalTime.of(exam.reminder!!.hour, exam.reminder!!.minute)
+                ),
+                title = exam.title,
+                reminderId = newExamId.toInt()
+            )
             hidePopUp(loading)
 
             val success = AlertDialog.Information(

@@ -1,12 +1,18 @@
 package com.wahyusembiring.common.util
 
 import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wahyusembiring.common.NOTIFICATION_ID_EXTRA
+import com.wahyusembiring.common.NOTIFICATION_TITLE_EXTRA
+import com.wahyusembiring.common.NotificationBroadcastReceiver
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -14,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.completeWith
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -48,3 +55,42 @@ fun ViewModel.launch(block: suspend CoroutineScope.() -> Unit): Job {
 }
 
 fun Int.withZeroPadding(length: Int = 2): String = this.toString().padStart(length, '0')
+fun getNotificationReminderPermission(): List<String> {
+    val permissions = mutableListOf<String>()
+
+    // Android 33 and above
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    // Android 31 and above
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+        permissions.add(Manifest.permission.SCHEDULE_EXACT_ALARM)
+    }
+
+    return permissions
+}
+
+fun scheduleReminder(
+    context: Context,
+    localDateTime: LocalDateTime,
+    title: String,
+    reminderId: Int
+) {
+    val intent = Intent(context, NotificationBroadcastReceiver::class.java).apply {
+        putExtra(NOTIFICATION_ID_EXTRA, reminderId)
+        putExtra(NOTIFICATION_TITLE_EXTRA, title)
+    }
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        reminderId,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.setExactAndAllowWhileIdle(
+        AlarmManager.RTC_WAKEUP,
+        localDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
+        pendingIntent
+    )
+}

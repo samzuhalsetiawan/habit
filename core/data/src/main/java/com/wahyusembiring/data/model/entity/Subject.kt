@@ -1,6 +1,7 @@
 package com.wahyusembiring.data.model.entity
 
 import androidx.compose.ui.graphics.Color
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -11,7 +12,7 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = Lecture::class,
             parentColumns = ["id"],
-            childColumns = ["lecture"],
+            childColumns = ["lecture_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
@@ -27,7 +28,8 @@ data class Subject(
 
     val room: String,
 
-    val lecture: Int?,
+    @ColumnInfo("lecture_id")
+    val lectureId: Int,
 
     val description: String,
 )

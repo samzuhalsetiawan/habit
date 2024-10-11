@@ -7,17 +7,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.wahyusembiring.habit.navigation.addLectureScreen
+import com.wahyusembiring.habit.navigation.blankScreen
 import com.wahyusembiring.habit.navigation.calendarScreen
 import com.wahyusembiring.habit.navigation.createHomeworkScreen
 import com.wahyusembiring.habit.navigation.createReminderScreen
 import com.wahyusembiring.habit.navigation.createSubjectScreen
 import com.wahyusembiring.habit.navigation.examScreen
-import com.wahyusembiring.habit.navigation.gradesScreen
-import com.wahyusembiring.habit.navigation.kanbanBoardScreen
+import com.wahyusembiring.habit.navigation.subjectScreen
+import com.wahyusembiring.habit.navigation.lectureScreen
 import com.wahyusembiring.habit.navigation.onBoardingScreen
 import com.wahyusembiring.habit.navigation.overviewScreen
 import com.wahyusembiring.habit.navigation.thesisPlannerScreen
@@ -46,17 +46,19 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     drawerState = drawerState,
                     screens = {
+                        blankScreen()
                         createHomeworkScreen(navController)
                         overviewScreen(navController, drawerState)
                         createSubjectScreen(navController)
                         examScreen(navController)
                         createReminderScreen(navController)
-                        kanbanBoardScreen(navController)
                         calendarScreen(navController, drawerState)
                         onBoardingScreen(navController)
                         thesisSelectionScreen(navController, drawerState)
                         thesisPlannerScreen(navController, drawerState)
-                        gradesScreen(navController, drawerState)
+                        subjectScreen(navController, drawerState)
+                        lectureScreen(navController, drawerState)
+                        addLectureScreen(navController)
                     }
                 )
             }

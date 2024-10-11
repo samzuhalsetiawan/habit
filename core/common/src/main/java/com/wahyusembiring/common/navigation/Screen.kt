@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
 sealed class Screen {
 
     @Serializable
+    data object Blank : Screen()
+
+    @Serializable
     data object Overview : Screen()
 
     @Serializable
@@ -21,9 +24,6 @@ sealed class Screen {
     data object CreateSubject : Screen()
 
     @Serializable
-    data object KanbanBoard : Screen()
-
-    @Serializable
     data object ThesisSelection : Screen()
 
     @Serializable
@@ -36,6 +36,11 @@ sealed class Screen {
     data object OnBoarding : Screen()
 
     @Serializable
-    data object Grades : Screen()
+    data object Subject : Screen()
 
+    @Serializable
+    data object Lecture : Screen()
+
+    @Serializable
+    data object AddLecture : Screen()
 }

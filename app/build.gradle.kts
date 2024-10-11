@@ -36,11 +36,10 @@ dependencies {
     implementation(project(":feature:overview"))
     implementation(project(":feature:exam"))
     implementation(project(":feature:reminder"))
-    implementation(project(":feature:kanban"))
     implementation(project(":feature:calendar"))
     implementation(project(":feature:onboarding"))
+    implementation(project(":feature:lecture"))
     implementation(project(":feature:thesisplanner"))
-    implementation(project(":feature:grades"))
 
 
 //   Coil

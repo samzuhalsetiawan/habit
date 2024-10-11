@@ -26,12 +26,6 @@ data class DrawerItem(
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(
-                    title = R.string.kanban,
-                    icon = R.drawable.ic_kanban,
-                    screen = Screen.KanbanBoard::class,
-                    category = Category.CATEGORY_1
-                ),
-                DrawerItem(
                     title = R.string.calendar,
                     icon = R.drawable.ic_calendar,
                     screen = Screen.Calendar::class,
@@ -44,30 +38,16 @@ data class DrawerItem(
                     category = Category.CATEGORY_1
                 ),
                 DrawerItem(
-                    title = R.string.grades,
-                    icon = R.drawable.ic_grades,
-                    screen = Screen.Grades::class,
-                    category = Category.CATEGORY_2
-                ),
-                DrawerItem(
                     title = R.string.subjects,
                     icon = R.drawable.ic_subjects,
-                    category = Category.CATEGORY_2
-                ),
-                DrawerItem(
-                    title = R.string.attendance,
-                    icon = R.drawable.ic_attendance,
+                    screen = Screen.Subject::class,
                     category = Category.CATEGORY_2
                 ),
                 DrawerItem(
                     title = R.string.lectures,
                     icon = R.drawable.ic_teachers,
-                    category = Category.CATEGORY_2
-                ),
-                DrawerItem(
-                    title = R.string.recordings,
-                    icon = R.drawable.ic_recordings,
-                    category = Category.CATEGORY_2
+                    category = Category.CATEGORY_2,
+                    screen = Screen.Lecture::class
                 ),
                 DrawerItem(
                     title = R.string.information,

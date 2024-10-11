@@ -46,4 +46,36 @@
     <string name="enter_your_exam_score">Enter your exam score</string>
     <string name="undone">Undone</string>
     <string name="done">Done</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="add">Add</string>
+    <string name="email">Email</string>
+    <string name="no_email">No email</string>
+    <string name="enter_email">Enter email</string>
+    <string name="address">Address</string>
+    <string name="no_address">No Address</string>
+    <string name="enter_address">Enter address</string>
+    <string name="office_hour">Office Hour</string>
+    <string name="no_office_hour">No Office Hour</string>
+    <string name="no_phone_number">No phone number</string>
+    <string name="enter_office_hour">Enter Office Hour</string>
+    <string name="no_day_selected">No day selected</string>
+    <string name="office_hour_from_to">From %1$s:%2$s to %3$s:%4$s</string>
+    <string name="day">Day:</string>
+    <string name="from">From:</string>
+    <string name="until">Until:</string>
+    <string name="time_colon">%1$s:%2$s</string>
+    <string name="available_from">Available from</string>
+    <string name="website">Website</string>
+    <string name="no_website">No website</string>
+    <string name="enter_website_link">Enter website link</string>
+    <array name="days">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </array>
 </resources>

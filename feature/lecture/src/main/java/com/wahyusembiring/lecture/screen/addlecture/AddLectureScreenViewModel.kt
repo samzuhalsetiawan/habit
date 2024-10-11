@@ -1,0 +1,149 @@
+package com.wahyusembiring.lecture.screen.addlecture
+
+import android.content.ContentResolver
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.wahyusembiring.data.model.OfficeHour
+import com.wahyusembiring.data.model.entity.Lecture
+import com.wahyusembiring.data.repository.LectureRepository
+import com.wahyusembiring.lecture.R
+import com.wahyusembiring.ui.util.UIText
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class AddLectureScreenViewModel @Inject constructor(
+    private val lectureRepository: LectureRepository
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(AddLectureScreenUItate())
+    val state = _state.asStateFlow()
+
+    fun onUIEvent(event: AddLectureScreenUIEvent) {
+        when (event) {
+            is AddLectureScreenUIEvent.OnBackButtonClick -> onBackButtonClick(event.navController)
+            is AddLectureScreenUIEvent.OnSaveButtonClick -> onSaveButtonClick()
+            is AddLectureScreenUIEvent.OnLectureNameChange -> onLectureNameChange(event.name)
+            is AddLectureScreenUIEvent.OnSaveConfirmationDialogCancel -> onSaveConfirmationDialogCancel()
+            is AddLectureScreenUIEvent.OnSaveConfirmationDialogConfirm -> onSaveConfirmationDialogConfirm()
+            is AddLectureScreenUIEvent.OnSaveConfirmationDialogDismiss -> onSaveConfirmationDialogDismiss()
+            is AddLectureScreenUIEvent.OnErrorDialogDismiss -> onErrorDialogDismiss()
+            is AddLectureScreenUIEvent.OnProfilePictureSelected -> onProfilePictureSelected(event.uri)
+            is AddLectureScreenUIEvent.OnNewPhoneNumber -> onNewPhoneNumber(event.phoneNumber)
+            is AddLectureScreenUIEvent.OnNewEmail -> onNewEmail(event.email)
+            is AddLectureScreenUIEvent.OnNewAddress -> onNewAddress(event.address)
+            is AddLectureScreenUIEvent.OnNewOfficeHour -> onNewOfficeHour(event.officeHour)
+            is AddLectureScreenUIEvent.OnNewWebsite -> onNewWebsite(event.website)
+        }
+    }
+
+    private fun onNewWebsite(website: String) {
+        _state.update {
+            it.copy(websites = it.websites + website)
+        }
+    }
+
+    private fun onNewOfficeHour(officeHour: OfficeHour) {
+        _state.update {
+            it.copy(officeHours = it.officeHours + officeHour)
+        }
+    }
+
+    private fun onNewAddress(address: String) {
+        _state.update {
+            it.copy(
+                addresses = it.addresses + address
+            )
+        }
+    }
+
+    private fun onNewEmail(email: String) {
+        _state.update {
+            it.copy(
+                emails = it.emails + email
+            )
+        }
+    }
+
+    private fun onNewPhoneNumber(phoneNumber: String) {
+        _state.update {
+            it.copy(
+                phoneNumbers = it.phoneNumbers + phoneNumber
+            )
+        }
+    }
+
+    private fun onProfilePictureSelected(uri: Uri?) {
+        _state.update {
+            it.copy(
+                profilePictureUri = uri ?: it.profilePictureUri
+            )
+        }
+    }
+
+    private fun onErrorDialogDismiss() {
+        _state.update {
+            it.copy(errorMessage = null)
+        }
+    }
+
+    private fun onSaveConfirmationDialogConfirm() {
+        try {
+            val lecture = Lecture(
+                photo = _state.value.profilePictureUri,
+                name = _state.value.name.ifBlank {
+                    throw ValidationException(
+                        UIText.StringResource(R.string.lecture_name_cannot_be_empty)
+                    )
+                },
+                phone = _state.value.phoneNumbers,
+                email = _state.value.emails,
+                address = _state.value.addresses,
+                officeHour = _state.value.officeHours,
+                website = _state.value.websites,
+            )
+            viewModelScope.launch {
+                lectureRepository.insertLecture(lecture)
+                onSaveConfirmationDialogDismiss()
+            }
+        } catch (validationException: ValidationException) {
+            _state.update {
+                it.copy(errorMessage = validationException.displayMessage)
+            }
+        }
+    }
+
+    private fun onSaveConfirmationDialogDismiss() {
+        _state.update {
+            it.copy(showSaveConfirmationDialog = false)
+        }
+    }
+
+    private fun onSaveConfirmationDialogCancel() {
+        _state.update {
+            it.copy(showSaveConfirmationDialog = false)
+        }
+    }
+
+    private fun onLectureNameChange(name: String) {
+        _state.update {
+            it.copy(name = name)
+        }
+    }
+
+    private fun onSaveButtonClick() {
+        _state.update {
+            it.copy(showSaveConfirmationDialog = true)
+        }
+    }
+
+    private fun onBackButtonClick(navController: NavController) {
+        navController.navigateUp()
+    }
+}

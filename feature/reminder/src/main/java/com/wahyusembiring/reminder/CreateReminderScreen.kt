@@ -1,5 +1,8 @@
 package com.wahyusembiring.reminder
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import com.wahyusembiring.common.util.getNotificationReminderPermission
 import com.wahyusembiring.ui.component.button.AddAttachmentButton
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
@@ -23,6 +28,7 @@ import com.wahyusembiring.ui.component.button.ChooseColorButton
 import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.spacing
+import com.wahyusembiring.ui.util.checkForPermissionOrLaunchPermissionLauncher
 
 @Composable
 fun CreateReminderScreen(
@@ -47,6 +53,17 @@ private fun CreateReminderScreen(
     state: CreateReminderScreenUIState,
     onUIEvent: (CreateReminderScreenUIEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val notificationPermissionRequestLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it.values.all { permission -> permission }) {
+                onUIEvent(CreateReminderScreenUIEvent.OnTimePickerButtonClick)
+            }
+        }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -60,7 +77,9 @@ private fun CreateReminderScreen(
                 } else {
                     stringResource(R.string.save)
                 },
-                onActionButtonClicked = { onUIEvent(CreateReminderScreenUIEvent.OnSaveButtonClicked) },
+                onActionButtonClicked = {
+                    onUIEvent(CreateReminderScreenUIEvent.OnSaveButtonClicked(context.applicationContext))
+                },
                 navigationButtonDescription = stringResource(R.string.close_create_reminder_sheet)
             )
             Column(
@@ -88,7 +107,16 @@ private fun CreateReminderScreen(
                 )
                 AddReminderButton(
                     time = state.time,
-                    onClicked = { onUIEvent(CreateReminderScreenUIEvent.OnTimePickerButtonClick) }
+                    onClicked = {
+                        checkForPermissionOrLaunchPermissionLauncher(
+                            context = context,
+                            permissionToRequest = getNotificationReminderPermission(),
+                            permissionRequestLauncher = notificationPermissionRequestLauncher,
+                            onPermissionAlreadyGranted = {
+                                onUIEvent(CreateReminderScreenUIEvent.OnTimePickerButtonClick)
+                            }
+                        )
+                    }
                 )
                 ChooseColorButton(
                     color = state.color,

@@ -30,6 +30,7 @@ import com.wahyusembiring.ui.theme.spacing
 @Composable
 fun TimePicker(
     modifier: Modifier = Modifier,
+    title: String = stringResource(R.string.when_do_you_want_to_be_reminded),
     onTimeSelected: (time: Time) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -55,7 +56,7 @@ fun TimePicker(
                         .padding(horizontal = MaterialTheme.spacing.Large)
                         .padding(bottom = MaterialTheme.spacing.Medium),
                     color = MaterialTheme.colorScheme.primary,
-                    text = stringResource(R.string.when_do_you_want_to_be_reminded)
+                    text = title
                 )
                 androidx.compose.material3.TimePicker(state = timePickerState)
                 Row(

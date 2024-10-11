@@ -1,5 +1,7 @@
 package com.wahyusembiring.exam
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.wahyusembiring.common.navigation.Screen
+import com.wahyusembiring.common.util.getNotificationReminderPermission
 import com.wahyusembiring.ui.component.button.AddAttachmentButton
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
@@ -25,6 +29,7 @@ import com.wahyusembiring.ui.component.button.ExamCategoryPickerButton
 import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.spacing
+import com.wahyusembiring.ui.util.checkForPermissionOrLaunchPermissionLauncher
 
 @Composable
 fun ExamScreen(
@@ -49,6 +54,16 @@ private fun ExamScreen(
     state: ExamScreenUIState,
     onUIEvent: (ExamScreenUIEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+    val notificationPermissionRequestLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it.values.all { permission -> permission }) {
+                onUIEvent(ExamScreenUIEvent.OnExamTimePickerClick)
+            }
+        }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -62,7 +77,7 @@ private fun ExamScreen(
                 } else {
                     stringResource(R.string.save)
                 },
-                onActionButtonClicked = { onUIEvent(ExamScreenUIEvent.OnSaveExamButtonClick) },
+                onActionButtonClicked = { onUIEvent(ExamScreenUIEvent.OnSaveExamButtonClick(context)) },
                 navigationButtonDescription = stringResource(R.string.close_add_exam_sheet)
             )
             Column(
@@ -90,7 +105,16 @@ private fun ExamScreen(
                 )
                 AddReminderButton(
                     time = state.time,
-                    onClicked = { onUIEvent(ExamScreenUIEvent.OnExamTimePickerClick) }
+                    onClicked = {
+                        checkForPermissionOrLaunchPermissionLauncher(
+                            context = context,
+                            permissionToRequest = getNotificationReminderPermission(),
+                            permissionRequestLauncher = notificationPermissionRequestLauncher,
+                            onPermissionAlreadyGranted = {
+                                onUIEvent(ExamScreenUIEvent.OnExamTimePickerClick)
+                            }
+                        )
+                    }
                 )
                 ExamCategoryPickerButton(
                     examCategory = state.category,

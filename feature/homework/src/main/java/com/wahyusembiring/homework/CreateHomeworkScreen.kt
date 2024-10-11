@@ -1,5 +1,7 @@
 package com.wahyusembiring.homework
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,12 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.wahyusembiring.common.navigation.Screen
+import com.wahyusembiring.common.util.getNotificationReminderPermission
 import com.wahyusembiring.ui.component.button.AddAttachmentButton
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
@@ -26,6 +30,7 @@ import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndA
 import com.wahyusembiring.ui.component.popup.PopUpHandler
 import com.wahyusembiring.ui.theme.HabitTheme
 import com.wahyusembiring.ui.theme.spacing
+import com.wahyusembiring.ui.util.checkForPermissionOrLaunchPermissionLauncher
 
 @Composable
 fun CreateHomeworkScreen(
@@ -56,6 +61,17 @@ private fun CreateHomeworkScreen(
     state: CreateHomeworkScreenUIState,
     onUIEvent: (CreateHomeworkUIEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val notificationPermissionRequestLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it.values.all { permission -> permission }) {
+                onUIEvent(CreateHomeworkUIEvent.OnPickTimeButtonClicked)
+            }
+        }
+
     Scaffold { paddingValues ->
         Column(
             modifier = modifier
@@ -64,7 +80,13 @@ private fun CreateHomeworkScreen(
         ) {
             NavigationAndActionButtonHeader(
                 onNavigationButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnNavigateBack) },
-                onActionButtonClicked = { onUIEvent(CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked) },
+                onActionButtonClicked = {
+                    onUIEvent(
+                        CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked(
+                            context
+                        )
+                    )
+                },
                 actionButtonText = if (state.isEditMode) stringResource(R.string.edit) else stringResource(
                     R.string.save
                 ),
@@ -95,7 +117,16 @@ private fun CreateHomeworkScreen(
                 )
                 AddReminderButton(
                     time = state.time,
-                    onClicked = { onUIEvent(CreateHomeworkUIEvent.OnPickTimeButtonClicked) }
+                    onClicked = {
+                        checkForPermissionOrLaunchPermissionLauncher(
+                            context = context,
+                            permissionToRequest = getNotificationReminderPermission(),
+                            permissionRequestLauncher = notificationPermissionRequestLauncher,
+                            onPermissionAlreadyGranted = {
+                                onUIEvent(CreateHomeworkUIEvent.OnPickTimeButtonClicked)
+                            },
+                        )
+                    }
                 )
                 AddSubjectButton(
                     subject = state.subject,

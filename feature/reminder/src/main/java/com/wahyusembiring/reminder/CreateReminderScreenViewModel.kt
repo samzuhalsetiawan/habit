@@ -1,8 +1,16 @@
 package com.wahyusembiring.reminder
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wahyusembiring.common.NOTIFICATION_ID_EXTRA
+import com.wahyusembiring.common.NOTIFICATION_TITLE_EXTRA
+import com.wahyusembiring.common.NotificationBroadcastReceiver
 import com.wahyusembiring.common.util.launch
+import com.wahyusembiring.common.util.scheduleReminder
 import com.wahyusembiring.data.model.entity.Reminder
 import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.ReminderRepository
@@ -18,6 +26,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = CreateReminderScreenViewModel.Factory::class)
@@ -64,12 +77,14 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
             is CreateReminderScreenUIEvent.OnTimePickerButtonClick -> launch { onTimePickerButtonClick() }
             is CreateReminderScreenUIEvent.OnColorPickerButtonClick -> launch { onColorPickerButtonClick() }
             is CreateReminderScreenUIEvent.OnAttachmentPickerButtonClick -> launch { onAttachmentPickerButtonClick() }
-            is CreateReminderScreenUIEvent.OnSaveButtonClicked -> launch { onSaveButtonClicked() }
+            is CreateReminderScreenUIEvent.OnSaveButtonClicked -> launch { onSaveButtonClicked(event.context) }
             else -> Unit
         }
     }
 
-    private suspend fun onSaveButtonClicked() {
+    private suspend fun onSaveButtonClicked(
+        context: Context
+    ) {
         val confirmationDialog = if (reminderId == -1) {
             AlertDialog.Confirmation(
                 title = UIText.StringResource(R.string.save_reminder),
@@ -85,7 +100,7 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
         when (confirmationDialog.result.await()) {
             AlertDialog.Result.Positive -> {
                 hidePopUp(confirmationDialog)
-                onSaveReminderConfirmed()
+                onSaveReminderConfirmed(context)
             }
 
             AlertDialog.Result.Negative -> hidePopUp(confirmationDialog)
@@ -93,11 +108,13 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun onSaveReminderConfirmed() {
+    private suspend fun onSaveReminderConfirmed(
+        context: Context
+    ) {
         val loadingDialog = AlertDialog.Loading(UIText.StringResource(R.string.saving_reminder))
         try {
             showPopUp(loadingDialog)
-            saveReminder()
+            saveReminder(context)
             hidePopUp(loadingDialog)
 
             val successDialog = AlertDialog.Information(
@@ -118,7 +135,9 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun saveReminder() {
+    private suspend fun saveReminder(
+        context: Context
+    ) {
         val reminder = Reminder(
             id = if (reminderId != -1) reminderId else 0,
             title = _state.value.title.ifBlank { throw MissingRequiredFieldException.Title() },
@@ -129,8 +148,18 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
             description = _state.value.description,
             completed = _state.value.isCompleted
         )
-        eventRepository.saveReminder(reminder)
+        val savedReminderId = eventRepository.saveReminder(reminder)
+        scheduleReminder(
+            context = context,
+            localDateTime = LocalDateTime.of(
+                LocalDate.ofInstant(reminder.date.toInstant(), ZoneId.systemDefault()),
+                LocalTime.of(reminder.time.hour, reminder.time.minute)
+            ),
+            title = reminder.title,
+            reminderId = savedReminderId.toInt()
+        )
     }
+
 
     private fun onTitleChanged(title: String) {
         _state.update {

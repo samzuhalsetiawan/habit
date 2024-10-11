@@ -5,10 +5,12 @@ import com.wahyusembiring.data.local.MainDatabase
 import com.wahyusembiring.data.local.dao.SubjectDao
 import com.wahyusembiring.data.repository.DataStoreRepository
 import com.wahyusembiring.data.repository.EventRepository
+import com.wahyusembiring.data.repository.LectureRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.data.repository.ThesisRepository
 import com.wahyusembiring.data.repository.implementation.DataStoreRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.EventRepositoryImpl
+import com.wahyusembiring.data.repository.implementation.LectureRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.SubjectRepositoryImpl
 import com.wahyusembiring.data.repository.implementation.ThesisRepositoryImpl
 import dagger.Module
@@ -60,6 +62,14 @@ object AppModule {
         return ThesisRepositoryImpl(
             taskDao = mainDatabase.taskDao,
             thesisDao = mainDatabase.thesisDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLectureRepository(mainDatabase: MainDatabase): LectureRepository {
+        return LectureRepositoryImpl(
+            lectureDao = mainDatabase.lectureDao
         )
     }
 
