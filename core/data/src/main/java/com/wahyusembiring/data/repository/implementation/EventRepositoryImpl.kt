@@ -8,18 +8,25 @@ import com.wahyusembiring.data.model.HomeworkWithSubject
 import com.wahyusembiring.data.model.entity.Exam
 import com.wahyusembiring.data.model.entity.Homework
 import com.wahyusembiring.data.model.entity.Reminder
+import com.wahyusembiring.data.remote.ExamService
+import com.wahyusembiring.data.remote.HomeworkService
+import com.wahyusembiring.data.remote.ReminderService
+import com.wahyusembiring.data.remote.SubjectService
 import com.wahyusembiring.data.repository.EventRepository
-import com.wahyusembiring.data.repository.ExamRepository
-import com.wahyusembiring.data.repository.HomeworkRepository
-import com.wahyusembiring.data.repository.ReminderRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
-class EventRepositoryImpl(
+class EventRepositoryImpl @Inject constructor(
     private val examDao: ExamDao,
     private val homeworkDao: HomeworkDao,
-    private val reminderDao: ReminderDao
+    private val reminderDao: ReminderDao,
+    private val homeworkService: HomeworkService,
+    private val examService: ExamService,
+    private val reminderService: ReminderService,
+    private val subjectService: SubjectService
 ) : EventRepository {
 
     override fun getAllEvent(): Flow<List<Any>> {
@@ -51,11 +58,14 @@ class EventRepositoryImpl(
     }
 
     override suspend fun saveHomework(homework: Homework): Long {
-        return homeworkDao.insertHomework(homework)
+        val homeworkId = homeworkDao.insertHomework(homework)
+        homeworkService.saveHomework(homework.copy(id = homeworkId.toInt()))
+        return homeworkId
     }
 
     override suspend fun updateHomework(homework: Homework) {
-        return homeworkDao.updateHomework(homework)
+        homeworkDao.updateHomework(homework)
+        homeworkService.saveHomework(homework)
     }
 
     override fun getAllExamWithSubject(): Flow<List<ExamWithSubject>> {
@@ -63,11 +73,14 @@ class EventRepositoryImpl(
     }
 
     override suspend fun saveExam(exam: Exam): Long {
-        return examDao.insertExam(exam)
+        val examId = examDao.insertExam(exam)
+        examService.saveExam(exam.copy(id = examId.toInt()))
+        return examId
     }
 
     override suspend fun updateExam(exam: Exam) {
-        return examDao.updateExam(exam)
+        examDao.updateExam(exam)
+        examService.saveExam(exam)
     }
 
     override fun getAllReminder(minDate: Long?, maxDate: Long?): Flow<List<Reminder>> {
@@ -79,23 +92,29 @@ class EventRepositoryImpl(
     }
 
     override suspend fun saveReminder(reminder: Reminder): Long {
-        return reminderDao.insertReminder(reminder)
+        val reminderId = reminderDao.insertReminder(reminder)
+        reminderService.saveReminder(reminder.copy(id = reminderId.toInt()))
+        return reminderId
     }
 
     override suspend fun updateReminder(reminder: Reminder) {
-        return reminderDao.updateReminder(reminder)
+        reminderDao.updateReminder(reminder)
+        reminderService.saveReminder(reminder)
     }
 
     override suspend fun deleteExam(exam: Exam) {
-        return examDao.deleteExam(exam)
+        examDao.deleteExam(exam)
+        examService.deleteExam(exam)
     }
 
     override suspend fun deleteHomework(homework: Homework) {
-        return homeworkDao.deleteHomework(homework)
+        homeworkDao.deleteHomework(homework)
+        homeworkService.deleteHomework(homework)
     }
 
     override suspend fun deleteReminder(reminder: Reminder) {
-        return reminderDao.deleteReminder(reminder)
+        reminderDao.deleteReminder(reminder)
+        reminderService.deleteReminder(reminder)
     }
 
     override fun getExamById(id: Int): Flow<ExamWithSubject?> {

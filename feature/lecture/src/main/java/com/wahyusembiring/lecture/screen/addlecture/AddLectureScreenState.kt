@@ -8,6 +8,7 @@ import com.wahyusembiring.ui.util.UIText
 
 data class AddLectureScreenUItate(
     val showSaveConfirmationDialog: Boolean = false,
+    val showLectureSavedDialog: Boolean = false,
     val errorMessage: UIText? = null,
     val name: String = "",
     val profilePictureUri: Uri? = null,
@@ -22,6 +23,7 @@ sealed class AddLectureScreenUIEvent {
     data class OnBackButtonClick(val navController: NavController) : AddLectureScreenUIEvent()
     data class OnLectureNameChange(val name: String) : AddLectureScreenUIEvent()
     data object OnSaveButtonClick : AddLectureScreenUIEvent()
+    data object OnLectureSavedDialogDismiss : AddLectureScreenUIEvent()
     data class OnProfilePictureSelected(val uri: Uri?) : AddLectureScreenUIEvent()
     data class OnNewPhoneNumber(val phoneNumber: String) : AddLectureScreenUIEvent()
     data class OnNewEmail(val email: String) : AddLectureScreenUIEvent()

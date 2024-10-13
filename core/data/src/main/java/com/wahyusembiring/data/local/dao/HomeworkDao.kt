@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HomeworkDao {
 
-    @Upsert(entity = Homework::class)
+    @Insert(entity = Homework::class)
     suspend fun insertHomework(homework: Homework): Long
 
     @Update(entity = Homework::class)
@@ -34,7 +34,10 @@ interface HomeworkDao {
                 "WHERE due_date BETWEEN :minDate AND :maxDate " +
                 "ORDER BY due_date ASC"
     )
-    fun getAllHomeworkWithSubject(minDate: Long, maxDate: Long): Flow<List<HomeworkWithSubject>>
+    fun getAllHomeworkWithSubject(
+        minDate: Long,
+        maxDate: Long
+    ): Flow<List<HomeworkWithSubject>>
 
     @Transaction
     @Query("SELECT * FROM homework WHERE id = :id")

@@ -13,6 +13,10 @@ android {
 dependencies {
     implementation(project(":core:common"))
 
+//    Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+
     implementation(libs.androidx.compose.ui.graphics)
 
     implementation(libs.datastore.preferences)

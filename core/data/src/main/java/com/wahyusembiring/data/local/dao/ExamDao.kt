@@ -23,7 +23,7 @@ interface ExamDao {
     @Query("SELECT * FROM exam WHERE id = :id")
     fun getExamById(id: Int): Flow<ExamWithSubject?>
 
-    @Upsert(entity = Exam::class)
+    @Insert(entity = Exam::class)
     suspend fun insertExam(exam: Exam): Long
 
     @Update(entity = Exam::class)

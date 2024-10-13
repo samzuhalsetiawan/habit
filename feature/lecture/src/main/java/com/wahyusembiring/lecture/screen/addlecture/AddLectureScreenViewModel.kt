@@ -1,13 +1,12 @@
 package com.wahyusembiring.lecture.screen.addlecture
 
-import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.wahyusembiring.data.model.OfficeHour
-import com.wahyusembiring.data.model.entity.Lecture
-import com.wahyusembiring.data.repository.LectureRepository
+import com.wahyusembiring.data.model.entity.Lecturer
+import com.wahyusembiring.data.repository.LecturerRepository
 import com.wahyusembiring.lecture.R
 import com.wahyusembiring.ui.util.UIText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddLectureScreenViewModel @Inject constructor(
-    private val lectureRepository: LectureRepository
+    private val lecturerRepository: LecturerRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddLectureScreenUItate())
@@ -40,6 +39,13 @@ class AddLectureScreenViewModel @Inject constructor(
             is AddLectureScreenUIEvent.OnNewAddress -> onNewAddress(event.address)
             is AddLectureScreenUIEvent.OnNewOfficeHour -> onNewOfficeHour(event.officeHour)
             is AddLectureScreenUIEvent.OnNewWebsite -> onNewWebsite(event.website)
+            is AddLectureScreenUIEvent.OnLectureSavedDialogDismiss -> onLectureSavedDialogDismiss()
+        }
+    }
+
+    private fun onLectureSavedDialogDismiss() {
+        _state.update {
+            it.copy(showLectureSavedDialog = false)
         }
     }
 
@@ -94,8 +100,9 @@ class AddLectureScreenViewModel @Inject constructor(
     }
 
     private fun onSaveConfirmationDialogConfirm() {
+        onSaveConfirmationDialogDismiss()
         try {
-            val lecture = Lecture(
+            val lecture = Lecturer(
                 photo = _state.value.profilePictureUri,
                 name = _state.value.name.ifBlank {
                     throw ValidationException(
@@ -109,8 +116,8 @@ class AddLectureScreenViewModel @Inject constructor(
                 website = _state.value.websites,
             )
             viewModelScope.launch {
-                lectureRepository.insertLecture(lecture)
-                onSaveConfirmationDialogDismiss()
+                lecturerRepository.insertLecture(lecture)
+                _state.update { it.copy(showLectureSavedDialog = true) }
             }
         } catch (validationException: ValidationException) {
             _state.update {

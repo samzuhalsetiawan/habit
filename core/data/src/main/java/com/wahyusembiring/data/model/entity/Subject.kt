@@ -10,9 +10,9 @@ import androidx.room.PrimaryKey
     tableName = "subject",
     foreignKeys = [
         ForeignKey(
-            entity = Lecture::class,
+            entity = Lecturer::class,
             parentColumns = ["id"],
-            childColumns = ["lecture_id"],
+            childColumns = ["lecturer_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
@@ -28,8 +28,8 @@ data class Subject(
 
     val room: String,
 
-    @ColumnInfo("lecture_id")
-    val lectureId: Int,
+    @ColumnInfo("lecturer_id")
+    val lecturerId: Int,
 
     val description: String,
 )

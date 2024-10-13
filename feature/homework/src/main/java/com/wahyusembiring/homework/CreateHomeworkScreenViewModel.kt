@@ -186,7 +186,12 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
             attachments = _state.value.attachments,
             completed = _state.value.isCompleted
         )
-        val newHomeworkId = eventRepository.saveHomework(homework)
+        val newHomeworkId = if (homeworkId == -1) {
+            eventRepository.saveHomework(homework)
+        } else {
+            eventRepository.updateHomework(homework)
+            homeworkId
+        }
         if (homework.reminder != null) {
             scheduleReminder(
                 context = context,

@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 import com.wahyusembiring.data.model.OfficeHour
 
 @Entity(
-    tableName = "lecture"
+    tableName = "lecturer"
 )
-data class Lecture(
+data class Lecturer(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 

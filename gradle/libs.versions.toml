@@ -30,6 +30,11 @@ material = "1.12.0"
 coroutine = "1.9.0-RC.2"
 kotlinxDateTime = "0.6.0"
 dataStore = "1.1.1"
+googleServices = "4.4.2"
+firebaseBom = "33.4.0"
+firestore = "25.1.0"
+gson = "2.11.0"
+paging = "3.3.2"
 
 
 [libraries]
@@ -63,6 +68,7 @@ boguszpawlowski-kotlix-datetime = { group = "io.github.boguszpawlowski.composeca
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 
 #Navigation
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
@@ -102,6 +108,14 @@ desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref 
 #DataStore
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
 
+#Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+
+#Paging
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
 #Build-Logic dependencies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
@@ -131,6 +145,8 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }
 #Dagger Hilt
 hilt-android-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+#Firebase
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
 #Convention Plugin
 habit-android-application = { id = "habit.android.application", version = "unspecified" }

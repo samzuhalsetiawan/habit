@@ -148,7 +148,12 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
             description = _state.value.description,
             completed = _state.value.isCompleted
         )
-        val savedReminderId = eventRepository.saveReminder(reminder)
+        val savedReminderId = if (reminderId == -1) {
+            eventRepository.saveReminder(reminder)
+        } else {
+            eventRepository.updateReminder(reminder)
+            reminderId
+        }
         scheduleReminder(
             context = context,
             localDateTime = LocalDateTime.of(

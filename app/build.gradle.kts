@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.habit.android.lifecycle)
     alias(libs.plugins.habit.android.navigation)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -41,6 +42,8 @@ dependencies {
     implementation(project(":feature:lecture"))
     implementation(project(":feature:thesisplanner"))
 
+//    Firebase
+    implementation(platform(libs.firebase.bom))
 
 //   Coil
     implementation(libs.coil.compose)

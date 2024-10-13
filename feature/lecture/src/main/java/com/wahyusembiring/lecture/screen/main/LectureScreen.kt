@@ -72,12 +72,12 @@ private fun LectureScreen(
         LazyColumn(
             modifier = Modifier.padding(scaffoldPadding)
         ) {
-            items(state.listOfLectureWithSubjects.size) { index ->
+            items(state.listOfLecturerWithSubjects.size) { index ->
                 LectureCard(
-                    lectureWithSubjects = state.listOfLectureWithSubjects[index],
+                    lecturerWithSubjects = state.listOfLecturerWithSubjects[index],
                     onClick = { /*TODO*/ }
                 )
-                if (index != state.listOfLectureWithSubjects.lastIndex) {
+                if (index != state.listOfLecturerWithSubjects.lastIndex) {
                     HorizontalDivider()
                 }
             }

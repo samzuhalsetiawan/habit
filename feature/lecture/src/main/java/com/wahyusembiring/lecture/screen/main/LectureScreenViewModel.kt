@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.wahyusembiring.common.navigation.Screen
-import com.wahyusembiring.data.repository.LectureRepository
+import com.wahyusembiring.data.repository.LecturerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,15 +14,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LectureScreenViewModel @Inject constructor(
-    private val lectureRepository: LectureRepository
+    private val lecturerRepository: LecturerRepository
 ) : ViewModel() {
 
 
     init {
         viewModelScope.launch {
-            lectureRepository.getAllLectureWithSubjects().collect {
+            lecturerRepository.getAllLectureWithSubjects().collect {
                 _state.update {
-                    it.copy(listOfLectureWithSubjects = it.listOfLectureWithSubjects)
+                    it.copy(listOfLecturerWithSubjects = it.listOfLecturerWithSubjects)
                 }
             }
         }

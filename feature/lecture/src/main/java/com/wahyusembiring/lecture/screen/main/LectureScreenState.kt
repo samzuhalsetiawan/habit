@@ -1,11 +1,11 @@
 package com.wahyusembiring.lecture.screen.main
 
 import androidx.navigation.NavController
-import com.wahyusembiring.data.model.LectureWithSubject
+import com.wahyusembiring.data.model.LecturerWithSubject
 
 data class LectureScreenUIState(
     val showDrawer: Boolean = false,
-    val listOfLectureWithSubjects: List<LectureWithSubject> = emptyList()
+    val listOfLecturerWithSubjects: List<LecturerWithSubject> = emptyList()
 )
 
 sealed class LectureScreenUIEvent {

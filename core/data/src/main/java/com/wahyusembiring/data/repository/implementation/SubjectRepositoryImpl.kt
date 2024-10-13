@@ -4,18 +4,22 @@ import com.wahyusembiring.data.local.dao.SubjectDao
 import com.wahyusembiring.data.model.SubjectWithExam
 import com.wahyusembiring.data.model.SubjectWithExamAndHomework
 import com.wahyusembiring.data.model.entity.Subject
+import com.wahyusembiring.data.remote.SubjectService
 import com.wahyusembiring.data.repository.SubjectRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class SubjectRepositoryImpl(
-    private val subjectDao: SubjectDao
+class SubjectRepositoryImpl @Inject constructor(
+    private val subjectDao: SubjectDao,
+    private val subjectService: SubjectService
 ) : SubjectRepository {
     override fun getAllSubject(): Flow<List<Subject>> {
-        return subjectDao.getAllSubjectsAsFlow()
+        return subjectDao.getAllSubject()
     }
 
     override suspend fun saveSubject(subject: Subject) {
-        subjectDao.upsertSubject(subject)
+        subjectDao.insertSubject(subject)
+        subjectService.saveSubject(subject)
     }
 
     override fun getAllSubjectWithExam(): Flow<List<SubjectWithExam>> {

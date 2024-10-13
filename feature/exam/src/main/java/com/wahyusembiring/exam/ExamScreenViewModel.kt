@@ -7,7 +7,6 @@ import com.wahyusembiring.common.util.launch
 import com.wahyusembiring.common.util.scheduleReminder
 import com.wahyusembiring.data.model.entity.Exam
 import com.wahyusembiring.data.repository.EventRepository
-import com.wahyusembiring.data.repository.ExamRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.ui.component.popup.AlertDialog
 import com.wahyusembiring.ui.component.popup.Picker
@@ -26,7 +25,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = ExamScreenViewModel.Factory::class)
 class ExamScreenViewModel @AssistedInject constructor(
@@ -133,7 +131,12 @@ class ExamScreenViewModel @AssistedInject constructor(
                 attachments = _state.value.attachments,
                 score = _state.value.score
             )
-            val newExamId = eventRepository.saveExam(exam)
+            val newExamId = if (examId == -1) {
+                eventRepository.saveExam(exam)
+            } else {
+                eventRepository.updateExam(exam)
+                examId
+            }
             scheduleReminder(
                 context = context,
                 localDateTime = LocalDateTime.of(

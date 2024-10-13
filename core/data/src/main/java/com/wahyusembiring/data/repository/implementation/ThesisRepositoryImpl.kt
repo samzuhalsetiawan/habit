@@ -5,12 +5,15 @@ import com.wahyusembiring.data.local.dao.ThesisDao
 import com.wahyusembiring.data.model.entity.Task
 import com.wahyusembiring.data.model.entity.Thesis
 import com.wahyusembiring.data.model.ThesisWithTask
+import com.wahyusembiring.data.remote.ThesisService
 import com.wahyusembiring.data.repository.ThesisRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class ThesisRepositoryImpl(
+class ThesisRepositoryImpl @Inject constructor(
     private val thesisDao: ThesisDao,
     private val taskDao: TaskDao,
+    private val thesisService: ThesisService
 ) : ThesisRepository {
 
     override fun getAllThesis(): Flow<List<ThesisWithTask>> {
@@ -22,31 +25,40 @@ class ThesisRepositoryImpl(
     }
 
     override suspend fun saveNewThesis(thesis: Thesis): Long {
-        return thesisDao.insertThesis(thesis)
+        val thesisId = thesisDao.insertThesis(thesis)
+        thesisService.saveNewThesis(thesis.copy(id = thesisId.toInt()))
+        return thesisId
     }
 
     override suspend fun updateThesis(thesis: Thesis) {
-        return thesisDao.updateThesis(thesis)
+        thesisDao.updateThesis(thesis)
+        thesisService.updateThesis(thesis)
     }
 
     override suspend fun updateThesisTitleById(id: Int, title: String) {
-        return thesisDao.updateThesisTitleById(id, title)
+        thesisDao.updateThesisTitleById(id, title)
+        thesisService.updateThesisTitleById(id, title)
     }
 
     override suspend fun deleteThesis(thesis: Thesis) {
-        return thesisDao.deleteThesis(thesis)
+        thesisDao.deleteThesis(thesis)
+        thesisService.deleteThesis(thesis)
     }
 
     override suspend fun addNewTask(task: Task): Long {
-        return taskDao.insertTask(task)
+        val taskId = taskDao.insertTask(task)
+        thesisService.addNewTask(task.copy(id = taskId.toInt()))
+        return taskId
     }
 
     override suspend fun deleteTask(task: Task) {
-        return taskDao.deleteTask(task)
+        taskDao.deleteTask(task)
+        thesisService.deleteTask(task)
     }
 
     override suspend fun changeTaskCompletedStatus(task: Task, isCompleted: Boolean) {
-        return taskDao.updateTask(task.copy(isCompleted = isCompleted))
+        taskDao.updateTask(task.copy(isCompleted = isCompleted))
+        thesisService.changeTaskCompletedStatus(task, isCompleted)
     }
 
 }

@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.common.util.launch
-import com.wahyusembiring.data.model.entity.Lecture
+import com.wahyusembiring.data.model.entity.Lecturer
 import com.wahyusembiring.data.model.entity.Subject
-import com.wahyusembiring.data.repository.LectureRepository
+import com.wahyusembiring.data.repository.LecturerRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.subject.R
 import com.wahyusembiring.ui.component.popup.AlertDialog
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateSubjectViewModel @Inject constructor(
     private val subjectRepository: SubjectRepository,
-    private val lectureRepository: LectureRepository
+    private val lecturerRepository: LecturerRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CreateSubjectScreenUIState())
@@ -35,7 +35,7 @@ class CreateSubjectViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            lectureRepository.getAllLecture().collect { lectures ->
+            lecturerRepository.getAllLecture().collect { lectures ->
                 _state.update {
                     it.copy(lectures = lectures)
                 }
@@ -58,7 +58,7 @@ class CreateSubjectViewModel @Inject constructor(
         }
     }
 
-    private fun onLecturerSelected(lecturer: Lecture) {
+    private fun onLecturerSelected(lecturer: Lecturer) {
         _state.update {
             it.copy(lecture = lecturer)
         }
@@ -132,7 +132,7 @@ class CreateSubjectViewModel @Inject constructor(
             color = _state.value.color,
             room = _state.value.room.ifBlank { throw MissingRequiredFieldException.Room() },
             description = _state.value.description,
-            lectureId = _state.value.lecture?.id ?: throw MissingRequiredFieldException.Lecture()
+            lecturerId = _state.value.lecture?.id ?: throw MissingRequiredFieldException.Lecture()
         )
         subjectRepository.saveSubject(subject)
     }

@@ -1,6 +1,7 @@
 package com.wahyusembiring.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -14,10 +15,10 @@ interface SubjectDao {
 
     @Transaction
     @Query("SELECT * FROM subject")
-    fun getAllSubjectsAsFlow(): Flow<List<Subject>>
+    fun getAllSubject(): Flow<List<Subject>>
 
-    @Upsert(entity = Subject::class)
-    suspend fun upsertSubject(subject: Subject): Long
+    @Insert(entity = Subject::class)
+    suspend fun insertSubject(subject: Subject): Long
 
     @Transaction
     @Query("SELECT * FROM subject")

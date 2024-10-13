@@ -9,10 +9,11 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.wahyusembiring.data.repository.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "habit_preferences")
 
-class DataStoreRepositoryImpl(
+class DataStoreRepositoryImpl @Inject constructor(
     private val appContext: Context
 ) : DataStoreRepository {
 

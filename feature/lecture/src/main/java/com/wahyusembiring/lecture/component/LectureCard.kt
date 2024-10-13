@@ -1,6 +1,5 @@
 package com.wahyusembiring.lecture.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +11,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.wahyusembiring.data.model.LectureWithSubject
-import com.wahyusembiring.data.model.entity.Lecture
+import com.wahyusembiring.data.model.LecturerWithSubject
 
 @Composable
 fun LectureCard(
-    lectureWithSubjects: LectureWithSubject,
+    lecturerWithSubjects: LecturerWithSubject,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -30,19 +28,19 @@ fun LectureCard(
             ) {
                 AsyncImage(
                     modifier = Modifier.size(32.dp),
-                    model = lectureWithSubjects.lecture.photo,
+                    model = lecturerWithSubjects.lecturer.photo,
                     contentDescription = null
                 )
             }
         },
         headlineContent = {
-            Text(text = lectureWithSubjects.lecture.name)
+            Text(text = lecturerWithSubjects.lecturer.name)
         },
         supportingContent = {
             Text(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                text = lectureWithSubjects.subjects.joinToString { it.name }
+                text = lecturerWithSubjects.subjects.joinToString { it.name }
             )
         }
     )

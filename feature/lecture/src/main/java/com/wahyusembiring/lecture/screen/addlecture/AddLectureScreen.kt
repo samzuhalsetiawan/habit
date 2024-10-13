@@ -40,6 +40,7 @@ import com.wahyusembiring.ui.component.officehourinput.OfficeHourInput
 import com.wahyusembiring.ui.component.phonenumberinput.PhoneNumberInput
 import com.wahyusembiring.ui.component.popup.alertdialog.confirmation.ConfirmationAlertDialog
 import com.wahyusembiring.ui.component.popup.alertdialog.error.ErrorAlertDialog
+import com.wahyusembiring.ui.component.popup.alertdialog.information.InformationAlertDialog
 import com.wahyusembiring.ui.component.profilepicturepicker.ProfilePicturePicker
 import com.wahyusembiring.ui.component.websiteinput.WebsiteInput
 import com.wahyusembiring.ui.theme.spacing
@@ -54,7 +55,10 @@ fun AddLectureScreen(
     AddLectureScreen(
         state = state,
         onUIEvent = viewModel::onUIEvent,
-        navController = navController
+        navController = navController,
+        navigateUp = {
+            navController.navigateUp()
+        }
     )
 }
 
@@ -63,7 +67,8 @@ fun AddLectureScreen(
 private fun AddLectureScreen(
     state: AddLectureScreenUItate,
     onUIEvent: (AddLectureScreenUIEvent) -> Unit,
-    navController: NavController
+    navController: NavController,
+    navigateUp: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -196,6 +201,20 @@ private fun AddLectureScreen(
             message = stringResource(R.string.are_you_sure_you_want_to_save_this_lecture),
             positiveButtonText = stringResource(R.string.save),
             negativeButtonText = stringResource(R.string.cancel),
+        )
+    }
+    if (state.showLectureSavedDialog) {
+        InformationAlertDialog(
+            onButtonClicked = {
+                onUIEvent(AddLectureScreenUIEvent.OnLectureSavedDialogDismiss)
+                navigateUp()
+            },
+            buttonText = stringResource(id = R.string.ok),
+            title = stringResource(R.string.lecture_saved),
+            message = "",
+            onDismissRequest = {
+                onUIEvent(AddLectureScreenUIEvent.OnLectureSavedDialogDismiss)
+            },
         )
     }
     if (state.errorMessage != null) {

@@ -28,7 +28,7 @@ interface ReminderDao {
     )
     fun getAllReminder(minDate: Long, maxDate: Long): Flow<List<Reminder>>
 
-    @Upsert(entity = Reminder::class)
+    @Insert(entity = Reminder::class)
     suspend fun insertReminder(reminder: Reminder): Long
 
     @Update(entity = Reminder::class)

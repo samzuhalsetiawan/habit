@@ -8,4 +8,5 @@
     <string name="cancel">Cancel</string>
     <string name="lecture_name_cannot_be_empty">Lecture name cannot be empty</string>
     <string name="ok">Ok</string>
+    <string name="lecture_saved">Lecture Saved</string>
 </resources>
