@@ -1,5 +1,6 @@
 package com.wahyusembiring.homework
 
+import android.app.Application
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -12,9 +13,6 @@ import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.HomeworkRepository
 import com.wahyusembiring.data.repository.SubjectRepository
-import com.wahyusembiring.ui.component.popup.AlertDialog
-import com.wahyusembiring.ui.component.popup.Picker
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -36,7 +34,8 @@ import javax.inject.Inject
 class CreateHomeworkScreenViewModel @AssistedInject constructor(
     @Assisted private val homeworkId: Int = -1,
     private val eventRepository: EventRepository,
-    private val subjectRepository: SubjectRepository
+    private val subjectRepository: SubjectRepository,
+    private val application: Application
 ) : ViewModel() {
 
     @AssistedFactory
@@ -53,129 +52,133 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         viewModelScope.launch {
             when (event) {
                 is CreateHomeworkUIEvent.OnHomeworkTitleChanged -> onHomeworkTitleChanged(event.title)
-                is CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked -> onSaveHomeworkButtonClick(
-                    event.context
-                )
-
+                is CreateHomeworkUIEvent.OnSaveHomeworkButtonClicked -> onSaveHomeworkButtonClick()
                 is CreateHomeworkUIEvent.OnPickDateButtonClicked -> onDatePickerClick()
                 is CreateHomeworkUIEvent.OnPickTimeButtonClicked -> onTimePickerClick()
                 is CreateHomeworkUIEvent.OnPickSubjectButtonClicked -> onSubjectPickerClick()
                 is CreateHomeworkUIEvent.OnPickAttachmentButtonClicked -> onAttachmentPickerClick()
-                else -> Unit
+                is CreateHomeworkUIEvent.OnAttachmentPicked -> onAttachmentPicked(event.attachments)
+                is CreateHomeworkUIEvent.OnConfirmSaveHomeworkClick -> onConfirmSaveHomeworkClick()
+                is CreateHomeworkUIEvent.OnDatePicked -> onDateSelected(event.date)
+                is CreateHomeworkUIEvent.OnDismissAttachmentPicker -> onDismissAttachmentPicker()
+                is CreateHomeworkUIEvent.OnDismissDatePicker -> onDismissDatePicker()
+                is CreateHomeworkUIEvent.OnDismissHomeworkSavedDialog -> onDismissHomeworkSavedDialog()
+                is CreateHomeworkUIEvent.OnDismissSaveConfirmationDialog -> onDismissSaveConfirmationDialog()
+                is CreateHomeworkUIEvent.OnDismissSubjectPicker -> onDismissSubjectPicker()
+                is CreateHomeworkUIEvent.OnDismissTimePicker -> onDismissTimePicker()
+                is CreateHomeworkUIEvent.OnSubjectPicked -> onSubjectSelected(event.subject)
+                is CreateHomeworkUIEvent.OnTimePicked -> onTimeSelected(event.time)
+                is CreateHomeworkUIEvent.OnDismissErrorDialog -> onDismissErrorDialog()
+                is CreateHomeworkUIEvent.OnDismissSavingLoading -> onDismissSavingLoading()
             }
+        }
+    }
+
+    private fun onDismissSavingLoading() {
+        _state.update {
+            it.copy(showSavingLoading = false)
+        }
+    }
+
+    private fun onDismissErrorDialog() {
+        _state.update {
+            it.copy(errorMessage = null)
+        }
+    }
+
+    private fun onDismissTimePicker() {
+        _state.update {
+            it.copy(showTimePicker = false)
+        }
+    }
+
+    private fun onDismissSubjectPicker() {
+        _state.update {
+            it.copy(showSubjectPicker = false)
+        }
+    }
+
+    private fun onDismissSaveConfirmationDialog() {
+        _state.update {
+            it.copy(showSaveConfirmationDialog = false)
+        }
+    }
+
+    private fun onDismissHomeworkSavedDialog() {
+        _state.update {
+            it.copy(showHomeworkSavedDialog = false)
+        }
+    }
+
+    private fun onDismissDatePicker() {
+        _state.update {
+            it.copy(showDatePicker = false)
+        }
+    }
+
+    private fun onDismissAttachmentPicker() {
+        _state.update {
+            it.copy(showAttachmentPicker = false)
+        }
+    }
+
+    private fun onAttachmentPicked(attachments: List<Attachment>) {
+        _state.update {
+            it.copy(attachments = attachments)
         }
     }
 
     private suspend fun onAttachmentPickerClick() {
-        val attachmentPicker = Picker.AttachmentPicker()
-        showPopUp(attachmentPicker)
-        when (val result = attachmentPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                onAttachmentsConfirmed(result.value)
-                hidePopUp(attachmentPicker)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(attachmentPicker)
+        _state.update {
+            it.copy(showAttachmentPicker = true)
         }
     }
 
     private suspend fun onSubjectPickerClick() {
-        val subjectPicker = Picker.SubjectPicker()
-        showPopUp(subjectPicker)
-        when (val result = subjectPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                onSubjectSelected(result.value)
-                hidePopUp(subjectPicker)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(subjectPicker)
+        _state.update {
+            it.copy(showSubjectPicker = true)
         }
     }
 
     private suspend fun onTimePickerClick() {
-        val timePicker = Picker.TimePicker()
-        showPopUp(timePicker)
-        when (val result = timePicker.result.await()) {
-            is Picker.Result.Picked -> {
-                onTimeSelected(result.value)
-                hidePopUp(timePicker)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(timePicker)
+        _state.update {
+            it.copy(showTimePicker = true)
         }
     }
 
     private suspend fun onDatePickerClick() {
-        val datePicker = Picker.DatePicker()
-        showPopUp(datePicker)
-        when (val result = datePicker.result.await()) {
-            is Picker.Result.Picked -> {
-                onDateSelected(result.value)
-                hidePopUp(datePicker)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(datePicker)
+        _state.update {
+            it.copy(showDatePicker = true)
         }
     }
 
-    private suspend fun onSaveHomeworkButtonClick(
-        context: Context
-    ) {
-        // Show confirmation dialog
-        val confirmationDialog = if (homeworkId == -1) {
-            AlertDialog.Confirmation(
-                title = UIText.StringResource(R.string.save_homework),
-                message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_homework),
-            )
-        } else {
-            AlertDialog.Confirmation(
-                title = UIText.StringResource(R.string.edit_homework),
-                message = UIText.StringResource(R.string.are_you_sure_you_want_to_edit_this_homework),
-            )
-        }
-        showPopUp(confirmationDialog)
-        when (confirmationDialog.result.await()) {
-            AlertDialog.Result.Positive -> {
-                hidePopUp(confirmationDialog)
-                onSaveHomeworkConfirmed(context)
-            }
-
-            AlertDialog.Result.Negative -> hidePopUp(confirmationDialog)
-            AlertDialog.Result.Dismiss -> hidePopUp(confirmationDialog)
+    private suspend fun onSaveHomeworkButtonClick() {
+        _state.update {
+            it.copy(showSaveConfirmationDialog = true)
         }
     }
 
-    private suspend fun onSaveHomeworkConfirmed(
-        context: Context
-    ) {
-        val loadingPopup = AlertDialog.Loading(UIText.StringResource(R.string.saving))
+    private fun onConfirmSaveHomeworkClick() {
+        _state.update { it.copy(showSavingLoading = true) }
         try {
-            showPopUp(loadingPopup)
-            saveHomework(context)
-            hidePopUp(loadingPopup)
-
-            // Show success popup
-            val successPopup = AlertDialog.Information(
-                message = UIText.StringResource(R.string.homework_saved)
-            )
-            showPopUp(successPopup)
-            successPopup.result.invokeOnCompletion { hidePopUp(successPopup) }
+            viewModelScope.launch {
+                saveHomework()
+                _state.update {
+                    it.copy(showSavingLoading = false, showHomeworkSavedDialog = true)
+                }
+            }
         } catch (e: MissingRequiredFieldException) {
-            hidePopUp(loadingPopup)
+            _state.update { it.copy(showSavingLoading = false) }
             val errorMessage = when (e) {
                 is MissingRequiredFieldException.Title -> UIText.StringResource(R.string.homework_title_is_required)
                 is MissingRequiredFieldException.Date -> UIText.StringResource(R.string.due_date_is_required)
                 is MissingRequiredFieldException.Subject -> UIText.StringResource(R.string.subject_is_required)
             }
-            val errorPopup = AlertDialog.Error(errorMessage)
-            showPopUp(errorPopup)
-            errorPopup.result.invokeOnCompletion { hidePopUp(errorPopup) }
+            _state.update { it.copy(errorMessage = errorMessage) }
         }
     }
 
-    private suspend fun saveHomework(
-        context: Context
-    ) {
+    private suspend fun saveHomework() {
         val homework = Homework(
             id = if (homeworkId == -1) 0 else homeworkId,
             title = _state.value.homeworkTitle.ifBlank { throw MissingRequiredFieldException.Title() },
@@ -194,7 +197,7 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
         }
         if (homework.reminder != null) {
             scheduleReminder(
-                context = context,
+                context = application.applicationContext,
                 localDateTime = LocalDateTime.of(
                     LocalDate.ofInstant(homework.dueDate.toInstant(), ZoneId.systemDefault()),
                     LocalTime.of(homework.reminder!!.hour, homework.reminder!!.minute)
@@ -202,18 +205,6 @@ class CreateHomeworkScreenViewModel @AssistedInject constructor(
                 title = homework.title,
                 reminderId = newHomeworkId.toInt()
             )
-        }
-    }
-
-    private fun showPopUp(popUp: PopUp) {
-        _state.update {
-            it.copy(popUps = it.popUps + popUp)
-        }
-    }
-
-    private fun hidePopUp(popUp: PopUp) {
-        _state.update {
-            it.copy(popUps = it.popUps - popUp)
         }
     }
 

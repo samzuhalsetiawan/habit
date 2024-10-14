@@ -1,16 +1,18 @@
 package com.wahyusembiring.exam
 
+import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wahyusembiring.common.util.launch
 import com.wahyusembiring.common.util.scheduleReminder
+import com.wahyusembiring.data.model.Attachment
+import com.wahyusembiring.data.model.Time
 import com.wahyusembiring.data.model.entity.Exam
+import com.wahyusembiring.data.model.entity.ExamCategory
+import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.data.repository.EventRepository
 import com.wahyusembiring.data.repository.SubjectRepository
-import com.wahyusembiring.ui.component.popup.AlertDialog
-import com.wahyusembiring.ui.component.popup.Picker
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,12 +27,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.util.Date
 
 @HiltViewModel(assistedFactory = ExamScreenViewModel.Factory::class)
 class ExamScreenViewModel @AssistedInject constructor(
     @Assisted val examId: Int = -1,
     private val eventRepository: EventRepository,
-    private val subjectRepository: SubjectRepository
+    private val subjectRepository: SubjectRepository,
+    private val application: Application
 ) : ViewModel() {
 
     @AssistedFactory
@@ -52,26 +56,91 @@ class ExamScreenViewModel @AssistedInject constructor(
             is ExamScreenUIEvent.OnExamSubjectPickerClick -> launch { onExamSubjectPickerClick() }
             is ExamScreenUIEvent.OnExamAttachmentPickerClick -> launch { onExamAttachmentPickerClick() }
             is ExamScreenUIEvent.OnExamCategoryPickerClick -> launch { onExamCategoryPickerClick() }
-            is ExamScreenUIEvent.OnSaveExamButtonClick -> launch { onSaveExamButtonClick(event.context) }
-            else -> Unit
+            is ExamScreenUIEvent.OnSaveExamButtonClick -> launch { onSaveExamButtonClick() }
+            is ExamScreenUIEvent.OnAttachmentPicked -> onAttachmentPicked(event.attachments)
+            is ExamScreenUIEvent.OnAttachmentPickedDismiss -> onAttachmentPickedDismiss()
+            is ExamScreenUIEvent.OnCategoryPicked -> onCategoryPicked(event.category)
+            is ExamScreenUIEvent.OnCategoryPickedDismiss -> onCategoryPickedDismiss()
+            is ExamScreenUIEvent.OnDatePicked -> onDatePicked(event.date)
+            is ExamScreenUIEvent.OnDatePickedDismiss -> onDatePickedDismiss()
+            is ExamScreenUIEvent.OnErrorDialogDismiss -> onErrorDialogDismiss()
+            is ExamScreenUIEvent.OnExamSavedDialogDismiss -> onExamSavedDialogDismiss()
+            is ExamScreenUIEvent.OnSaveConfirmationDialogDismiss -> onSaveConfirmationDialogDismiss()
+            is ExamScreenUIEvent.OnSaveExamConfirmClick -> launch { onSaveExamConfirmClick() }
+            is ExamScreenUIEvent.OnSubjectPicked -> onSubjectPicked(event.subject)
+            is ExamScreenUIEvent.OnSubjectPickedDismiss -> onSubjectPickedDismiss()
+            is ExamScreenUIEvent.OnTimePicked -> onTimePicked(event.time)
+            is ExamScreenUIEvent.OnTimePickedDismiss -> onTimePickedDismiss()
         }
+    }
+
+    private fun onTimePickedDismiss() {
+        _state.update { it.copy(showTimePicker = false) }
+    }
+
+    private fun onTimePicked(time: Time) {
+        _state.update { it.copy(time = time) }
+    }
+
+    private fun onSubjectPickedDismiss() {
+        _state.update { it.copy(showSubjectPicker = false) }
+    }
+
+    private fun onSubjectPicked(subject: Subject) {
+        _state.update { it.copy(subject = subject) }
+    }
+
+    private fun onSaveConfirmationDialogDismiss() {
+        _state.update { it.copy(showSaveConfirmationDialog = false) }
+    }
+
+    private fun onExamSavedDialogDismiss() {
+        _state.update { it.copy(showExamSavedDialog = false) }
+    }
+
+    private fun onErrorDialogDismiss() {
+        _state.update { it.copy(errorMessage = null) }
+    }
+
+    private fun onDatePickedDismiss() {
+        _state.update { it.copy(showDatePicker = false) }
+    }
+
+    private fun onDatePicked(date: Date) {
+        _state.update { it.copy(date = date) }
+    }
+
+    private fun onCategoryPickedDismiss() {
+        _state.update { it.copy(showCategoryPicker = false) }
+    }
+
+    private fun onCategoryPicked(category: ExamCategory) {
+        _state.update { it.copy(category = category) }
+    }
+
+    private fun onAttachmentPickedDismiss() {
+        _state.update { it.copy(showAttachmentPicker = false) }
+    }
+
+    private fun onAttachmentPicked(attachments: List<Attachment>) {
+        _state.update { it.copy(attachments = attachments) }
     }
 
     init {
         if (examId != -1) {
             viewModelScope.launch {
-                eventRepository.getExamById(examId).collect { examDto ->
-                    if (examDto == null) return@collect
+                eventRepository.getExamById(examId).collect { examWithSubject ->
+                    if (examWithSubject == null) return@collect
                     _state.update {
                         it.copy(
                             isEditMode = true,
-                            name = examDto.exam.title,
-                            date = examDto.exam.date,
-                            time = examDto.exam.reminder,
-                            subject = examDto.subject,
-                            category = examDto.exam.category,
-                            score = examDto.exam.score,
-                            attachments = examDto.exam.attachments
+                            name = examWithSubject.exam.title,
+                            date = examWithSubject.exam.date,
+                            time = examWithSubject.exam.reminder,
+                            subject = examWithSubject.subject,
+                            category = examWithSubject.exam.category,
+                            score = examWithSubject.exam.score,
+                            attachments = examWithSubject.exam.attachments
                         )
                     }
                 }
@@ -86,38 +155,12 @@ class ExamScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun onSaveExamButtonClick(
-        context: Context
-    ) {
-        val confirmationDalog = if (examId == -1) {
-            AlertDialog.Confirmation(
-                title = UIText.StringResource(R.string.save_exam),
-                message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_exam),
-            )
-        } else {
-            AlertDialog.Confirmation(
-                title = UIText.StringResource(R.string.edit_exam),
-                message = UIText.StringResource(R.string.are_you_sure_you_want_to_edit_this_exam),
-            )
-        }
-        showPopUp(confirmationDalog)
-        when (confirmationDalog.result.await()) {
-            AlertDialog.Result.Positive -> {
-                hidePopUp(confirmationDalog)
-                saveExam(context)
-            }
-
-            AlertDialog.Result.Negative -> hidePopUp(confirmationDalog)
-            AlertDialog.Result.Dismiss -> hidePopUp(confirmationDalog)
-        }
+    private suspend fun onSaveExamButtonClick() {
+        _state.update { it.copy(showSaveConfirmationDialog = true) }
     }
 
-    private suspend fun saveExam(
-        context: Context
-    ) {
-        val loading =
-            AlertDialog.Loading(UIText.StringResource(com.wahyusembiring.ui.R.string.saving))
-        showPopUp(loading)
+    private suspend fun onSaveExamConfirmClick() {
+        _state.update { it.copy(showSavingLoading = true) }
         try {
             val exam = Exam(
                 id = if (examId != -1) examId else 0,
@@ -138,7 +181,7 @@ class ExamScreenViewModel @AssistedInject constructor(
                 examId
             }
             scheduleReminder(
-                context = context,
+                context = application.applicationContext,
                 localDateTime = LocalDateTime.of(
                     LocalDate.ofInstant(exam.date.toInstant(), ZoneId.systemDefault()),
                     LocalTime.of(exam.reminder!!.hour, exam.reminder!!.minute)
@@ -146,24 +189,21 @@ class ExamScreenViewModel @AssistedInject constructor(
                 title = exam.title,
                 reminderId = newExamId.toInt()
             )
-            hidePopUp(loading)
-
-            val success = AlertDialog.Information(
-                message = UIText.StringResource(R.string.exam_saved)
-            )
-            showPopUp(success)
-            success.result.invokeOnCompletion { hidePopUp(success) }
+            _state.update {
+                it.copy(
+                    showSavingLoading = false,
+                    showExamSavedDialog = true
+                )
+            }
         } catch (e: MissingRequiredFieldException) {
-            hidePopUp(loading)
+            _state.update { it.copy(showSavingLoading = false) }
             val errorMessage = when (e) {
                 is MissingRequiredFieldException.Date -> UIText.StringResource(R.string.date_cannot_be_empty)
                 is MissingRequiredFieldException.Subject -> UIText.StringResource(R.string.subject_cannot_be_empty)
                 is MissingRequiredFieldException.Time -> UIText.StringResource(R.string.time_cannot_be_empty)
                 is MissingRequiredFieldException.Title -> UIText.StringResource(R.string.exam_name_cannot_be_empty)
             }
-            val error = AlertDialog.Error(message = errorMessage)
-            showPopUp(error)
-            error.result.invokeOnCompletion { hidePopUp(error) }
+            _state.update { it.copy(errorMessage = errorMessage) }
         }
     }
 
@@ -171,78 +211,24 @@ class ExamScreenViewModel @AssistedInject constructor(
         _state.value = _state.value.copy(name = name)
     }
 
-    private suspend fun onExamDatePickerClick() {
-        val datePicker = Picker.DatePicker()
-        showPopUp(datePicker)
-        when (val result = datePicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(datePicker)
-                _state.value = _state.value.copy(date = result.value)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(datePicker)
-        }
+    private fun onExamDatePickerClick() {
+        _state.update { it.copy(showDatePicker = true) }
     }
 
-    private suspend fun onExamTimePickerClick() {
-        val timePicker = Picker.TimePicker()
-        showPopUp(timePicker)
-        when (val result = timePicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(timePicker)
-                _state.value = _state.value.copy(time = result.value)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(timePicker)
-        }
+    private fun onExamTimePickerClick() {
+        _state.update { it.copy(showTimePicker = true) }
     }
 
-    private suspend fun onExamSubjectPickerClick() {
-        val subjectPicker = Picker.SubjectPicker()
-        showPopUp(subjectPicker)
-        when (val result = subjectPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(subjectPicker)
-                _state.value = _state.value.copy(subject = result.value)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(subjectPicker)
-        }
+    private fun onExamSubjectPickerClick() {
+        _state.update { it.copy(showSubjectPicker = true) }
     }
 
-    private suspend fun onExamCategoryPickerClick() {
-        val categoryPicker = Picker.ExamCategoryPicker()
-        showPopUp(categoryPicker)
-        when (val result = categoryPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(categoryPicker)
-                _state.value = _state.value.copy(category = result.value)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(categoryPicker)
-        }
+    private fun onExamCategoryPickerClick() {
+        _state.update { it.copy(showCategoryPicker = true) }
     }
 
-    private suspend fun onExamAttachmentPickerClick() {
-        val attachmentPicker = Picker.AttachmentPicker()
-        showPopUp(attachmentPicker)
-        when (val result = attachmentPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(attachmentPicker)
-                _state.value = _state.value.copy(attachments = result.value)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(attachmentPicker)
-        }
-    }
-
-
-    private fun showPopUp(popUp: PopUp) {
-        _state.value = _state.value.copy(popUps = _state.value.popUps + popUp)
-    }
-
-    private fun hidePopUp(popUp: PopUp) {
-        _state.value = _state.value.copy(popUps = _state.value.popUps - popUp)
+    private fun onExamAttachmentPickerClick() {
+        _state.update { it.copy(showAttachmentPicker = true) }
     }
 
     override fun onCleared() {

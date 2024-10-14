@@ -29,21 +29,11 @@ class LectureScreenViewModel @Inject constructor(
     }
 
 
-    private fun onHamburgerMenuClick() {
-        _state.update {
-            it.copy(showDrawer = true)
-        }
-    }
-
     private val _state = MutableStateFlow(LectureScreenUIState())
     val state = _state.asStateFlow()
 
     fun onUIEvent(event: LectureScreenUIEvent) {
         when (event) {
-            is LectureScreenUIEvent.OnHamburgerMenuClick -> {
-                onHamburgerMenuClick()
-            }
-
             is LectureScreenUIEvent.OnAddLectureClick -> onAddLectureClick(event.navController)
         }
     }

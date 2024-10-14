@@ -5,7 +5,6 @@ import com.wahyusembiring.data.model.File
 import com.wahyusembiring.data.model.ThesisWithTask
 import com.wahyusembiring.data.model.entity.Task
 import com.wahyusembiring.data.model.entity.Thesis
-import com.wahyusembiring.ui.component.popup.PopUp
 
 data class ThesisPlannerScreenUIState(
     val thesis: ThesisWithTask? = null,
@@ -13,5 +12,10 @@ data class ThesisPlannerScreenUIState(
     val editedThesisTitle: String = "",
     val articles: List<File> = emptyList(),
     val tasks: List<Task> = emptyList(),
-    val popUps: List<PopUp> = emptyList()
+
+    //popup
+    val showDatePicker: Boolean = false,
+    val showCreateTaskDialog: Boolean = false,
+    val articlePendingDelete: File? = null,
+    val taskPendingDelete: Task? = null,
 )

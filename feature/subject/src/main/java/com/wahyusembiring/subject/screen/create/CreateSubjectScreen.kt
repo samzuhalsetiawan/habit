@@ -25,10 +25,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.wahyusembiring.common.navigation.Screen
 import com.wahyusembiring.subject.R
 import com.wahyusembiring.ui.component.button.ChooseColorButton
 import com.wahyusembiring.ui.component.dropdown.Dropdown
-import com.wahyusembiring.ui.component.popup.PopUpHandler
+import com.wahyusembiring.ui.component.popup.alertdialog.confirmation.ConfirmationAlertDialog
+import com.wahyusembiring.ui.component.popup.alertdialog.information.InformationAlertDialog
+import com.wahyusembiring.ui.component.popup.alertdialog.loading.LoadingAlertDialog
+import com.wahyusembiring.ui.component.popup.picker.colorpicker.ColorPicker
 import com.wahyusembiring.ui.theme.spacing
 import com.wahyusembiring.ui.util.UIText
 
@@ -43,12 +47,12 @@ fun CreateSubjectScreen(
     CreateSubjectScreen(
         modifier = Modifier.fillMaxSize(),
         state = state,
-        navController = navController,
-        onUIEvent = {
-            when (it) {
-                is CreateSubjectScreenUIEvent.OnNavigateBack -> navController.popBackStack()
-                else -> viewModel.onUIEvent(it)
-            }
+        onUIEvent = viewModel::onUIEvent,
+        onNavigateUp = {
+            navController.navigateUp()
+        },
+        onNavigateToCreateLecturer = {
+            navController.navigate(Screen.AddLecture)
         }
     )
 }
@@ -58,15 +62,18 @@ private fun CreateSubjectScreen(
     modifier: Modifier = Modifier,
     state: CreateSubjectScreenUIState,
     onUIEvent: (CreateSubjectScreenUIEvent) -> Unit,
-    navController: NavHostController,
+    onNavigateUp: () -> Unit,
+    onNavigateToCreateLecturer: () -> Unit,
 ) {
     Scaffold { paddingValues ->
         Column(
             modifier = modifier.padding(paddingValues)
         ) {
             BackAndSaveHeader(
-                onBackButtonClicked = { onUIEvent(CreateSubjectScreenUIEvent.OnNavigateBack) },
-                onSaveButtonClicked = { onUIEvent(CreateSubjectScreenUIEvent.OnSaveButtonClicked) }
+                onBackButtonClicked = onNavigateUp,
+                onSaveButtonClicked = {
+                    onUIEvent(CreateSubjectScreenUIEvent.OnSaveButtonClicked)
+                }
             )
             Column(
                 modifier = Modifier
@@ -139,13 +146,7 @@ private fun CreateSubjectScreen(
                             Text(text = stringResource(R.string.there_are_no_lecturer_avaliable))
                             Spacer(modifier = Modifier.height(MaterialTheme.spacing.Small))
                             Button(
-                                onClick = {
-                                    onUIEvent(
-                                        CreateSubjectScreenUIEvent.OnAddLecturerButtonClicked(
-                                            navController
-                                        )
-                                    )
-                                }
+                                onClick = onNavigateToCreateLecturer
                             ) {
                                 Text(text = stringResource(R.string.add_new_lecturer))
                             }
@@ -154,11 +155,52 @@ private fun CreateSubjectScreen(
                 )
             }
         }
-
-        PopUpHandler(
-            popUps = state.popUps,
-            initialColorForColorPicker = state.color
+    }
+    if (state.showColorPicker) {
+        ColorPicker(
+            initialColor = state.color,
+            onDismissRequest = { onUIEvent(CreateSubjectScreenUIEvent.OnColorPickerDismiss) },
+            onColorConfirmed = { onUIEvent(CreateSubjectScreenUIEvent.OnColorPicked(it)) }
         )
+    }
+
+    if (state.showSavingLoading) {
+        LoadingAlertDialog(message = stringResource(R.string.saving))
+    }
+
+    if (state.showSaveConfirmationDialog) {
+        ConfirmationAlertDialog(
+            title = stringResource(R.string.save_subject),
+            message = stringResource(R.string.are_you_sure_you_want_to_save_this_subject),
+            positiveButtonText = stringResource(R.string.save),
+            onPositiveButtonClick = {
+                onUIEvent(CreateSubjectScreenUIEvent.OnSaveConfirmationDialogConfirm)
+            },
+            negativeButtonText = stringResource(R.string.cancel),
+            onNegativeButtonClick = {
+                onUIEvent(CreateSubjectScreenUIEvent.OnSaveConfirmationDialogDismiss)
+            },
+            onDismissRequest = {
+                onUIEvent(CreateSubjectScreenUIEvent.OnSaveConfirmationDialogDismiss)
+            },
+        )
+    }
+
+    if (state.showSubjectSavedDialog) {
+        InformationAlertDialog(
+            title = stringResource(R.string.success),
+            message = stringResource(R.string.subject_saved),
+            buttonText = stringResource(R.string.ok),
+            onButtonClicked = {
+                onUIEvent(CreateSubjectScreenUIEvent.OnSubjectSavedDialogDismiss)
+                onNavigateUp()
+            },
+            onDismissRequest = {
+                onUIEvent(CreateSubjectScreenUIEvent.OnSubjectSavedDialogDismiss)
+                onNavigateUp()
+            },
+
+            )
     }
 }
 

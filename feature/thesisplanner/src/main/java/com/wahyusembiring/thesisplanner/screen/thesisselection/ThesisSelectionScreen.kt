@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,23 +45,17 @@ fun ThesisSelectionScreen(
     navController: NavHostController
 ) {
 
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
 
     ThesisSelectionScreen(
-        state = state.value,
-        onUIEvent = {
-            when (it) {
-                is ThesisSelectionScreenUIEvent.OnHamburgerMenuClick -> {
-                    coroutineScope.launch { drawerState.open() }
-                }
-
-                is ThesisSelectionScreenUIEvent.OnNavigateToThesisPlanner -> {
-                    navController.navigate(Screen.ThesisPlanner(it.thesisId))
-                }
-
-                else -> viewModel.onUIEvent(it)
-            }
+        state = state,
+        onUIEvent = viewModel::onUIEvent,
+        onNavigateToThesisPlanner = {
+            navController.navigate(Screen.ThesisPlanner(it))
+        },
+        onHamburgerMenuClick = {
+            coroutineScope.launch { drawerState.open() }
         }
     )
 }
@@ -67,7 +63,9 @@ fun ThesisSelectionScreen(
 @Composable
 private fun ThesisSelectionScreen(
     state: ThesisSelectionScreenUIState,
-    onUIEvent: (ThesisSelectionScreenUIEvent) -> Unit
+    onUIEvent: (ThesisSelectionScreenUIEvent) -> Unit,
+    onNavigateToThesisPlanner: (thesisId: Int) -> Unit,
+    onHamburgerMenuClick: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -75,7 +73,7 @@ private fun ThesisSelectionScreen(
         topBar = {
             TopAppBar(
                 title = stringResource(R.string.thesis_planner),
-                onMenuClick = { onUIEvent(ThesisSelectionScreenUIEvent.OnHamburgerMenuClick) }
+                onMenuClick = onHamburgerMenuClick
             )
         },
         floatingActionButton = {
@@ -83,9 +81,7 @@ private fun ThesisSelectionScreen(
                 onClick = {
                     onUIEvent(
                         ThesisSelectionScreenUIEvent.OnCreateNewThesisClick(
-                            onNavigateToThesisPlanner = {
-                                onUIEvent(ThesisSelectionScreenUIEvent.OnNavigateToThesisPlanner(it))
-                            }
+                            onNavigateToThesisPlanner = onNavigateToThesisPlanner
                         )
                     )
                 }
@@ -107,9 +103,7 @@ private fun ThesisSelectionScreen(
                     ThesisList(
                         listOfThesis = state.listOfThesis,
                         onThesisClick = {
-                            onUIEvent(
-                                ThesisSelectionScreenUIEvent.OnNavigateToThesisPlanner(it.thesis.id)
-                            )
+                            onNavigateToThesisPlanner(it.thesis.id)
                         },
                         onDeleteThesis = {
                             onUIEvent(ThesisSelectionScreenUIEvent.OnDeleteThesisClick(it))

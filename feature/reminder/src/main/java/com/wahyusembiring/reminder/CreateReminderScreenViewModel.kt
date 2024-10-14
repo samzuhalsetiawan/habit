@@ -1,22 +1,19 @@
 package com.wahyusembiring.reminder
 
 import android.app.AlarmManager
+import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wahyusembiring.common.NOTIFICATION_ID_EXTRA
-import com.wahyusembiring.common.NOTIFICATION_TITLE_EXTRA
-import com.wahyusembiring.common.NotificationBroadcastReceiver
 import com.wahyusembiring.common.util.launch
 import com.wahyusembiring.common.util.scheduleReminder
+import com.wahyusembiring.data.model.Attachment
+import com.wahyusembiring.data.model.Time
 import com.wahyusembiring.data.model.entity.Reminder
 import com.wahyusembiring.data.repository.EventRepository
-import com.wahyusembiring.data.repository.ReminderRepository
-import com.wahyusembiring.ui.component.popup.AlertDialog
-import com.wahyusembiring.ui.component.popup.Picker
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -31,12 +28,14 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = CreateReminderScreenViewModel.Factory::class)
 class CreateReminderScreenViewModel @AssistedInject constructor(
     @Assisted val reminderId: Int = -1,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val application: Application
 ) : ViewModel() {
 
     @AssistedFactory
@@ -77,67 +76,93 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
             is CreateReminderScreenUIEvent.OnTimePickerButtonClick -> launch { onTimePickerButtonClick() }
             is CreateReminderScreenUIEvent.OnColorPickerButtonClick -> launch { onColorPickerButtonClick() }
             is CreateReminderScreenUIEvent.OnAttachmentPickerButtonClick -> launch { onAttachmentPickerButtonClick() }
-            is CreateReminderScreenUIEvent.OnSaveButtonClicked -> launch { onSaveButtonClicked(event.context) }
-            else -> Unit
+            is CreateReminderScreenUIEvent.OnSaveButtonClicked -> launch { onSaveButtonClicked() }
+            is CreateReminderScreenUIEvent.OnAttachmentPicked -> onAttachmentPicked(event.attachments)
+            is CreateReminderScreenUIEvent.OnAttachmentPickerDismiss -> onAttachmentPickerDismiss()
+            is CreateReminderScreenUIEvent.OnColorPicked -> onColorPicked(event.color)
+            is CreateReminderScreenUIEvent.OnColorPickerDismiss -> onColorPickerDismiss()
+            is CreateReminderScreenUIEvent.OnDatePicked -> onDatePicked(event.date)
+            is CreateReminderScreenUIEvent.OnDatePickerDismiss -> onDatePickerDismiss()
+            is CreateReminderScreenUIEvent.OnErrorDialogDismiss -> onErrorDialogDismiss()
+            is CreateReminderScreenUIEvent.OnReminderSavedDialogDismiss -> onReminderSavedDialogDismiss()
+            is CreateReminderScreenUIEvent.OnSaveConfirmationDialogDismiss -> onSaveConfirmationDialogDismiss()
+            is CreateReminderScreenUIEvent.OnSaveReminderConfirmClick -> launch { onSaveReminderConfirmClick() }
+            is CreateReminderScreenUIEvent.OnTimePicked -> onTimePicked(event.time)
+            is CreateReminderScreenUIEvent.OnTimePickerDismiss -> onTimePickerDismiss()
         }
     }
 
-    private suspend fun onSaveButtonClicked(
-        context: Context
-    ) {
-        val confirmationDialog = if (reminderId == -1) {
-            AlertDialog.Confirmation(
-                title = UIText.StringResource(R.string.save_reminder),
-                message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_reminder)
-            )
-        } else {
-            AlertDialog.Confirmation(
-                title = UIText.StringResource(R.string.edit_reminder),
-                message = UIText.StringResource(R.string.are_you_sure_you_want_to_edit_this_reminder)
-            )
-        }
-        showPopUp(confirmationDialog)
-        when (confirmationDialog.result.await()) {
-            AlertDialog.Result.Positive -> {
-                hidePopUp(confirmationDialog)
-                onSaveReminderConfirmed(context)
-            }
-
-            AlertDialog.Result.Negative -> hidePopUp(confirmationDialog)
-            AlertDialog.Result.Dismiss -> hidePopUp(confirmationDialog)
-        }
+    private fun onTimePickerDismiss() {
+        _state.update { it.copy(showTimePicker = false) }
     }
 
-    private suspend fun onSaveReminderConfirmed(
-        context: Context
-    ) {
-        val loadingDialog = AlertDialog.Loading(UIText.StringResource(R.string.saving_reminder))
+    private fun onTimePicked(time: Time) {
+        _state.update { it.copy(time = time) }
+    }
+
+    private fun onSaveConfirmationDialogDismiss() {
+        _state.update { it.copy(showSaveConfirmationDialog = false) }
+    }
+
+    private fun onReminderSavedDialogDismiss() {
+        _state.update { it.copy(showReminderSavedDialog = false) }
+    }
+
+    private fun onErrorDialogDismiss() {
+        _state.update { it.copy(errorMessage = null) }
+    }
+
+    private fun onDatePickerDismiss() {
+        _state.update { it.copy(showDatePicker = false) }
+    }
+
+    private fun onDatePicked(date: Date) {
+        _state.update { it.copy(date = date) }
+    }
+
+    private fun onColorPickerDismiss() {
+        _state.update { it.copy(showColorPicker = false) }
+    }
+
+    private fun onColorPicked(color: Color) {
+        _state.update { it.copy(color = color) }
+    }
+
+    private fun onAttachmentPickerDismiss() {
+        _state.update { it.copy(showAttachmentPicker = false) }
+    }
+
+    private fun onAttachmentPicked(attachments: List<Attachment>) {
+        _state.update { it.copy(attachments = attachments) }
+    }
+
+
+    private fun onSaveButtonClicked() {
+        _state.update { it.copy(showSaveConfirmationDialog = true) }
+    }
+
+    private suspend fun onSaveReminderConfirmClick() {
+        _state.update { it.copy(showSavingLoading = true) }
         try {
-            showPopUp(loadingDialog)
-            saveReminder(context)
-            hidePopUp(loadingDialog)
-
-            val successDialog = AlertDialog.Information(
-                message = UIText.StringResource(R.string.reminder_saved),
-            )
-            showPopUp(successDialog)
-            successDialog.result.invokeOnCompletion { hidePopUp(successDialog) }
+            saveReminder()
+            _state.update {
+                it.copy(
+                    showSavingLoading = false,
+                    showReminderSavedDialog = true
+                )
+            }
         } catch (e: MissingRequiredFieldException) {
-            hidePopUp(loadingDialog)
+            _state.update { it.copy(showSavingLoading = false) }
             val errorMessage = when (e) {
                 is MissingRequiredFieldException.Title -> UIText.StringResource(R.string.title_is_required)
                 is MissingRequiredFieldException.Date -> UIText.StringResource(R.string.date_is_required)
                 is MissingRequiredFieldException.Time -> UIText.StringResource(R.string.time_is_required)
             }
-            val errorDialog = AlertDialog.Error(message = errorMessage)
-            showPopUp(errorDialog)
-            errorDialog.result.invokeOnCompletion { hidePopUp(errorDialog) }
+            _state.update { it.copy(errorMessage = errorMessage) }
         }
     }
 
-    private suspend fun saveReminder(
-        context: Context
-    ) {
+    private suspend fun saveReminder() {
         val reminder = Reminder(
             id = if (reminderId != -1) reminderId else 0,
             title = _state.value.title.ifBlank { throw MissingRequiredFieldException.Title() },
@@ -155,7 +180,7 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
             reminderId
         }
         scheduleReminder(
-            context = context,
+            context = application.applicationContext,
             localDateTime = LocalDateTime.of(
                 LocalDate.ofInstant(reminder.date.toInstant(), ZoneId.systemDefault()),
                 LocalTime.of(reminder.time.hour, reminder.time.minute)
@@ -172,76 +197,20 @@ class CreateReminderScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun onDatePickerButtonClick() {
-        val datePicker = Picker.DatePicker()
-        showPopUp(datePicker)
-        when (val result = datePicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(datePicker)
-                _state.update {
-                    it.copy(date = result.value)
-                }
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(datePicker)
-        }
+    private fun onDatePickerButtonClick() {
+        _state.update { it.copy(showDatePicker = true) }
     }
 
-    private suspend fun onTimePickerButtonClick() {
-        val timePicker = Picker.TimePicker()
-        showPopUp(timePicker)
-        when (val result = timePicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(timePicker)
-                _state.update {
-                    it.copy(time = result.value)
-                }
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(timePicker)
-        }
+    private fun onTimePickerButtonClick() {
+        _state.update { it.copy(showTimePicker = true) }
     }
 
-    private suspend fun onColorPickerButtonClick() {
-        val colorPicker = Picker.ColorPicker()
-        showPopUp(colorPicker)
-        when (val result = colorPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(colorPicker)
-                _state.update {
-                    it.copy(color = result.value)
-                }
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(colorPicker)
-        }
+    private fun onColorPickerButtonClick() {
+        _state.update { it.copy(showColorPicker = true) }
     }
 
-    private suspend fun onAttachmentPickerButtonClick() {
-        val attachmentPicker = Picker.AttachmentPicker()
-        showPopUp(attachmentPicker)
-        when (val result = attachmentPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(attachmentPicker)
-                _state.update {
-                    it.copy(attachments = it.attachments + result.value)
-                }
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(attachmentPicker)
-        }
-    }
-
-    private fun showPopUp(popUp: PopUp) {
-        _state.update {
-            it.copy(popUps = it.popUps + popUp)
-        }
-    }
-
-    private fun hidePopUp(popUp: PopUp) {
-        _state.update {
-            it.copy(popUps = it.popUps - popUp)
-        }
+    private fun onAttachmentPickerButtonClick() {
+        _state.update { it.copy(showAttachmentPicker = true) }
     }
 
 }

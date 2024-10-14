@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,7 @@ import androidx.navigation.NavController
 import com.wahyusembiring.lecture.R
 import com.wahyusembiring.lecture.component.LectureCard
 import com.wahyusembiring.ui.component.topappbar.TopAppBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun LectureScreen(
@@ -28,15 +30,15 @@ fun LectureScreen(
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(key1 = state.showDrawer) {
-        if (state.showDrawer) drawerState.open()
-    }
+    val coroutineScope = rememberCoroutineScope()
 
     LectureScreen(
         navController = navController,
         state = state,
-        onUIEvent = viewModel::onUIEvent
+        onUIEvent = viewModel::onUIEvent,
+        onHamburgerMenuClick = {
+            coroutineScope.launch { drawerState.open() }
+        }
     )
 
 }
@@ -46,14 +48,13 @@ private fun LectureScreen(
     navController: NavController,
     state: LectureScreenUIState,
     onUIEvent: (LectureScreenUIEvent) -> Unit,
+    onHamburgerMenuClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = stringResource(R.string.lectures),
-                onMenuClick = {
-                    onUIEvent(LectureScreenUIEvent.OnHamburgerMenuClick)
-                }
+                onMenuClick = onHamburgerMenuClick
             )
         },
         floatingActionButton = {

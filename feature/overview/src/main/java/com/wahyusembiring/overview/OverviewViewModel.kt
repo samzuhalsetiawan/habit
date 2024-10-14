@@ -84,8 +84,6 @@ class OverviewViewModel @Inject constructor(
             is OverviewScreenUIEvent.OnMarkExamAsUndone -> launch {
                 onMarkExamAsUndone(event.exam)
             }
-
-            else -> Unit
         }
     }
 

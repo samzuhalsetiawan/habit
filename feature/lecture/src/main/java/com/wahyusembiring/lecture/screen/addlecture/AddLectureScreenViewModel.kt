@@ -1,5 +1,7 @@
 package com.wahyusembiring.lecture.screen.addlecture
 
+import android.app.Application
+import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddLectureScreenViewModel @Inject constructor(
-    private val lecturerRepository: LecturerRepository
+    private val lecturerRepository: LecturerRepository,
+    private val application: Application
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddLectureScreenUItate())
@@ -103,7 +106,12 @@ class AddLectureScreenViewModel @Inject constructor(
         onSaveConfirmationDialogDismiss()
         try {
             val lecture = Lecturer(
-                photo = _state.value.profilePictureUri,
+                photo = _state.value.profilePictureUri.also {
+                    if (it != null) {
+                        application.applicationContext.contentResolver
+                            .takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                },
                 name = _state.value.name.ifBlank {
                     throw ValidationException(
                         UIText.StringResource(R.string.lecture_name_cannot_be_empty)

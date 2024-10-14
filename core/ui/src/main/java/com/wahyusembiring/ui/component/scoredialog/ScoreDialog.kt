@@ -19,7 +19,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.wahyusembiring.data.model.ExamWithSubject
 import com.wahyusembiring.ui.R
-import com.wahyusembiring.ui.component.popup.PopUp
 
 data class ScoreDialog(
     val exam: ExamWithSubject,

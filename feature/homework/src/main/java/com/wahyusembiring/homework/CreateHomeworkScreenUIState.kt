@@ -4,7 +4,7 @@ import android.net.Uri
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.data.model.Time
-import com.wahyusembiring.ui.component.popup.PopUp
+import com.wahyusembiring.ui.util.UIText
 import java.util.Date
 
 data class CreateHomeworkScreenUIState(
@@ -17,5 +17,14 @@ data class CreateHomeworkScreenUIState(
     val attachments: List<Attachment> = emptyList(),
     val isCompleted: Boolean = false,
     val description: String = "",
-    val popUps: List<PopUp> = emptyList(),
+
+    // popup
+    val showDatePicker: Boolean = false,
+    val showTimePicker: Boolean = false,
+    val showSubjectPicker: Boolean = false,
+    val showAttachmentPicker: Boolean = false,
+    val showSaveConfirmationDialog: Boolean = false,
+    val showHomeworkSavedDialog: Boolean = false,
+    val showSavingLoading: Boolean = false,
+    val errorMessage: UIText? = null,
 )

@@ -51,19 +51,13 @@ fun OverviewScreen(
 
     OverviewScreen(
         state = state,
-        onUIEvent = {
-            when (it) {
-                is OverviewScreenUIEvent.OnNavigateTo -> {
-                    navController.navigate(it.screen)
-                }
-
-                is OverviewScreenUIEvent.OnHamburgerMenuClick -> {
-                    coroutineScope.launch { drawerState.open() }
-                }
-
-                else -> viewModel.onUIEvent(it)
-            }
+        onUIEvent = viewModel::onUIEvent,
+        onHamburgerMenuClick = {
+            coroutineScope.launch { drawerState.open() }
         },
+        onNavigateTo = {
+            navController.navigate(it)
+        }
     )
 }
 
@@ -73,6 +67,8 @@ private fun OverviewScreen(
     modifier: Modifier = Modifier,
     state: OverviewScreenUIState,
     onUIEvent: (OverviewScreenUIEvent) -> Unit,
+    onHamburgerMenuClick: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     var fabExpanded by remember { mutableStateOf(false) }
 
@@ -80,7 +76,7 @@ private fun OverviewScreen(
         topBar = {
             TopAppBar(
                 title = stringResource(R.string.overview),
-                onMenuClick = { onUIEvent(OverviewScreenUIEvent.OnHamburgerMenuClick) }
+                onMenuClick = onHamburgerMenuClick
             )
         },
         floatingActionButton = {
@@ -88,9 +84,9 @@ private fun OverviewScreen(
                 isExpanded = fabExpanded,
                 onClick = { fabExpanded = !fabExpanded },
                 onDismiss = { fabExpanded = false },
-                onReminderFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateReminder())) },
-                onExamFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateExam())) },
-                onHomeworkFabClick = { onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateHomework())) }
+                onReminderFabClick = { onNavigateTo(Screen.CreateReminder()) },
+                onExamFabClick = { onNavigateTo(Screen.CreateExam()) },
+                onHomeworkFabClick = { onNavigateTo(Screen.CreateHomework()) },
             )
         }
     ) {
@@ -98,6 +94,7 @@ private fun OverviewScreen(
             modifier = modifier.padding(it),
             state = state,
             onUIEvent = onUIEvent,
+            onNavigateTo = onNavigateTo
         )
     }
 }
@@ -109,6 +106,7 @@ private fun OverviewScreenMainContent(
     modifier: Modifier = Modifier,
     state: OverviewScreenUIState,
     onUIEvent: (OverviewScreenUIEvent) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -132,15 +130,15 @@ private fun OverviewScreenMainContent(
                 onEventClick = { event ->
                     when (event) {
                         is HomeworkWithSubject -> {
-                            onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateHomework(event.homework.id)))
+                            onNavigateTo(Screen.CreateHomework(event.homework.id))
                         }
 
                         is ExamWithSubject -> {
-                            onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateExam(event.exam.id)))
+                            onNavigateTo(Screen.CreateExam(event.exam.id))
                         }
 
                         is Reminder -> {
-                            onUIEvent(OverviewScreenUIEvent.OnNavigateTo(Screen.CreateReminder(event.id)))
+                            onNavigateTo(Screen.CreateReminder(event.id))
                         }
 
                         else -> Unit
@@ -200,17 +198,6 @@ private fun DaySectionHeader(
         Text(
             text = date,
             style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OverviewScreenPreview() {
-    HabitTheme {
-        OverviewScreen(
-            state = OverviewScreenUIState(),
-            onUIEvent = {}
         )
     }
 }

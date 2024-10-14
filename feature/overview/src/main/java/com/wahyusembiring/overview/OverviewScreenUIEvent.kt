@@ -9,8 +9,6 @@ sealed class OverviewScreenUIEvent {
     data class OnEventCompletedStateChange(val event: Any, val isCompleted: Boolean) :
         OverviewScreenUIEvent()
 
-    data object OnHamburgerMenuClick : OverviewScreenUIEvent()
-    data class OnNavigateTo(val screen: Screen) : OverviewScreenUIEvent()
     data class OnDeleteEvent(val event: Any) : OverviewScreenUIEvent()
     data class OnExamScorePicked(val exam: ExamWithSubject, val score: Int) :
         OverviewScreenUIEvent()

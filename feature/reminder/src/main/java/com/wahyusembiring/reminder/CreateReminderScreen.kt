@@ -26,7 +26,13 @@ import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.button.AddReminderButton
 import com.wahyusembiring.ui.component.button.ChooseColorButton
 import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
-import com.wahyusembiring.ui.component.popup.PopUpHandler
+import com.wahyusembiring.ui.component.popup.alertdialog.confirmation.ConfirmationAlertDialog
+import com.wahyusembiring.ui.component.popup.alertdialog.information.InformationAlertDialog
+import com.wahyusembiring.ui.component.popup.alertdialog.loading.LoadingAlertDialog
+import com.wahyusembiring.ui.component.popup.picker.attachmentpicker.AttachmentPicker
+import com.wahyusembiring.ui.component.popup.picker.colorpicker.ColorPicker
+import com.wahyusembiring.ui.component.popup.picker.datepicker.DatePicker
+import com.wahyusembiring.ui.component.popup.picker.timepicker.TimePicker
 import com.wahyusembiring.ui.theme.spacing
 import com.wahyusembiring.ui.util.checkForPermissionOrLaunchPermissionLauncher
 
@@ -39,19 +45,19 @@ fun CreateReminderScreen(
 
     CreateReminderScreen(
         state = state,
-        onUIEvent = {
-            when (it) {
-                is CreateReminderScreenUIEvent.OnNavigateBack -> navController.popBackStack()
-                else -> viewModel.onUIEvent(it)
-            }
+        onUIEvent = viewModel::onUIEvent,
+        onNavigateUp = {
+            navController.navigateUp()
         }
     )
 }
 
+@Suppress("t")
 @Composable
 private fun CreateReminderScreen(
     state: CreateReminderScreenUIState,
     onUIEvent: (CreateReminderScreenUIEvent) -> Unit,
+    onNavigateUp: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -71,14 +77,14 @@ private fun CreateReminderScreen(
                 .fillMaxSize()
         ) {
             NavigationAndActionButtonHeader(
-                onNavigationButtonClicked = { onUIEvent(CreateReminderScreenUIEvent.OnNavigateBack) },
+                onNavigationButtonClicked = onNavigateUp,
                 actionButtonText = if (state.isEditMode) {
                     stringResource(R.string.edit)
                 } else {
                     stringResource(R.string.save)
                 },
                 onActionButtonClicked = {
-                    onUIEvent(CreateReminderScreenUIEvent.OnSaveButtonClicked(context.applicationContext))
+                    onUIEvent(CreateReminderScreenUIEvent.OnSaveButtonClicked)
                 },
                 navigationButtonDescription = stringResource(R.string.close_create_reminder_sheet)
             )
@@ -128,10 +134,78 @@ private fun CreateReminderScreen(
                 )
             }
         }
+    }
 
-        PopUpHandler(
-            popUps = state.popUps,
-            initialColorForColorPicker = state.color
+    if (state.showDatePicker) {
+        DatePicker(
+            onDismissRequest = { onUIEvent(CreateReminderScreenUIEvent.OnDatePickerDismiss) },
+            onDateSelected = { onUIEvent(CreateReminderScreenUIEvent.OnDatePicked(it)) }
         )
     }
+
+    if (state.showTimePicker) {
+        TimePicker(
+            onDismissRequest = { onUIEvent(CreateReminderScreenUIEvent.OnTimePickerDismiss) },
+            onTimeSelected = { onUIEvent(CreateReminderScreenUIEvent.OnTimePicked(it)) }
+        )
+    }
+
+    if (state.showColorPicker) {
+        ColorPicker(
+            initialColor = state.color,
+            onDismissRequest = { onUIEvent(CreateReminderScreenUIEvent.OnColorPickerDismiss) },
+            onColorConfirmed = { onUIEvent(CreateReminderScreenUIEvent.OnColorPicked(it)) }
+        )
+    }
+
+    if (state.showAttachmentPicker) {
+        AttachmentPicker(
+            onDismissRequest = { onUIEvent(CreateReminderScreenUIEvent.OnAttachmentPickerDismiss) },
+            onAttachmentsConfirmed = { onUIEvent(CreateReminderScreenUIEvent.OnAttachmentPicked(it)) }
+        )
+    }
+
+    if (state.showSavingLoading) {
+        LoadingAlertDialog(message = stringResource(R.string.saving))
+    }
+
+    if (state.showSaveConfirmationDialog) {
+        ConfirmationAlertDialog(
+            title = stringResource(R.string.save_reminder),
+            message = if (state.isEditMode) {
+                stringResource(R.string.are_you_sure_you_want_to_edit_this_reminder)
+            } else {
+                stringResource(R.string.are_you_sure_you_want_to_save_this_reminder)
+            },
+            positiveButtonText = stringResource(R.string.save),
+            onPositiveButtonClick = {
+                onUIEvent(CreateReminderScreenUIEvent.OnSaveReminderConfirmClick)
+                onUIEvent(CreateReminderScreenUIEvent.OnSaveConfirmationDialogDismiss)
+            },
+            negativeButtonText = stringResource(R.string.cancel),
+            onNegativeButtonClick = {
+                onUIEvent(CreateReminderScreenUIEvent.OnSaveConfirmationDialogDismiss)
+            },
+            onDismissRequest = {
+                onUIEvent(CreateReminderScreenUIEvent.OnSaveConfirmationDialogDismiss)
+            },
+        )
+    }
+
+    if (state.showReminderSavedDialog) {
+        InformationAlertDialog(
+            title = stringResource(R.string.success),
+            message = stringResource(R.string.reminder_saved),
+            buttonText = stringResource(R.string.ok),
+            onButtonClicked = {
+                onUIEvent(CreateReminderScreenUIEvent.OnReminderSavedDialogDismiss)
+                onNavigateUp()
+            },
+            onDismissRequest = {
+                onUIEvent(CreateReminderScreenUIEvent.OnReminderSavedDialogDismiss)
+                onNavigateUp()
+            },
+        )
+    }
+
 }

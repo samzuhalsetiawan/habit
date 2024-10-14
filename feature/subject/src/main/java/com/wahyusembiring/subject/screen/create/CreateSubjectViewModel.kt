@@ -11,9 +11,6 @@ import com.wahyusembiring.data.model.entity.Subject
 import com.wahyusembiring.data.repository.LecturerRepository
 import com.wahyusembiring.data.repository.SubjectRepository
 import com.wahyusembiring.subject.R
-import com.wahyusembiring.ui.component.popup.AlertDialog
-import com.wahyusembiring.ui.component.popup.Picker
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,12 +47,33 @@ class CreateSubjectViewModel @Inject constructor(
             is CreateSubjectScreenUIEvent.OnSaveButtonClicked -> launch { onSaveButtonClicked() }
             is CreateSubjectScreenUIEvent.OnPickColorButtonClicked -> launch { onPickColorButtonClicked() }
             is CreateSubjectScreenUIEvent.OnLecturerSelected -> onLecturerSelected(event.lecturer)
-            is CreateSubjectScreenUIEvent.OnAddLecturerButtonClicked -> onAddLecturerButtonClicked(
-                event.navController
-            )
-
-            else -> Unit
+            is CreateSubjectScreenUIEvent.OnColorPicked -> onColorPicked(event.color)
+            is CreateSubjectScreenUIEvent.OnColorPickerDismiss -> onColorPickerDismiss()
+            is CreateSubjectScreenUIEvent.OnErrorDialogDismiss -> onErrorDialogDismiss()
+            is CreateSubjectScreenUIEvent.OnSaveConfirmationDialogConfirm -> onSaveConfirmationDialogConfirm()
+            is CreateSubjectScreenUIEvent.OnSaveConfirmationDialogDismiss -> onSaveConfirmationDialogDismiss()
+            is CreateSubjectScreenUIEvent.OnSubjectSavedDialogDismiss -> onSubjectSavedDialogDismiss()
         }
+    }
+
+    private fun onSubjectSavedDialogDismiss() {
+        _state.update { it.copy(showSubjectSavedDialog = false) }
+    }
+
+    private fun onSaveConfirmationDialogDismiss() {
+        _state.update { it.copy(showSaveConfirmationDialog = false) }
+    }
+
+    private fun onErrorDialogDismiss() {
+        _state.update { it.copy(errorMessage = null) }
+    }
+
+    private fun onColorPickerDismiss() {
+        _state.update { it.copy(showColorPicker = false) }
+    }
+
+    private fun onColorPicked(color: Color) {
+        _state.update { it.copy(color = color) }
     }
 
     private fun onLecturerSelected(lecturer: Lecturer) {
@@ -64,64 +82,33 @@ class CreateSubjectViewModel @Inject constructor(
         }
     }
 
-    private fun onAddLecturerButtonClicked(navController: NavController) {
-        navController.navigate(Screen.AddLecture)
+    private fun onPickColorButtonClicked() {
+        _state.update { it.copy(showColorPicker = true) }
     }
 
-    private suspend fun onPickColorButtonClicked() {
-        val colorPicker = Picker.ColorPicker()
-        showPopUp(colorPicker)
-        when (val result = colorPicker.result.await()) {
-            is Picker.Result.Picked -> {
-                hidePopUp(colorPicker)
-                updateColor(result.value)
-            }
-
-            is Picker.Result.Dismiss -> hidePopUp(colorPicker)
-        }
+    private fun onSaveButtonClicked() {
+        _state.update { it.copy(showSaveConfirmationDialog = true) }
     }
 
-    private suspend fun onSaveButtonClicked() {
-        val confirmationDialog = AlertDialog.Confirmation(
-            title = UIText.StringResource(R.string.save_subject),
-            message = UIText.StringResource(R.string.are_you_sure_you_want_to_save_this_subject),
-        )
-        showPopUp(confirmationDialog)
-        when (confirmationDialog.result.await()) {
-            AlertDialog.Result.Positive -> {
-                hidePopUp(confirmationDialog)
-                onSaveSubjectConfirmed()
-            }
-
-            AlertDialog.Result.Negative -> hidePopUp(confirmationDialog)
-            AlertDialog.Result.Dismiss -> hidePopUp(confirmationDialog)
-        }
-    }
-
-    private fun onSaveSubjectConfirmed() {
-        val loadingPopup = AlertDialog.Loading(UIText.StringResource(R.string.saving))
+    private fun onSaveConfirmationDialogConfirm() {
+        _state.update { it.copy(showSavingLoading = true) }
         viewModelScope.launch {
             try {
-                showPopUp(loadingPopup)
                 saveSubject()
-                hidePopUp(loadingPopup)
-
-                // Show success popup
-                val successPopup = AlertDialog.Information(
-                    message = UIText.StringResource(R.string.subject_saved)
-                )
-                showPopUp(successPopup)
-                successPopup.result.invokeOnCompletion { hidePopUp(successPopup) }
+                _state.update {
+                    it.copy(
+                        showSavingLoading = false,
+                        showSubjectSavedDialog = true
+                    )
+                }
             } catch (e: MissingRequiredFieldException) {
-                hidePopUp(loadingPopup)
+                _state.update { it.copy(showSavingLoading = false) }
                 val errorMessage = when (e) {
                     is MissingRequiredFieldException.SubjectName -> UIText.StringResource(R.string.subject_name_is_required)
                     is MissingRequiredFieldException.Room -> UIText.StringResource(R.string.room_is_required)
                     is MissingRequiredFieldException.Lecture -> UIText.StringResource(R.string.please_select_a_lecture)
                 }
-                val errorPopup = AlertDialog.Error(errorMessage)
-                showPopUp(errorPopup)
-                errorPopup.result.invokeOnCompletion { hidePopUp(errorPopup) }
+                _state.update { it.copy(errorMessage = errorMessage) }
             }
         }
     }
@@ -152,18 +139,6 @@ class CreateSubjectViewModel @Inject constructor(
     private fun updateRoom(room: String) {
         _state.update {
             it.copy(room = room)
-        }
-    }
-
-    private fun showPopUp(popUp: PopUp) {
-        _state.update {
-            it.copy(popUps = it.popUps + popUp)
-        }
-    }
-
-    private fun hidePopUp(popUp: PopUp) {
-        _state.update {
-            it.copy(popUps = it.popUps - popUp)
         }
     }
 

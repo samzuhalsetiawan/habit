@@ -9,8 +9,6 @@ import com.wahyusembiring.data.model.ThesisWithTask
 import com.wahyusembiring.data.model.entity.Task
 import com.wahyusembiring.data.model.entity.Thesis
 import com.wahyusembiring.data.repository.ThesisRepository
-import com.wahyusembiring.ui.component.popup.AlertDialog
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.util.UIText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,8 +59,7 @@ class ThesisPlannerScreenViewModel @AssistedInject constructor(
 
     fun onUIEvent(event: ThesisPlannerScreenUIEvent) {
         when (event) {
-            is ThesisPlannerScreenUIEvent.OnAddArticleClick -> TODO()
-            is ThesisPlannerScreenUIEvent.OnArticleClick -> TODO()
+            is ThesisPlannerScreenUIEvent.OnArticleClick -> onArticleClick(event.article)
             is ThesisPlannerScreenUIEvent.OnDeleteArticleClick -> launch {
                 onDeleteArticleClick(
                     event.article
@@ -79,8 +76,66 @@ class ThesisPlannerScreenViewModel @AssistedInject constructor(
                 )
             }
 
-            else -> Unit
+            is ThesisPlannerScreenUIEvent.OnArticleDeleteDialogDismiss -> onArticleDeleteDialogDismiss()
+            is ThesisPlannerScreenUIEvent.OnCreateTaskButtonClick -> onCreateTaskButtonClick()
+            is ThesisPlannerScreenUIEvent.OnCreateTaskDialogDismiss -> onCreateTaskDialogDismiss()
+            is ThesisPlannerScreenUIEvent.OnDatePickerButtonClick -> onDatePickerButtonClick()
+            is ThesisPlannerScreenUIEvent.OnDatePickerDismiss -> onDatePickerDismiss()
+            is ThesisPlannerScreenUIEvent.OnDeleteArticleConfirm -> onDeleteArticleConfirm(event.article)
+            is ThesisPlannerScreenUIEvent.OnDeleteTaskClick -> onDeleteTaskClick(event.task)
+            is ThesisPlannerScreenUIEvent.OnTaskDeleteConfirm -> onTaskDeleteConfirm(event.task)
+            is ThesisPlannerScreenUIEvent.OnTaskDeleteDialogDismiss -> onTaskDeleteDialogDismiss()
         }
+    }
+
+    private fun onTaskDeleteDialogDismiss() {
+        _uiState.update { it.copy(taskPendingDelete = null) }
+    }
+
+    private fun onTaskDeleteConfirm(task: Task) {
+        viewModelScope.launch {
+            thesisRepository.deleteTask(task)
+        }
+    }
+
+    private fun onDeleteTaskClick(task: Task) {
+        _uiState.update {
+            it.copy(taskPendingDelete = task)
+        }
+    }
+
+    private fun onDeleteArticleConfirm(article: File) {
+        viewModelScope.launch {
+            thesisRepository.updateThesis(
+                thesis.thesis.let {
+                    it.copy(articles = it.articles - article)
+                }
+            )
+        }
+    }
+
+    private fun onDatePickerDismiss() {
+        _uiState.update { it.copy(showDatePicker = false) }
+    }
+
+    private fun onDatePickerButtonClick() {
+        _uiState.update { it.copy(showDatePicker = true) }
+    }
+
+    private fun onCreateTaskDialogDismiss() {
+        _uiState.update { it.copy(showCreateTaskDialog = false) }
+    }
+
+    private fun onCreateTaskButtonClick() {
+        _uiState.update { it.copy(showCreateTaskDialog = true) }
+    }
+
+    private fun onArticleDeleteDialogDismiss() {
+        _uiState.update { it.copy(articlePendingDelete = null) }
+    }
+
+    private fun onArticleClick(article: File) {
+
     }
 
     private suspend fun onTaskCompletedStatusChange(task: Task, completed: Boolean) {
@@ -106,29 +161,13 @@ class ThesisPlannerScreenViewModel @AssistedInject constructor(
     }
 
 
-    private suspend fun onDeleteArticleClick(article: File) {
-        val confirmationAlertDialog = AlertDialog.Confirmation(
-            title = UIText.StringResource(R.string.delete_article),
-            message = UIText.StringResource(
-                R.string.are_you_sure_you_want_to_delete,
-                article.fileName
-            ),
-        )
-        showPopUp(confirmationAlertDialog)
-        val result = confirmationAlertDialog.result.await()
-        when (result) {
-            AlertDialog.Result.Positive -> {
-                dismissPopUp(confirmationAlertDialog)
-                thesisRepository.updateThesis(thesis.thesis.copy(articles = thesis.thesis.articles - article))
-            }
-
-            AlertDialog.Result.Negative -> dismissPopUp(confirmationAlertDialog)
-            AlertDialog.Result.Dismiss -> dismissPopUp(confirmationAlertDialog)
+    private fun onDeleteArticleClick(article: File) {
+        _uiState.update {
+            it.copy(articlePendingDelete = article)
         }
     }
 
     private fun onDocumentPickerResult(articles: List<File>) {
-//        _uiState.update { it.copy(articles = it.articles + articles) }
         viewModelScope.launch {
             articles.forEach {
                 thesisRepository.updateThesis(
@@ -138,12 +177,5 @@ class ThesisPlannerScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private fun showPopUp(popUp: PopUp) {
-        _uiState.update { it.copy(popUps = it.popUps + popUp) }
-    }
-
-    private fun dismissPopUp(popUp: PopUp) {
-        _uiState.update { it.copy(popUps = it.popUps - popUp) }
-    }
 
 }

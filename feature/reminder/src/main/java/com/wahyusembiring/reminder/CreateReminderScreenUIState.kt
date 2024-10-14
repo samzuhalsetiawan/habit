@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.compose.ui.graphics.Color
 import com.wahyusembiring.data.model.Attachment
 import com.wahyusembiring.data.model.Time
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.theme.primaryLight
+import com.wahyusembiring.ui.util.UIText
 import java.util.Date
 
 data class CreateReminderScreenUIState(
@@ -17,5 +17,15 @@ data class CreateReminderScreenUIState(
     val isCompleted: Boolean = false,
     val attachments: List<Attachment> = emptyList(),
     val description: String = "",
-    val popUps: List<PopUp> = emptyList(),
+
+    //popup
+    val showDatePicker: Boolean = false,
+    val showTimePicker: Boolean = false,
+    val showColorPicker: Boolean = false,
+    val showAttachmentPicker: Boolean = false,
+    val showSaveConfirmationDialog: Boolean = false,
+    val showSavingLoading: Boolean = false,
+    val showReminderSavedDialog: Boolean = false,
+    val errorMessage: UIText? = null
+
 )

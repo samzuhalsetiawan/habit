@@ -2,8 +2,8 @@ package com.wahyusembiring.subject.screen.create
 
 import androidx.compose.ui.graphics.Color
 import com.wahyusembiring.data.model.entity.Lecturer
-import com.wahyusembiring.ui.component.popup.PopUp
 import com.wahyusembiring.ui.theme.primaryLight
+import com.wahyusembiring.ui.util.UIText
 
 data class CreateSubjectScreenUIState(
     val name: String = "",
@@ -12,5 +12,11 @@ data class CreateSubjectScreenUIState(
     val description: String = "",
     val lecture: Lecturer? = null,
     val lectures: List<Lecturer> = emptyList(),
-    val popUps: List<PopUp> = emptyList()
+
+    //popup
+    val showColorPicker: Boolean = false,
+    val showSaveConfirmationDialog: Boolean = false,
+    val showSavingLoading: Boolean = false,
+    val showSubjectSavedDialog: Boolean = false,
+    val errorMessage: UIText? = null
 )

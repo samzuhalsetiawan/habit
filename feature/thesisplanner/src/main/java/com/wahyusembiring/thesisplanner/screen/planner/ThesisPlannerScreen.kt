@@ -46,7 +46,6 @@ import com.wahyusembiring.thesisplanner.component.Section
 import com.wahyusembiring.thesisplanner.component.TaskList
 import com.wahyusembiring.ui.component.button.AddDateButton
 import com.wahyusembiring.ui.component.modalbottomsheet.component.NavigationAndActionButtonHeader
-import com.wahyusembiring.ui.component.popup.AlertDialog
 import com.wahyusembiring.ui.component.popup.alertdialog.confirmation.ConfirmationAlertDialog
 import com.wahyusembiring.ui.component.popup.picker.datepicker.DatePicker
 import com.wahyusembiring.ui.theme.spacing
@@ -62,7 +61,29 @@ fun ThesisPlannerScreen(
     navController: NavHostController
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+
+    ThesisPlannerScreen(
+        state = state,
+        onUIEvent = viewModel::onUIEvent,
+        onNavigateBack = {
+            navController.navigateUp()
+        }
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThesisPlannerScreen(
+    state: ThesisPlannerScreenUIState,
+    onUIEvent: (ThesisPlannerScreenUIEvent) -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     val context = LocalContext.current
 
     val documentPickerLauncher =
@@ -75,7 +96,7 @@ fun ThesisPlannerScreen(
                     )
                 }
                 val files = uris.map { it.toFile(context) }
-                viewModel.onUIEvent(ThesisPlannerScreenUIEvent.OnDocumentPickerResult(files))
+                onUIEvent(ThesisPlannerScreenUIEvent.OnDocumentPickerResult(files))
             }
         }
 
@@ -83,58 +104,6 @@ fun ThesisPlannerScreen(
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             documentPickerLauncher.launch(arrayOf("application/pdf"))
         }
-
-    ThesisPlannerScreen(
-        state = state,
-        onUIEvent = {
-            when (it) {
-                is ThesisPlannerScreenUIEvent.OnBackMenuClick -> {
-                    navController.popBackStack()
-                }
-
-                is ThesisPlannerScreenUIEvent.OnAddArticleClick -> {
-                    checkForPermissionOrLaunchPermissionLauncher(
-                        context = context,
-                        permissionToRequest = getFileAccessPermissionRequest(),
-                        permissionRequestLauncher = documentPermissionRequestLauncher,
-                        onPermissionAlreadyGranted = { documentPickerLauncher.launch(arrayOf("application/pdf")) }
-                    )
-                }
-
-                else -> viewModel.onUIEvent(it)
-            }
-        }
-    )
-    for (popUp in state.popUps) {
-        when (popUp) {
-            is AlertDialog.Confirmation -> {
-                ConfirmationAlertDialog(
-                    onPositiveButtonClick = popUp::onPositiveButtonClick,
-                    onNegativeButtonClick = popUp::onNegativeButtonClick,
-                    onDismissRequest = popUp::onDismiss,
-                    title = popUp.title.asString(),
-                    message = popUp.message.asString(),
-                    positiveButtonText = popUp.positiveButtonText.asString(),
-                    negativeButtonText = popUp.negativeButtonText.asString(),
-                )
-            }
-
-            else -> Unit
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ThesisPlannerScreen(
-    state: ThesisPlannerScreenUIState,
-    onUIEvent: (ThesisPlannerScreenUIEvent) -> Unit
-) {
-    val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showCreateTaskDialog by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -144,7 +113,7 @@ private fun ThesisPlannerScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { onUIEvent(ThesisPlannerScreenUIEvent.OnBackMenuClick) }
+                        onClick = onNavigateBack
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -181,7 +150,20 @@ private fun ThesisPlannerScreen(
                 title = stringResource(R.string.articles),
                 trailingContent = {
                     IconButton(
-                        onClick = { onUIEvent(ThesisPlannerScreenUIEvent.OnAddArticleClick) }
+                        onClick = {
+                            checkForPermissionOrLaunchPermissionLauncher(
+                                context = context,
+                                permissionToRequest = getFileAccessPermissionRequest(),
+                                permissionRequestLauncher = documentPermissionRequestLauncher,
+                                onPermissionAlreadyGranted = {
+                                    documentPickerLauncher.launch(
+                                        arrayOf(
+                                            "application/pdf"
+                                        )
+                                    )
+                                }
+                            )
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -205,7 +187,9 @@ private fun ThesisPlannerScreen(
                 title = stringResource(R.string.task),
                 trailingContent = {
                     IconButton(
-                        onClick = { showCreateTaskDialog = true }
+                        onClick = {
+                            onUIEvent(ThesisPlannerScreenUIEvent.OnCreateTaskButtonClick)
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -228,14 +212,14 @@ private fun ThesisPlannerScreen(
             HorizontalDivider()
         }
     }
-    if (showCreateTaskDialog) {
+    if (state.showCreateTaskDialog) {
         ModalBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {
                 coroutineScope
                     .launch { sheetState.hide() }
                     .invokeOnCompletion {
-                        showCreateTaskDialog = false
+                        onUIEvent(ThesisPlannerScreenUIEvent.OnCreateTaskDialogDismiss)
                     }
             }
         ) {
@@ -254,11 +238,16 @@ private fun ThesisPlannerScreen(
                     coroutineScope
                         .launch { sheetState.hide() }
                         .invokeOnCompletion {
-                            showCreateTaskDialog = false
+                            onUIEvent(ThesisPlannerScreenUIEvent.OnCreateTaskDialogDismiss)
                         }
                 },
                 onActionButtonClicked = {
                     onUIEvent(ThesisPlannerScreenUIEvent.OnSaveTaskClick(task))
+                    coroutineScope
+                        .launch { sheetState.hide() }
+                        .invokeOnCompletion {
+                            onUIEvent(ThesisPlannerScreenUIEvent.OnCreateTaskDialogDismiss)
+                        }
                 },
                 navigationButtonDescription = "Cancel create task"
             )
@@ -283,13 +272,15 @@ private fun ThesisPlannerScreen(
             AddDateButton(
                 date = task.dueDate,
                 onClicked = {
-                    showDatePicker = true
+                    onUIEvent(ThesisPlannerScreenUIEvent.OnDatePickerButtonClick)
                 }
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.Large))
-            if (showDatePicker) {
+            if (state.showDatePicker) {
                 DatePicker(
-                    onDismissRequest = { showDatePicker = false },
+                    onDismissRequest = {
+                        onUIEvent(ThesisPlannerScreenUIEvent.OnDatePickerDismiss)
+                    },
                     onDateSelected = {
                         task = task.copy(dueDate = it)
                     }
@@ -297,4 +288,47 @@ private fun ThesisPlannerScreen(
             }
         }
     }
+
+    if (state.articlePendingDelete != null) {
+        ConfirmationAlertDialog(
+            title = stringResource(R.string.delete_article),
+            message = stringResource(R.string.are_you_sure_you_want_to_delete_this_thesis),
+            positiveButtonText = stringResource(R.string.yes),
+            onPositiveButtonClick = {
+                onUIEvent(
+                    ThesisPlannerScreenUIEvent.OnDeleteArticleConfirm(state.articlePendingDelete)
+                )
+                onUIEvent(ThesisPlannerScreenUIEvent.OnArticleDeleteDialogDismiss)
+            },
+            negativeButtonText = stringResource(R.string.no),
+            onNegativeButtonClick = {
+                onUIEvent(ThesisPlannerScreenUIEvent.OnArticleDeleteDialogDismiss)
+            },
+            onDismissRequest = {
+                onUIEvent(ThesisPlannerScreenUIEvent.OnArticleDeleteDialogDismiss)
+            },
+        )
+    }
+
+    if (state.taskPendingDelete != null) {
+        ConfirmationAlertDialog(
+            title = stringResource(R.string.delete_task),
+            message = stringResource(R.string.are_you_sure_you_want_to_delete_this_task),
+            positiveButtonText = stringResource(R.string.yes),
+            onPositiveButtonClick = {
+                onUIEvent(
+                    ThesisPlannerScreenUIEvent.OnTaskDeleteConfirm(state.taskPendingDelete)
+                )
+                onUIEvent(ThesisPlannerScreenUIEvent.OnTaskDeleteDialogDismiss)
+            },
+            negativeButtonText = stringResource(R.string.no),
+            onNegativeButtonClick = {
+                onUIEvent(ThesisPlannerScreenUIEvent.OnTaskDeleteDialogDismiss)
+            },
+            onDismissRequest = {
+                onUIEvent(ThesisPlannerScreenUIEvent.OnTaskDeleteDialogDismiss)
+            },
+        )
+    }
+
 }

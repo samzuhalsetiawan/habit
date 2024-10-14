@@ -44,10 +44,9 @@ class ThesisSelectionScreenViewModel @Inject constructor(
                     event.thesis
                 )
             }
-
-            else -> Unit
         }
     }
+
 
     private suspend fun onDeleteThesisClick(thesis: Thesis) {
         thesisRepository.deleteThesis(thesis.thesis)

@@ -63,11 +63,9 @@ fun CalendarScreen(
 
     CalendarScreen(
         state = state.value,
-        onUIEvent = {
-            when (it) {
-                is CalendarScreenUIEvent.OnHamburgerMenuClick -> coroutineScope.launch { drawerState.open() }
-                else -> viewModel.onUIEvent(it)
-            }
+        onUIEvent = viewModel::onUIEvent,
+        onHamburgerMenuClick = {
+            coroutineScope.launch { drawerState.open() }
         }
     )
 
@@ -76,16 +74,16 @@ fun CalendarScreen(
 @Composable
 private fun CalendarScreen(
     state: CalendarScreenUIState,
-    onUIEvent: (CalendarScreenUIEvent) -> Unit
+    onUIEvent: (CalendarScreenUIEvent) -> Unit,
+    onHamburgerMenuClick: () -> Unit,
 ) {
     val calendarState = rememberSelectableCalendarState()
-    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = stringResource(R.string.calendar),
-                onMenuClick = { onUIEvent(CalendarScreenUIEvent.OnHamburgerMenuClick) }
+                onMenuClick = onHamburgerMenuClick
             )
         }
     ) { paddingValues ->

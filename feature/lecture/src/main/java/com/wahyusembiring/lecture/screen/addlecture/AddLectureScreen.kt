@@ -1,5 +1,6 @@
 package com.wahyusembiring.lecture.screen.addlecture
 
+import android.content.Intent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,6 +72,9 @@ private fun AddLectureScreen(
     navController: NavController,
     navigateUp: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TopAppBar(
